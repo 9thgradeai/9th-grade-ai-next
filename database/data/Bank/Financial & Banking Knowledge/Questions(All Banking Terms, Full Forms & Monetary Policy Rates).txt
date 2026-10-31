@@ -1,0 +1,622 @@
+﻿Batch 1 — Questions 1–50
+Section A: Core banking terminology and full forms
+1. What does KYC stand for in banking?
+A. Keep Your Cash B. Know Your Customer C. Key Yield Calculation D. Know Your Credit
+Correct Answer: B. Know Your Customer
+Explanation: KYC is the process of identifying and verifying customers and understanding the nature of their banking relationships. It supports customer due diligence and AML/CFT compliance.
+2. What is the full form of AML?
+A. Automated Money Lending B. Annual Monetary Limit C. Anti-Money Laundering D. Asset Management Liability
+Correct Answer: C. Anti-Money Laundering
+Explanation: AML refers to laws, regulations, and controls intended to prevent criminals from disguising the origin of illegally obtained funds.
+3. What does CFT mean?
+A. Combating the Financing of Terrorism B. Central Finance Transaction C. Credit Fund Transfer D. Cash Flow Tracking
+Correct Answer: A. Combating the Financing of Terrorism
+Explanation: CFT measures prevent funds or financial services from being used to support terrorism. AML and CFT are closely related but address distinct threats.
+4. What is the full form of NPL in banking?
+A. Net Profit Liability B. National Payment Limit C. Non-Personal Loan D. Non-Performing Loan
+Correct Answer: D. Non-Performing Loan
+Explanation: An NPL is a loan classified as non-performing under the applicable regulatory framework. Classification criteria and applicable thresholds depend on the relevant rules.
+5. What does CAR stand for?
+A. Cash Allocation Ratio B. Capital Adequacy Ratio C. Credit Assessment Return D. Current Asset Requirement
+Correct Answer: B. Capital Adequacy Ratio
+Explanation: CAR measures regulatory capital relative to risk-weighted assets. It indicates a bank's capacity to absorb losses against its risk exposures.
+6. What is the full form of CAMELS?
+A. Capital, Assets, Management, Earnings, Liquidity, Sensitivity B. Capital, Accounts, Money, Equity, Lending, Solvency C. Credit, Assets, Market, Earnings, Liabilities, Security D. Capital, Audit, Management, Equity, Liquidity, Settlement
+Correct Answer: A. Capital, Assets, Management, Earnings, Liquidity, Sensitivity
+Explanation: CAMELS is a supervisory framework for assessing a financial institution's condition. The six components cover capital adequacy, asset quality, management, earnings, liquidity, and sensitivity to market risk.
+7. What does NIM stand for?
+A. National Investment Margin B. Net Insurance Measure C. Net Interest Margin D. Nominal Income Multiplier
+Correct Answer: C. Net Interest Margin
+Explanation: NIM generally measures net interest income relative to average interest-earning assets. It helps assess the profitability of a bank's interest-generating activities.
+8. What is the full form of CASA?
+A. Capital and Securities Account B. Current and Savings Account C. Credit and Settlement Arrangement D. Cash Allocation and Savings Authority
+Correct Answer: B. Current and Savings Account
+Explanation: CASA refers to current and savings deposits, commonly considered together when analysing a bank's deposit mix and funding costs.
+9. What does LCR stand for under Basel liquidity standards?
+A. Loan Classification Requirement B. Liability Coverage Return C. Lending Capital Ratio D. Liquidity Coverage Ratio
+Correct Answer: D. Liquidity Coverage Ratio
+Explanation: LCR assesses whether a bank holds sufficient high-quality liquid assets to cover its projected net cash outflows over a 30-calendar-day stress scenario under the Basel framework.
+10. What is the full form of NSFR?
+A. Net Settlement Funding Return B. National Savings Finance Ratio C. Net Stable Funding Ratio D. Non-Standard Financial Requirement
+Correct Answer: C. Net Stable Funding Ratio
+Explanation: NSFR promotes stable funding over a one-year horizon relative to the liquidity characteristics of assets and off-balance-sheet exposures.
+11. What does ROA mean?
+A. Return on Assets B. Rate of Allocation C. Return on Advances D. Reserve of Accounts
+Correct Answer: A. Return on Assets
+Explanation: ROA measures profitability relative to assets, commonly calculated as net profit divided by average total assets. The precise numerator and averaging convention should be stated when comparing published ratios.
+12. What is the full form of ROE?
+A. Rate of Equity B. Return on Earnings C. Reserve of Equity D. Return on Equity
+Correct Answer: D. Return on Equity
+Explanation: ROE measures profit relative to shareholders' equity. It should be interpreted alongside leverage and risk because a higher ROE does not automatically mean a safer or better-capitalised bank.
+13. What does CIB stand for in Bangladesh banking?
+A. Central Investment Board B. Credit Information Bureau C. Commercial Insurance Bureau D. Capital Issuance Board
+Correct Answer: B. Credit Information Bureau
+Explanation: Bangladesh Bank's Credit Information Bureau maintains and provides credit-related information used by reporting institutions to assess borrowers and credit exposure.
+14. What is the full form of BFIU?
+A. Bangladesh Financial Institutions Union B. Banking Finance Investigation Unit C. Bangladesh Financial Intelligence Unit D. Bangladesh Fiscal Inspection Unit
+Correct Answer: C. Bangladesh Financial Intelligence Unit
+Explanation: BFIU is Bangladesh's financial intelligence unit. It receives and analyses relevant financial intelligence and supports action against money laundering and terrorist financing.
+15. What does STR stand for in AML compliance?
+A. Suspicious Transaction Report B. Standard Transfer Receipt C. Secured Trade Return D. Settlement Tracking Record
+Correct Answer: A. Suspicious Transaction Report
+Explanation: An STR concerns transactions suspected of being connected to illicit activity. Suspicion, rather than simply the transaction amount, is central to the reporting concept.
+16. What does PEP mean in customer due diligence?
+A. Protected Equity Portfolio B. Public Exchange Participant C. Personal Earnings Profile D. Politically Exposed Person
+Correct Answer: D. Politically Exposed Person
+Explanation: A PEP is a person entrusted with a prominent public function. PEP relationships can require enhanced scrutiny under applicable AML/CFT rules; PEP status alone does not establish criminal conduct.
+17. What is the full form of EDD?
+A. Electronic Deposit Data B. Enhanced Due Diligence C. External Debt Declaration D. Equity Development Division
+Correct Answer: B. Enhanced Due Diligence
+Explanation: EDD involves additional checks and scrutiny where a customer, transaction, or relationship presents elevated money-laundering or terrorist-financing risk.
+18. What does UBO mean?
+A. Universal Banking Operation B. Unsecured Borrowing Obligation C. Ultimate Beneficial Owner D. Unified Bank Organisation
+Correct Answer: C. Ultimate Beneficial Owner
+Explanation: A UBO is the natural person who ultimately owns or controls a customer or on whose behalf a transaction is conducted, according to the applicable legal definition.
+19. What does SME stand for?
+A. Small and Medium Enterprise B. Secured Monetary Exchange C. Standard Management Entity D. Savings and Mortgage Establishment
+Correct Answer: A. Small and Medium Enterprise
+Explanation: SMEs are small and medium-sized businesses. Bangladesh banking and policy documents may use CMSME, adding cottage and micro enterprises; the applicable classification criteria matter.
+20. What is the full form of FDI?
+A. Financial Deposit Insurance B. Fixed Debt Instrument C. Foreign Deposit Income D. Foreign Direct Investment
+Correct Answer: D. Foreign Direct Investment
+Explanation: FDI involves cross-border investment associated with a lasting interest and significant influence in an enterprise, rather than merely purchasing a short-term financial asset.
+Section B: Bangladesh Bank and monetary policy
+21. Which legal instrument established Bangladesh Bank?
+A. Bank Company Act, 1991 B. Bangladesh Bank Order, 1972 C. Negotiable Instruments Act, 1881 D. Financial Institutions Act, 1993
+Correct Answer: B. Bangladesh Bank Order, 1972
+Explanation: The Bangladesh Bank Order, 1972, is the foundational legal instrument establishing the central bank. The Bank Company Act, 1991, separately governs important aspects of banking companies.
+22. As of 29 October 2026, what is Bangladesh Bank's policy repo rate under its October–December 2026 monetary policy statement?
+A. 7.50% B. 8.00% C. 9.50% D. 11.00%
+Correct Answer: C. 9.50%
+Explanation: Bangladesh Bank retained the policy repo rate at 9.50% for October–December 2026. This is a dated official policy rate, not a timeless fact. Source: Bangladesh Bank, Quarterly Monetary Policy Statement, 30 September 2026.
+23. What is the Standing Lending Facility (SLF) rate in Bangladesh Bank's October–December 2026 policy statement?
+A. 11.00% B. 9.50% C. 7.50% D. 4.00%
+Correct Answer: A. 11.00%
+Explanation: SLF is a standing facility through which eligible banks can obtain liquidity from the central bank subject to the applicable terms. The published SLF rate is 11.00%.
+24. What is the Standing Deposit Facility (SDF) rate under the same monetary policy statement?
+A. 11.00% B. 9.50% C. 4.00% D. 7.50%
+Correct Answer: D. 7.50%
+Explanation: SDF allows eligible banks to place funds with the central bank under the facility's terms. The October–December 2026 statement sets the SDF rate at 7.50%.
+25. Which option correctly orders Bangladesh Bank's policy repo, SLF, and SDF rates for October–December 2026?
+A. Repo 7.50%, SLF 9.50%, SDF 11.00% B. Repo 9.50%, SLF 11.00%, SDF 7.50% C. Repo 11.00%, SLF 7.50%, SDF 9.50% D. Repo 9.50%, SLF 7.50%, SDF 11.00%
+Correct Answer: B. Repo 9.50%, SLF 11.00%, SDF 7.50%
+Explanation: The policy repo is the benchmark rate, SLF is the lending-facility rate, and SDF is the deposit-facility rate. Memorise the three rates together and attach the October–December 2026 date.
+26. Under Bangladesh Bank's March 2025 CRR circular, what is the minimum daily CRR requirement cited for scheduled banks' demand and time liabilities?
+A. 2.00% B. 4.00% C. 3.00% D. 5.00%
+Correct Answer: C. 3.00%
+Explanation: Bangladesh Bank reduced the minimum daily CRR requirement from 3.50% to 3.00%. This must not be confused with the separate biweekly average requirement. Source: MPD Circular No. 01, 4 March 2025.
+27. What is the biweekly average CRR requirement stated in Bangladesh Bank's March 2025 circular?
+A. 4.00% B. 3.00% C. 2.50% D. 5.00%
+Correct Answer: A. 4.00%
+Explanation: The biweekly average CRR remained 4.00%, even after the minimum daily requirement was reduced to 3.00%. An exam question may test this distinction directly.
+28. What does CRR stand for?
+A. Credit Recovery Rate B. Capital Reserve Return C. Cash Repayment Requirement D. Cash Reserve Ratio
+Correct Answer: D. Cash Reserve Ratio
+Explanation: CRR refers to the required cash reserve maintained by a bank under central-bank rules, calculated using the applicable reserve base and averaging or daily-maintenance conditions.
+29. What does SLR stand for?
+A. Secured Lending Rate B. Statutory Liquidity Ratio C. Standard Liability Return D. Settlement Liquidity Reserve
+Correct Answer: B. Statutory Liquidity Ratio
+Explanation: SLR is a statutory liquidity requirement. Its permitted assets, calculation base, and applicable percentage depend on the relevant regulatory framework. Do not infer its current rate from the policy repo rate.
+30. What is the principal purpose of an open-market operation (OMO)?
+A. To set every commercial bank's deposit rate directly B. To audit borrowers' financial statements C. To influence liquidity and monetary conditions through market transactions D. To guarantee bank deposits against all losses
+Correct Answer: C. To influence liquidity and monetary conditions through market transactions
+Explanation: A central bank can use purchases and sales of eligible securities to influence banking-system liquidity and monetary conditions. Purchases generally inject liquidity, while sales generally absorb it, all else equal.
+31. What is a repo transaction in conventional central-bank operations?
+A. A sale of securities with an agreement to repurchase them later B. A permanent transfer of bank ownership C. An unsecured personal loan D. A compulsory deposit by a customer
+Correct Answer: A. A sale of securities with an agreement to repurchase them later
+Explanation: A repo is structured as a securities sale with a commitment to repurchase at an agreed date and price. Economically, it commonly functions as secured short-term funding.
+32. What does MPC stand for in monetary policy?
+A. Monetary Payments Council B. Market Pricing Commission C. Money Protection Code D. Monetary Policy Committee
+Correct Answer: D. Monetary Policy Committee
+Explanation: An MPC is the committee responsible for monetary-policy deliberation and decisions within its institutional mandate. Bangladesh Bank's September 2026 policy decision was taken by its MPC.
+33. What is the primary objective of contractionary monetary policy when inflation is persistently high?
+A. To maximise consumer borrowing regardless of inflation B. To reduce inflationary pressure by tightening monetary conditions C. To eliminate all taxation D. To guarantee a rise in every asset price
+Correct Answer: B. To reduce inflationary pressure by tightening monetary conditions
+Explanation: Tighter monetary conditions can raise financing costs and restrain credit demand and aggregate demand, helping reduce inflationary pressure. The effect depends on transmission, expectations, supply conditions, and other economic factors.
+Demand (MD / AD)
+Supply (MS / SRAS)
+Long-run supply (LRAS)
+Money market
+AD–AS
+2468105MoneyInterest rate
+2468105Real GDPPrice level
+Less money raises the interest rate to 6.1, lowers investment, and shifts AD left
+Policy type
+ExpansionaryContractionary
+Policy strength
+Give feedback
+34. What is the usual meaning of basis point (bp) in interest-rate reporting?
+A. One percentage point B. One-tenth of one percent C. One-hundredth of one percentage point D. Ten percentage points
+Correct Answer: C. One-hundredth of one percentage point
+Explanation: One basis point equals 0.01 percentage point. Thus, a 50-basis-point reduction from 10.00% results in a rate of 9.50%.
+35. Bangladesh Bank's policy repo rate fell from 10.00% to 9.50%. What was the reduction in basis points?
+A. 50 basis points B. 5 basis points C. 100 basis points D. 150 basis points
+Correct Answer: A. 50 basis points
+Explanation: The change is 10.00% − 9.50% = 0.50 percentage point. Since each basis point is 0.01 percentage point, the reduction equals 50 basis points. Bangladesh Bank reported this reduction effective 2 August 2026.
+36. What does OMO stand for?
+A. Official Money Reserve B. Open Market Operations C. Overnight Mortgage Obligation D. Outstanding Monetary Output
+Correct Answer: B. Open Market Operations
+Explanation: OMO is a standard central-bank tool for influencing liquidity and monetary conditions through transactions in securities or other eligible instruments.
+37. What does MPS stand for in Bangladesh Bank publications?
+A. Money Protection Scheme B. Market Performance Survey C. Monetary Payment System D. Monetary Policy Statement
+Correct Answer: D. Monetary Policy Statement
+Explanation: The MPS explains the central bank's monetary-policy stance, assessment of economic conditions, and relevant policy decisions. Bangladesh Bank published its October–December 2026 quarterly MPS on 30 September 2026.
+38. What is the most direct distinction between a policy repo rate and a commercial bank's loan rate?
+A. They are legally required to be identical B. The loan rate is always below the repo rate C. The repo rate is a central-bank policy rate, while the loan rate is charged by a lender to a borrower D. The repo rate applies only to household deposits
+Correct Answer: C. The repo rate is a central-bank policy rate, while the loan rate is charged by a lender to a borrower
+Explanation: Commercial lending rates depend on funding costs, credit risk, operating costs, market conditions, and applicable regulation. Policy-rate changes may influence them but do not make every loan rate identical to the repo rate.
+39. Which institution publishes Bangladesh's official monetary policy statements?
+A. Bangladesh Bank B. Bangladesh Securities and Exchange Commission C. National Board of Revenue D. Dhaka Stock Exchange
+Correct Answer: A. Bangladesh Bank
+Explanation: Bangladesh Bank publishes monetary-policy statements through its official website and communicates the central bank's policy stance and related decisions.
+40. What does DOMMR stand for in Bangladesh Bank's money-market reference-rate reporting?
+A. Deposit Operations and Money Management Return B. Domestic Official Monetary Market Requirement C. Daily Overnight Monetary Market Reserve D. Dhaka Overnight Money Market Rate
+Correct Answer: D. Dhaka Overnight Money Market Rate
+Explanation: DOMMR is a money-market reference rate published by Bangladesh Bank. It is distinct from the policy repo rate and from the Bangladesh Overnight Financing Rate (BOFR).
+Section C: Payment systems and digital banking
+41. What does BEFTN stand for?
+A. Bangladesh Electronic Finance Transfer Network B. Bangladesh Electronic Funds Transfer Network C. Bank Exchange and Fund Transaction Network D. Bangladesh External Financial Transfer Network
+Correct Answer: B. Bangladesh Electronic Funds Transfer Network
+Explanation: BEFTN facilitates electronic credit and debit transfers between participating banks. It is designed for batch-based electronic payments rather than the real-time gross settlement of each transaction.
+42. What is the full form of BACPS?
+A. Bangladesh Automated Clearing Payment Service B. Banking Automated Cash Processing System C. Bangladesh Automated Cheque Processing System D. Bangladesh Account Clearing and Payment Standard
+Correct Answer: C. Bangladesh Automated Cheque Processing System
+Explanation: BACPS automates cheque clearing through image-based processing. It reduces dependence on the physical transportation and manual processing of cheques.
+43. What does BD-RTGS stand for?
+A. Bangladesh Real Time Gross Settlement B. Bangladesh Retail Transfer Guarantee System C. Bank Deposit and Remittance Tracking Gateway D. Bangladesh Regional Trade Guarantee Service
+Correct Answer: A. Bangladesh Real Time Gross Settlement
+Explanation: RTGS settles eligible transactions individually and in real time, subject to system rules and liquidity availability. Unlike net settlement, it does not wait to offset all payments in a batch before settling them.
+44. What is the full form of NPSB?
+A. National Payment Settlement Board B. Network Processing Service of Bangladesh C. National Public Savings Bank D. National Payment Switch Bangladesh
+Correct Answer: D. National Payment Switch Bangladesh
+Explanation: NPSB provides interoperability among participating financial institutions and payment channels, including supported card and electronic payment transactions.
+45. What does MFS stand for?
+A. Monetary Funding Service B. Mobile Financial Services C. Managed Financial Settlement D. Merchant Finance System
+Correct Answer: B. Mobile Financial Services
+Explanation: MFS enables financial transactions through mobile-based channels. In Bangladesh, mobile financial services support activities such as transfers, cash-in, cash-out, and merchant payments, subject to provider permissions and applicable rules.
+46. What is the full form of QR in QR-code payments?
+A. Quick Registration B. Quality Recognition C. Quick Response D. Query Resolution
+Correct Answer: C. Quick Response
+Explanation: A QR code encodes information that a compatible device or payment application can read. Bangla QR is Bangladesh's national QR-code standard for interoperable merchant payments.
+47. What does POS mean in card payments?
+A. Point of Sale B. Payment Operating Standard C. Personal Online Settlement D. Proof of Savings
+Correct Answer: A. Point of Sale
+Explanation: A POS terminal or system allows merchants to initiate and process payment transactions at the point where goods or services are purchased.
+48. What is the full form of ATM?
+A. Automated Transfer Mechanism B. Account Transaction Machine C. Automatic Teller Management D. Automated Teller Machine
+Correct Answer: D. Automated Teller Machine
+Explanation: An ATM provides self-service banking functions, typically including cash withdrawals and balance enquiries, with available services depending on the institution and network.
+49. What does PIN stand for in payment-card security?
+A. Personal Internet Number B. Personal Identification Number C. Payment Information Network D. Protected Institution Name
+Correct Answer: B. Personal Identification Number
+Explanation: A PIN is a secret numeric credential used to authenticate certain transactions. It should not be disclosed to callers, messages, or unverified websites.
+50. What is the full form of OTP?
+A. Online Transaction Procedure B. Official Transfer Password C. One-Time Password D. Open Transfer Protocol
+Correct Answer: C. One-Time Password
+Explanation: An OTP is a temporary authentication code intended for a particular authentication event or limited period. Criminals may use social engineering to persuade customers to disclose OTPs.
+51. What does POS-to-POS interoperability principally enable?
+A. Supported payment acceptance across compatible systems or institutions B. Automatic approval of every credit application C. Elimination of all transaction fees D. Guaranteed reversal of every disputed transaction
+Correct Answer: A. Supported payment acceptance across compatible systems or institutions
+Explanation: Interoperability allows compatible payment systems to communicate and process transactions across participating institutions. It does not guarantee that every transaction will be approved or fee-free.
+52. What is the principal difference between clearing and settlement?
+A. Clearing always involves foreign currency, while settlement involves domestic currency B. Clearing applies only to cheques, while settlement applies only to cards C. The two terms always mean exactly the same thing D. Clearing determines, reconciles, or prepares obligations; settlement discharges those obligations
+Correct Answer: D. Clearing determines, reconciles, or prepares obligations; settlement discharges those obligations
+Explanation: Clearing establishes the obligations arising from payment instructions. Settlement is the actual discharge of the resulting payment obligations, using the relevant settlement assets and system arrangements.
+53. What does EFT stand for?
+A. Equity Financing Transfer B. Electronic Funds Transfer C. External Finance Transaction D. Estimated Funding Target
+Correct Answer: B. Electronic Funds Transfer
+Explanation: EFT is the electronic movement of money between accounts or institutions. It is a broad term covering multiple payment methods and system designs.
+54. What does P2P mean in digital payments?
+A. Payment-to-Provider only B. Public-to-Private C. Person-to-Person D. Portfolio-to-Portfolio
+Correct Answer: C. Person-to-Person
+Explanation: P2P payments transfer funds between individuals. The term describes the payment relationship rather than a single technical network.
+55. What is the full form of API in financial technology?
+A. Application Programming Interface B. Automated Payment Institution C. Account Protection Index D. Advanced Processing Instrument
+Correct Answer: A. Application Programming Interface
+Explanation: An API defines how software systems communicate. Banking APIs can support authorised services such as account information retrieval or payment initiation under applicable security and consent arrangements.
+Section D: Credit, risk, and bank supervision
+56. What does CIB stand for in Bangladesh Bank's credit-information context?
+A. Capital Investment Bureau B. Central Insurance Board C. Commercial Information Base D. Credit Information Bureau
+Correct Answer: D. Credit Information Bureau
+Explanation: CIB information supports credit-risk assessment by providing relevant borrowing and credit-exposure information. It helps lenders evaluate applicants alongside other appraisal evidence.
+57. What does NPL stand for?
+A. National Payment Liability B. Non-Performing Loan C. Net Profit Lending D. Non-Personal Liability
+Correct Answer: B. Non-Performing Loan
+Explanation: An NPL is a credit exposure classified as non-performing under the applicable rules. NPL ratios are indicators of asset quality, but classification definitions and reporting dates must be checked.
+58. What does ECL mean under expected-credit-loss accounting?
+A. Estimated Capital Leverage B. Effective Credit Limit C. Expected Credit Loss D. External Cash Liability
+Correct Answer: C. Expected Credit Loss
+Explanation: ECL estimates credit losses using forward-looking information and relevant probability-weighted scenarios under the applicable accounting standard. It differs from recognising losses only after a default has occurred.
+59. What is the full form of LGD in credit-risk measurement?
+A. Loss Given Default B. Lending Growth Distribution C. Liability Guarantee Document D. Loan Grading Decision
+Correct Answer: A. Loss Given Default
+Explanation: LGD estimates the proportion of an exposure expected to be lost if default occurs, after considering recoveries, collateral proceeds, and relevant costs.
+60. What does PD mean in credit-risk modelling?
+A. Provisioning Date B. Payment Duration C. Portfolio Diversification D. Probability of Default
+Correct Answer: D. Probability of Default
+Explanation: PD estimates the likelihood that a borrower or exposure will default over a defined horizon. It is a key input in many credit-risk models.
+61. What does EAD stand for in credit-risk management?
+A. Expected Annual Deposit B. Exposure at Default C. Equity Allocation Decision D. External Asset Declaration
+Correct Answer: B. Exposure at Default
+Explanation: EAD estimates the amount exposed when default occurs. It can include drawn balances and, where applicable, expected utilisation of undrawn commitments.
+62. Which set correctly identifies the traditional 5 Cs of credit?
+A. Cash, Cost, Currency, Capital, Collection B. Customer, Cheque, Collateral, Contract, Cash flow C. Character, Capacity, Capital, Collateral, Conditions D. Credit, Control, Compliance, Currency, Cost
+Correct Answer: C. Character, Capacity, Capital, Collateral, Conditions
+Explanation: The 5 Cs are a traditional credit-appraisal framework. Character concerns willingness to repay, capacity concerns repayment ability, capital concerns the borrower's financial stake, collateral concerns security, and conditions concern the economic and transaction environment.
+63. What does LTV stand for in secured lending?
+A. Loan-to-Value B. Liability Transfer Verification C. Lending Term Variation D. Liquidity-to-Volume
+Correct Answer: A. Loan-to-Value
+Explanation: LTV expresses the loan amount relative to the relevant asset value. For example, a Tk 6 lakh loan against property valued at Tk 10 lakh gives an LTV of 60%, assuming those are the applicable measurement amounts.
+64. What is the primary purpose of provisioning for credit losses?
+A. To eliminate every possibility of borrower default B. To increase a bank's share price automatically C. To guarantee that all collateral can be sold immediately D. To recognise estimated or required losses associated with credit exposures
+Correct Answer: D. To recognise estimated or required losses associated with credit exposures
+Explanation: Provisioning recognises credit-loss expense or allowances according to the applicable accounting and regulatory framework. Provisions do not eliminate the underlying credit risk.
+65. What does RBS mean in banking supervision?
+A. Reserve Banking Standard B. Risk-Based Supervision C. Retail Banking Settlement D. Risk Borrowing Schedule
+Correct Answer: B. Risk-Based Supervision
+Explanation: RBS prioritises supervisory attention according to risk, potential impact, and the condition of institutions. It is intended to allocate supervisory resources more effectively than relying solely on uniform checks.
+66. What does ICAAP stand for?
+A. International Credit Assessment and Approval Process B. Internal Cash Allocation and Accounting Policy C. Internal Capital Adequacy Assessment Process D. Institutional Credit Audit and Assurance Programme
+Correct Answer: C. Internal Capital Adequacy Assessment Process
+Explanation: ICAAP is a bank's internal process for assessing capital adequacy in relation to its risk profile, strategy, and planning horizon. It is associated with the Basel supervisory framework.
+67. What does RWA stand for?
+A. Risk-Weighted Assets B. Reserve and Working Assets C. Regulatory Withdrawal Amount D. Risk Withholding Account
+Correct Answer: A. Risk-Weighted Assets
+Explanation: RWA reflects assets and relevant exposures adjusted by regulatory risk weights. Regulatory capital ratios compare eligible capital with the relevant risk-weighted exposure measure.
+68. What does PDCA stand for in management and control improvement?
+A. Payment, Deposit, Credit, Audit B. Profit, Debt, Capital, Assets C. Planning, Development, Compliance, Approval D. Plan, Do, Check, Act
+Correct Answer: D. Plan, Do, Check, Act
+Explanation: PDCA is a continuous-improvement cycle: plan a change, implement it, check results, and act on the findings. It is a management methodology rather than a banking-specific prudential ratio.
+69. What is the primary function of a bank's internal audit?
+A. To approve every loan personally B. To independently evaluate controls, risk management, and governance processes C. To set the central bank's policy rate D. To guarantee a profit every quarter
+Correct Answer: B. To independently evaluate controls, risk management, and governance processes
+Explanation: Internal audit provides independent assurance on governance, risk management, and internal controls. It does not replace management's responsibility for running the bank.
+70. What does KRI stand for in risk management?
+A. Key Reserve Instrument B. Known Repayment Index C. Key Risk Indicator D. Kredit Recovery Information
+Correct Answer: C. Key Risk Indicator
+Explanation: A KRI is a measure used to monitor changes in exposure to a particular risk. It can provide an early warning when a defined threshold is breached.
+71. What does VaR stand for in financial risk management?
+A. Value at Risk B. Variable Asset Return C. Verified Account Reconciliation D. Volume at Repayment
+Correct Answer: A. Value at Risk
+Explanation: VaR estimates a loss threshold over a specified horizon at a stated confidence level, subject to model assumptions. It does not represent the maximum possible loss.
+72. What is operational risk?
+A. Only the risk of foreign-exchange losses B. Only the risk of falling stock prices C. Only the risk that a borrower refuses to repay D. Risk arising from inadequate or failed processes, people, systems, or external events
+Correct Answer: D. Risk arising from inadequate or failed processes, people, systems, or external events
+Explanation: Operational risk includes process failures, fraud, system outages, human error, and certain external events. The precise regulatory definition may specify exclusions such as strategic or reputational risk.
+73. What does ALCO commonly stand for in banking?
+A. Asset Lending Compliance Office B. Asset-Liability Committee C. Annual Liquidity Control Operation D. Account Liability Clearing Organisation
+Correct Answer: B. Asset-Liability Committee
+Explanation: ALCO oversees matters such as liquidity, interest-rate risk in the banking book, funding, and balance-sheet structure. Its mandate varies by institution.
+74. What is the principal purpose of stress testing?
+A. To guarantee that no financial crisis will occur B. To calculate the exact future share price C. To assess how adverse hypothetical or historical scenarios could affect financial resilience D. To replace all regular risk monitoring
+Correct Answer: C. To assess how adverse hypothetical or historical scenarios could affect financial resilience
+Explanation: Stress testing examines the impact of severe but plausible scenarios on capital, liquidity, earnings, or other risk measures. Results depend on scenario design and model assumptions.
+75. What is a bank's liquidity risk?
+A. The risk of being unable to meet obligations when due without unacceptable loss B. The risk of every customer demanding a loan C. The risk that the bank's currency has no official name D. The risk of an accounting entry containing a spelling mistake only
+Correct Answer: A. The risk of being unable to meet obligations when due without unacceptable loss
+Explanation: Liquidity risk concerns the ability to fund assets and meet cash-flow obligations. A bank can be solvent yet experience liquidity stress if it cannot access funds in time.
+Section E: Financial markets, instruments, and international banking
+76. What does T-bill stand for?
+A. Trade Balance Instrument B. Treasury Bill C. Transfer Banking Invoice D. Term Borrowing Index
+Correct Answer: B. Treasury Bill
+Explanation: Treasury bills are short-term government securities. They are generally issued at a discount or under another permitted pricing structure and redeemed according to their terms.
+77. What does T-bond stand for?
+A. Transaction Bond B. Treasury Banking Order C. Term Bill of Exchange D. Treasury Bond
+Correct Answer: D. Treasury Bond
+Explanation: Treasury bonds are government debt securities generally issued for longer maturities than Treasury bills. Their coupon, maturity, and market price depend on the instrument's terms and market conditions.
+78. What does IPO stand for?
+A. Initial Public Offering B. International Payment Order C. Internal Portfolio Operation D. Institutional Purchase Option
+Correct Answer: A. Initial Public Offering
+Explanation: An IPO is a company's initial public offering of securities to investors. In Bangladesh, public offerings fall within the applicable securities-law and BSEC regulatory framework.
+79. What is the full form of DSE?
+A. Deposit Settlement Exchange B. Development Securities Entity C. Dhaka Stock Exchange D. Domestic Savings Establishment
+Correct Answer: C. Dhaka Stock Exchange
+Explanation: DSE is one of Bangladesh's stock exchanges. It provides a market infrastructure for trading eligible securities under applicable rules.
+80. What does CSE stand for in Bangladesh's securities market?
+A. Central Settlement Entity B. Chittagong Stock Exchange C. Commercial Savings Exchange D. Capital Securities Establishment
+Correct Answer: B. Chittagong Stock Exchange
+Explanation: CSE is Bangladesh's other principal stock exchange. Its current corporate and operational details should be checked through official exchange and BSEC publications.
+81. What does BSEC stand for?
+A. Bangladesh Securities and Equity Council B. Banking and Savings Enforcement Commission C. Bangladesh Stock Exchange Corporation D. Bangladesh Securities and Exchange Commission
+Correct Answer: D. Bangladesh Securities and Exchange Commission
+Explanation: BSEC regulates Bangladesh's capital market within its statutory mandate, including relevant securities-market participants and activities.
+82. What is the full form of NAV in investment-fund terminology?
+A. Net Asset Value B. National Account Volume C. Net Advance Variation D. Nominal Asset Verification
+Correct Answer: A. Net Asset Value
+Explanation: NAV is the value of assets minus liabilities. For a fund, NAV per unit is typically calculated by dividing net assets by the number of outstanding units, subject to applicable valuation rules.
+83. What does EPS stand for in corporate finance?
+A. Equity Payment Standard B. Estimated Profit Settlement C. Earnings Per Share D. External Portfolio Security
+Correct Answer: C. Earnings Per Share
+Explanation: EPS measures earnings attributable to each ordinary share under the applicable calculation. Basic and diluted EPS can differ because diluted EPS accounts for potentially dilutive instruments.
+84. What does P/E ratio mean?
+A. Profit-to-Equity Settlement B. Price-to-Earnings Ratio C. Portfolio-to-Exposure Ratio D. Payment-to-Expense Ratio
+Correct Answer: B. Price-to-Earnings Ratio
+Explanation: The P/E ratio compares a share's market price with earnings per share. A high or low ratio alone does not establish whether a share is overvalued or undervalued.
+85. What does OTC stand for in financial markets?
+A. Official Treasury Certificate B. Open Transfer Clearing C. Overseas Trade Contract D. Over-the-Counter
+Correct Answer: D. Over-the-Counter
+Explanation: OTC transactions are arranged outside a traditional centralised exchange order book. Depending on the market and instrument, OTC activity may still be subject to reporting, conduct, and regulatory requirements.
+86. What is the full form of CP in money markets?
+A. Commercial Paper B. Capital Provision C. Cash Protection D. Credit Portfolio
+Correct Answer: A. Commercial Paper
+Explanation: Commercial paper is a short-term debt instrument typically issued by eligible businesses to meet financing needs. Its legal form, eligible issuers, and issuance conditions depend on the jurisdiction.
+87. What does CD mean in conventional money-market terminology?
+A. Credit Default B. Capital Deposit C. Certificate of Deposit D. Cash Distribution
+Correct Answer: C. Certificate of Deposit
+Explanation: A certificate of deposit is a deposit instrument issued by a financial institution for specified terms. It should not be confused with a credit-default instrument or a general deposit account.
+88. What does FX stand for?
+A. Fixed Exposure B. Foreign Exchange C. Financial Expansion D. Fund Execution
+Correct Answer: B. Foreign Exchange
+Explanation: FX refers to exchanging one currency for another. Banks provide foreign-exchange services for trade, remittances, investment, and other permitted transactions.
+89. What is the full form of SWIFT?
+A. Secure World Investment Finance Transfer B. Standard Wire Instruction and Funds Technology C. System for Worldwide International Financial Trading D. Society for Worldwide Interbank Financial Telecommunication
+Correct Answer: D. Society for Worldwide Interbank Financial Telecommunication
+Explanation: SWIFT provides a secure financial messaging network and related services. A SWIFT message does not itself mean that final settlement has occurred.
+90. What does LC stand for in international trade finance?
+A. Letter of Credit B. Lending Certificate C. Liquidity Contract D. Liability Confirmation
+Correct Answer: A. Letter of Credit
+Explanation: A letter of credit is a bank undertaking to honour a complying presentation under the instrument's terms. It provides a documentary payment mechanism, not an unconditional guarantee of the commercial quality of goods.
+91. What does LCAF stand for in Bangladesh's import-financing context?
+A. Lending Credit Allocation Form B. Local Currency Account Facility C. Letter of Credit Authorisation Form D. Liability and Credit Assessment Framework
+Correct Answer: C. Letter of Credit Authorisation Form
+Explanation: LCAF refers to the Letter of Credit Authorisation Form used in Bangladesh's import documentation and foreign-exchange regulatory framework. Current procedures should be verified against Bangladesh Bank's applicable foreign-exchange circulars.
+92. What does TT commonly stand for in bank remittance terminology?
+A. Treasury Transaction B. Telegraphic Transfer C. Termed Treasury D. Trade Tariff
+Correct Answer: B. Telegraphic Transfer
+Explanation: TT is a traditional term for an electronic transfer of funds. Modern banking uses electronic payment networks, and the exact processing route depends on the transaction and institution.
+93. What does BOP stand for in international economics?
+A. Bank Operating Policy B. Balance of Profit C. Banking Operations Protocol D. Balance of Payments
+Correct Answer: D. Balance of Payments
+Explanation: The balance of payments records transactions between residents of an economy and non-residents over a specified period, using the applicable statistical framework.
+94. What does FDI mean in Bangladesh's external-sector statistics?
+A. Foreign Direct Investment B. Foreign Deposit Insurance C. Fixed Debt Instrument D. Financial Development Index
+Correct Answer: A. Foreign Direct Investment
+Explanation: FDI reflects cross-border investment associated with a lasting interest in an enterprise. It is conceptually different from short-term portfolio investment and ordinary trade-credit flows.
+95. What does IMF stand for?
+A. International Monetary Federation B. Institutional Market Fund C. International Monetary Fund D. International Microfinance Forum
+Correct Answer: C. International Monetary Fund
+Explanation: The IMF promotes international monetary cooperation and provides surveillance, policy advice, and financial assistance to member countries subject to its arrangements.
+96. What does IDA stand for within the World Bank Group?
+A. International Development Authority B. International Development Association C. Investment and Deposit Agency D. International Debt Arrangement
+Correct Answer: B. International Development Association
+Explanation: IDA is the World Bank Group institution that provides concessional financing to eligible low-income countries. Its support can include credits and grants, subject to eligibility and programme terms.
+97. What does IFC stand for within the World Bank Group?
+A. International Finance Council B. Institutional Funding Corporation C. International Fiscal Commission D. International Finance Corporation
+Correct Answer: D. International Finance Corporation
+Explanation: IFC focuses on private-sector development in developing countries through investment and advisory services.
+98. What does MIGA stand for?
+A. Multilateral Investment Guarantee Agency B. Monetary Insurance and Guarantee Association C. Multinational International Growth Agency D. Market Investment Governance Authority
+Correct Answer: A. Multilateral Investment Guarantee Agency
+Explanation: MIGA is a World Bank Group institution that supports cross-border investment through political-risk insurance and credit-enhancement products within its mandate.
+99. What does ADB stand for?
+A. African Development Bank B. Asian Deposit Board C. Asian Development Bank D. Association of Domestic Banks
+Correct Answer: C. Asian Development Bank
+Explanation: ADB is a multilateral development bank focused on development in Asia and the Pacific. Its operations include sovereign and private-sector financing and technical assistance.
+100. What does AIIB stand for?
+A. Asian International Investment Board B. Asian Infrastructure Investment Bank C. Association of International Investment Banks D. Asian Industrial Insurance Bureau
+Correct Answer: B. Asian Infrastructure Investment Bank
+Explanation: AIIB is a multilateral development bank that finances sustainable infrastructure and related productive sectors, with membership and operations governed by its institutional framework.
+Section F: Islamic banking and financial inclusion
+101. What does Shariah-compliant finance seek to avoid in particular?
+A. All forms of business investment B. Every transaction involving physical assets C. All commercial profit D. Prohibited activities and impermissible contractual elements, including riba
+Correct Answer: D. Prohibited activities and impermissible contractual elements, including riba
+Explanation: Islamic finance follows applicable Shariah principles, including restrictions on riba and certain forms of gharar and prohibited activities. It does not prohibit all profit or all investment.
+102. What does riba generally refer to in Islamic finance?
+A. A prohibited form of increase associated with lending or certain exchanges B. A partnership in which all losses are always shared equally C. A lease of a productive asset D. A deferred delivery contract for eligible goods
+Correct Answer: A. A prohibited form of increase associated with lending or certain exchanges
+Explanation: Riba is a central prohibition in Islamic finance. Its precise application depends on the transaction and relevant Shariah interpretation; it should not simply be equated with every form of commercial profit.
+103. What is Mudaraba?
+A. A conventional fixed-interest loan B. A contract for immediate cash withdrawal C. A profit-sharing arrangement involving capital from one party and management by another D. A government tax on bank deposits
+Correct Answer: C. A profit-sharing arrangement involving capital from one party and management by another
+Explanation: In a typical Mudaraba, one party supplies capital and the other manages the venture. Profits are allocated according to an agreed ratio, while financial losses are generally borne by the capital provider unless the manager is liable for misconduct, negligence, or breach.
+104. What is Musharaka?
+A. A contract involving only a conventional fixed deposit B. A partnership in which partners contribute capital and share profits under agreed terms C. A mandatory insurance premium D. A foreign-exchange settlement network
+Correct Answer: B. A partnership in which partners contribute capital and share profits under agreed terms
+Explanation: Musharaka is a partnership-based financing arrangement. Loss-sharing generally follows capital contribution proportions, while profit allocation follows the applicable contractual and Shariah rules.
+105. What does Murabaha involve?
+A. An unsecured cash gift B. A contract solely for renting a building C. A forward currency speculation contract D. A sale in which the cost and agreed profit margin are disclosed
+Correct Answer: D. A sale in which the cost and agreed profit margin are disclosed
+Explanation: Murabaha is a cost-plus sale. In financing practice, the institution must satisfy the relevant ownership, possession, disclosure, and contractual requirements before selling the asset to the customer.
+106. What is Ijara in Islamic finance?
+A. A leasing arrangement B. A profit-free government grant C. A type of cheque crossing D. A short-term interbank messaging code
+Correct Answer: A. A leasing arrangement
+Explanation: Ijara is a lease arrangement involving the usufruct of an asset for agreed consideration. Ownership-related responsibilities and risks are allocated under the applicable contractual and Shariah rules.
+107. What is Salam?
+A. A deposit payable on demand B. A conventional overdraft C. A contract involving advance payment for specified goods delivered later, subject to conditions D. A contract for the sale of shares on an exchange
+Correct Answer: C. A contract involving advance payment for specified goods delivered later, subject to conditions
+Explanation: Salam permits a qualifying forward sale in which the price is paid in advance and the goods are delivered later. The contract must satisfy specific conditions concerning the goods, quantity, quality, delivery, and payment.
+108. What does Istisna typically finance?
+A. An overnight cash deposit B. Manufacturing or construction of a specified asset C. A conventional demand loan without conditions D. A bank's statutory cash reserve
+Correct Answer: B. Manufacturing or construction of a specified asset
+Explanation: Istisna is a contract for manufacturing or constructing a specified item. Payment arrangements can differ from Salam, subject to the applicable contractual and Shariah requirements.
+109. What is a Sukuk?
+A. A conventional savings-account passbook B. A standard central-bank repo rate C. A credit bureau report D. An Islamic capital-market certificate structured to represent rights or interests in eligible assets, usufructs, or investments
+Correct Answer: D. An Islamic capital-market certificate structured to represent rights or interests in eligible assets, usufructs, or investments
+Explanation: Sukuk structures vary. Unlike an ordinary conventional bond, a Sukuk is designed around the underlying contractual rights and Shariah-compliant structure rather than simply representing an interest-bearing debt obligation.
+110. What is the core principle of Takaful?
+A. Mutual assistance and risk-sharing through a Shariah-compliant arrangement B. Guaranteed profit on every investment C. Elimination of all insurance-related uncertainty D. Lending at a compulsory fixed interest rate
+Correct Answer: A. Mutual assistance and risk-sharing through a Shariah-compliant arrangement
+Explanation: Takaful is an Islamic insurance model based on mutual assistance and agreed arrangements for contributions and claims. Its actual operational structure depends on the product and applicable regulation.
+111. What does IFI commonly stand for?
+A. International Funds Index B. Institutional Finance Instrument C. Islamic Financial Institution D. Interbank Funding Instruction
+Correct Answer: C. Islamic Financial Institution
+Explanation: IFI is a broad term for an institution providing financial services under Islamic finance principles. The exact regulatory category depends on the jurisdiction.
+112. What does MFI commonly stand for in financial inclusion?
+A. Monetary Funding Index B. Microfinance Institution C. Mortgage Finance Instrument D. Managed Funds Intermediary
+Correct Answer: B. Microfinance Institution
+Explanation: An MFI provides financial services to underserved customers, often including small loans and savings-related products where legally permitted. Bangladesh has a distinct microcredit regulatory framework.
+113. What does CMSME stand for in Bangladesh's enterprise-financing terminology?
+A. Commercial Market and Securities Management Entity B. Central Monetary Savings and Microfinance Establishment C. Credit Management and Small Merchant Enterprise D. Cottage, Micro, Small and Medium Enterprises
+Correct Answer: D. Cottage, Micro, Small and Medium Enterprises
+Explanation: CMSME is a key term in Bangladesh's enterprise-financing and refinance programmes. Eligibility and size definitions depend on the applicable Bangladesh Bank circular or programme guidelines.
+114. What is financial inclusion?
+A. Access to and effective use of appropriate, affordable financial services B. Compulsory investment in shares by every citizen C. A ban on cash transactions D. Lending exclusively to large corporations
+Correct Answer: A. Access to and effective use of appropriate, affordable financial services
+Explanation: Financial inclusion concerns access to suitable financial services, including payments, savings, credit, and insurance where appropriate. Access alone is insufficient if services are unsuitable, unaffordable, or unsafe.
+115. What does DFS stand for in modern banking policy?
+A. Deposit Financing Schedule B. Domestic Funds Settlement C. Digital Financial Services D. Debt Funding Standard
+Correct Answer: C. Digital Financial Services
+Explanation: DFS includes financial services delivered through digital channels. Depending on context, this can include electronic payments, mobile financial services, digital banking, and other technology-enabled financial products.
+Section G: Banking law, accounts, cheques, and trade finance
+116. Which law primarily governs negotiable instruments such as cheques in Bangladesh?
+A. Contract Act, 1872, exclusively B. Negotiable Instruments Act, 1881 C. Companies Act, 1994, exclusively D. Evidence Act, 1872, exclusively
+Correct Answer: B. Negotiable Instruments Act, 1881
+Explanation: The Negotiable Instruments Act, 1881, governs important legal aspects of negotiable instruments, including cheques, promissory notes, and bills of exchange. Specific rights, liabilities, and exceptions depend on the applicable provisions and amendments.
+117. What does MICR stand for in cheque processing?
+A. Monetary Institution Credit Register B. Manual Instrument Clearing Record C. Magnetic Information Control Register D. Magnetic Ink Character Recognition
+Correct Answer: D. Magnetic Ink Character Recognition
+Explanation: MICR technology uses magnetically readable characters, commonly printed in a designated area of cheques, to support automated processing.
+118. What does CTS stand for in cheque-clearing systems?
+A. Cheque Truncation System B. Cash Transfer Security C. Credit Tracking Service D. Central Treasury Settlement
+Correct Answer: A. Cheque Truncation System
+Explanation: Cheque truncation replaces the physical movement of a cheque through the clearing process with the transmission of its electronic image and relevant data.
+119. What does CIF commonly stand for in banking customer records?
+A. Credit Investment Facility B. Cash Instruction Form C. Customer Information File D. Central Interbank Fund
+Correct Answer: C. Customer Information File
+Explanation: A CIF is a customer-information record used by a financial institution to maintain customer details and link relevant accounts or relationships. Exact terminology varies by banking system.
+120. What does CASA ratio generally measure?
+A. Classified loans as a proportion of capital B. Current and savings deposits relative to a bank's total deposits C. Cash reserves relative to risk-weighted assets D. Credit losses relative to gross income
+Correct Answer: B. Current and savings deposits relative to a bank's total deposits
+Explanation: CASA ratio is generally calculated as current-account deposits plus savings-account deposits divided by total deposits. A higher ratio can indicate a stronger low-cost deposit mix, but the actual funding cost depends on the institution and market.
+121. What is an overdraft facility?
+A. A compulsory reserve held by the central bank B. A permanent write-off of a loan C. A government security with a fixed maturity D. A facility allowing an eligible customer to draw beyond the available account balance up to an agreed limit
+Correct Answer: D. A facility allowing an eligible customer to draw beyond the available account balance up to an agreed limit
+Explanation: An overdraft is a credit facility permitting withdrawals beyond the available balance, subject to an approved limit and contractual terms. Interest and fees depend on the facility agreement and applicable rules.
+122. What is a bank guarantee?
+A. A bank's undertaking to answer for a specified obligation if the relevant conditions are met B. A guarantee that every investment will earn a profit C. A compulsory insurance policy on all deposits D. A promise by a borrower that interest rates will never change
+Correct Answer: A. A bank's undertaking to answer for a specified obligation if the relevant conditions are met
+Explanation: A bank guarantee is a contingent undertaking, commonly used in commercial transactions. The beneficiary's rights depend on the guarantee's wording, applicable law, and any documentary or demand conditions.
+123. What is a bill of exchange?
+A. A bank's annual financial statement B. A deposit receipt that cannot be transferred C. A written unconditional order directing a specified person to pay a certain sum to a specified person or bearer, as legally applicable D. A central bank's monetary-policy report
+Correct Answer: C. A written unconditional order directing a specified person to pay a certain sum to a specified person or bearer, as legally applicable
+Explanation: A bill of exchange is a negotiable instrument defined by law. Its validity and enforceability depend on statutory requirements and the instrument's terms.
+124. What is the primary purpose of crossing a cheque?
+A. To increase the amount written on the cheque B. To direct payment through a bank rather than ordinary direct cash payment to the holder, subject to the type of crossing and applicable law C. To cancel the account permanently D. To guarantee that sufficient funds exist
+Correct Answer: B. To direct payment through a bank rather than ordinary direct cash payment to the holder, subject to the type of crossing and applicable law
+Explanation: Crossing provides a safeguard by directing how a cheque is to be collected or paid. It does not guarantee sufficient funds or make a forged cheque valid.
+125. What does AML/CFT compliance primarily seek to prevent?
+A. All legitimate international trade B. Every cash withdrawal regardless of circumstances C. All customer account closures D. Money laundering and the financing of terrorism
+Correct Answer: D. Money laundering and the financing of terrorism
+Explanation: AML/CFT controls help identify, assess, monitor, and report relevant financial crime risks. Banks must apply customer due diligence, transaction monitoring, and other required controls under the applicable framework.
+126. What is a correspondent banking relationship?
+A. An arrangement under which one bank provides banking services to another bank B. An arrangement where all banks share a single owner C. A contract prohibiting international transfers D. A customer relationship limited to savings accounts
+Correct Answer: A. An arrangement under which one bank provides banking services to another bank
+Explanation: Correspondent banks may provide payment clearing, settlement, trade-finance, and other services to respondent institutions, particularly across borders.
+127. What does Nostro account mean?
+A. An account a domestic customer holds at their own bank B. A special account used only for employee salaries C. An account that one bank holds with another bank, commonly in the latter's currency D. A government account that cannot contain foreign currency
+Correct Answer: C. An account that one bank holds with another bank, commonly in the latter's currency
+Explanation: A Nostro account is described from the perspective of the bank holding funds with another bank. The corresponding account is generally called a Vostro account from the other bank's perspective.
+128. What is a Vostro account?
+A. An account a bank holds with a central bank exclusively B. An account another bank maintains with the reporting bank C. A customer's fixed-deposit account D. A non-performing loan account
+Correct Answer: B. An account another bank maintains with the reporting bank
+Explanation: Vostro means “your account” from the reporting bank's perspective. Nostro and Vostro describe opposite perspectives on the same correspondent-banking relationship.
+129. What is the primary function of a letter of credit in international trade?
+A. To eliminate every risk of shipment damage B. To certify that the buyer's business is profitable C. To guarantee that foreign-exchange rates will remain fixed D. To provide a documentary payment undertaking subject to the credit's terms
+Correct Answer: D. To provide a documentary payment undertaking subject to the credit's terms
+Explanation: Under a documentary credit, the issuing bank undertakes to honour a complying presentation. Banks deal with documents rather than physically inspecting the goods, so a complying presentation does not itself guarantee the goods' quality.
+130. What is the difference between a sight credit and a usance credit?
+A. A sight credit generally permits payment upon a complying presentation, while a usance credit provides for payment at a future maturity B. A sight credit is always unsecured, while a usance credit is always secured C. A sight credit is used only domestically, while a usance credit is used only internationally D. There is no difference
+Correct Answer: A. A sight credit generally permits payment upon a complying presentation, while a usance credit provides for payment at a future maturity
+Explanation: Sight and usance describe payment timing. Both remain subject to the documentary credit's terms and applicable rules.
+Section H: Ratios, interest, and financial calculations
+131. A bank has eligible regulatory capital of Tk 12 billion and risk-weighted assets of Tk 100 billion. What is its capital adequacy ratio?
+A. 8% B. 10% C. 12% D. 15%
+Correct Answer: C. 12%
+Explanation: CAR = eligible regulatory capital ÷ risk-weighted assets × 100. Therefore, 12/100 × 100 = 12%. This is the calculated ratio, not a claim that the bank satisfies every applicable capital requirement.
+132. A bank earns net interest income of Tk 4 billion on average interest-earning assets of Tk 80 billion. What is its net interest margin?
+A. 4% B. 5% C. 8% D. 10%
+Correct Answer: B. 5%
+Explanation: NIM = net interest income ÷ average interest-earning assets × 100. Thus, 4/80 × 100 = 5%.
+133. A bank's net profit is Tk 2 billion and its average total assets are Tk 100 billion. What is its ROA?
+A. 0.5% B. 1.0% C. 5.0% D. 2.0%
+Correct Answer: D. 2.0%
+Explanation: ROA = net profit ÷ average total assets × 100. Therefore, 2/100 × 100 = 2%.
+134. A bank's net profit is Tk 1.5 billion and average shareholders' equity is Tk 15 billion. What is its ROE?
+A. 10% B. 5% C. 15% D. 20%
+Correct Answer: A. 10%
+Explanation: ROE = net profit ÷ average shareholders' equity × 100. Thus, 1.5/15 × 100 = 10%.
+135. A bank has gross loans of Tk 200 billion, of which Tk 30 billion are classified as non-performing. What is the NPL ratio?
+A. 10% B. 12% C. 15% D. 20%
+Correct Answer: C. 15%
+Explanation: NPL ratio = NPLs ÷ gross loans × 100. Hence, 30/200 × 100 = 15%. The result assumes both amounts use the same reporting date and loan-balance definition.
+136. A customer deposits Tk 100,000 at a simple annual interest rate of 8% for two years. What is the interest before tax and fees?
+A. Tk 8,000 B. Tk 16,000 C. Tk 16,640 D. Tk 20,000
+Correct Answer: B. Tk 16,000
+Explanation: Simple interest = principal × annual rate × time. Therefore, Tk 100,000 × 0.08 × 2 = Tk 16,000.
+137. Tk 100,000 is invested at 10% annual compound interest for two years, compounded annually. What is the final amount?
+A. Tk 110,000 B. Tk 115,000 C. Tk 120,000 D. Tk 121,000
+Correct Answer: D. Tk 121,000
+Explanation: Amount = Principal × (1 + rate)^time. Therefore, Tk 100,000 × (1.10)^2 = Tk 121,000. Compound interest earned is Tk 21,000.
+138. A bank's interest expense is Tk 6 billion and interest income is Tk 10 billion. What is its net interest income?
+A. Tk 4 billion B. Tk 6 billion C. Tk 10 billion D. Tk 16 billion
+Correct Answer: A. Tk 4 billion
+Explanation: Net interest income = interest income − interest expense = Tk 10 billion − Tk 6 billion = Tk 4 billion.
+139. A loan has a principal of Tk 500,000 and an annual simple interest rate of 12%. What is the interest for six months?
+A. Tk 60,000 B. Tk 15,000 C. Tk 30,000 D. Tk 120,000
+Correct Answer: C. Tk 30,000
+Explanation: Interest = Tk 500,000 × 0.12 × 0.5 = Tk 30,000, assuming simple interest and no intervening payments or fees.
+140. A bank's current and savings deposits total Tk 40 billion, while total deposits are Tk 100 billion. What is its CASA ratio?
+A. 20% B. 40% C. 60% D. 80%
+Correct Answer: B. 40%
+Explanation: CASA ratio = (current deposits + savings deposits) ÷ total deposits × 100. Thus, 40/100 × 100 = 40%.
+141. A bank has high-quality liquid assets of Tk 15 billion and projected net cash outflows of Tk 10 billion over the applicable stress period. What is its LCR, assuming no further adjustments?
+A. 50% B. 100% C. 125% D. 150%
+Correct Answer: D. 150%
+Explanation: LCR = high-quality liquid assets ÷ net cash outflows × 100. Therefore, 15/10 × 100 = 150%. Actual regulatory calculation requires all applicable eligibility, cap, and adjustment rules.
+142. A bank has available stable funding of Tk 90 billion and required stable funding of Tk 75 billion. What is its NSFR?
+A. 120% B. 90% C. 75% D. 165%
+Correct Answer: A. 120%
+Explanation: NSFR = available stable funding ÷ required stable funding × 100. Thus, 90/75 × 100 = 120%. The example is a simplified calculation, not a regulatory compliance determination.
+143. A borrower receives Tk 800,000 against collateral valued at Tk 1,000,000. What is the loan-to-value ratio?
+A. 60% B. 70% C. 80% D. 125%
+Correct Answer: C. 80%
+Explanation: LTV = loan amount ÷ collateral value × 100. Therefore, 800,000/1,000,000 × 100 = 80%.
+144. A bank's assets are Tk 150 billion and its liabilities are Tk 135 billion. What is its accounting equity, assuming assets equal liabilities plus equity?
+A. Tk 5 billion B. Tk 15 billion C. Tk 135 billion D. Tk 285 billion
+Correct Answer: B. Tk 15 billion
+Explanation: Equity = assets − liabilities = Tk 150 billion − Tk 135 billion = Tk 15 billion. Accounting equity is not necessarily equal to regulatory capital.
+145. A bank's operating income is Tk 20 billion and operating expenses are Tk 12 billion. What is the operating cost-to-income ratio, assuming these are the relevant regulatory or management-reporting amounts?
+A. 30% B. 40% C. 50% D. 60%
+Correct Answer: D. 60%
+Explanation: Cost-to-income ratio = operating expenses ÷ operating income × 100. Thus, 12/20 × 100 = 60%. A lower ratio generally indicates lower operating costs relative to income, although comparisons require consistent definitions.
+Section I: Updated monetary-policy facts and applied concepts
+146. According to Bangladesh Bank's official money-market reference-rate report dated 29 October 2026, what was the overnight DOMMR?
+A. 9.15% B. 9.50% C. 9.21% D. 7.50%
+Correct Answer: A. 9.15%
+Explanation: Bangladesh Bank reported an overnight Dhaka Overnight Money Market Rate (DOMMR) of 9.15% for 29 October 2026. DOMMR is a market reference rate and must not be confused with the 9.50% policy repo rate.
+147. According to the same official report dated 29 October 2026, what was the overnight Bangladesh Overnight Financing Rate (BOFR)?
+A. 7.50% B. 9.50% C. 9.21% D. 11.00%
+Correct Answer: C. 9.21%
+Explanation: Bangladesh Bank's report lists the overnight BOFR at 9.21%. BOFR and DOMMR are distinct published money-market reference rates; neither should be substituted for the central bank's policy repo rate.
+148. Bangladesh Bank maintains a policy repo rate of 9.50%, an SLF rate of 11.00%, and an SDF rate of 7.50%. Which rate is the benchmark policy repo rate?
+A. 7.50% B. 9.50% C. 11.00% D. 4.00%
+Correct Answer: B. 9.50%
+Explanation: The policy repo rate is the central bank's benchmark policy rate in this set. SLF is the standing lending-facility rate, while SDF is the standing deposit-facility rate.
+149. If Bangladesh Bank purchases eligible securities from banks through an open-market operation, what is the usual immediate liquidity effect, all else equal?
+A. Banking-system liquidity necessarily falls B. Every bank's capital is automatically doubled C. All classified loans become performing D. Banking-system liquidity generally increases
+Correct Answer: D. Banking-system liquidity generally increases
+Explanation: A central-bank purchase normally injects funds into the banking system in exchange for securities. The ultimate impact on money-market rates and credit depends on the scale of the operation, counterparties, liquidity conditions, and other policy measures.
+150. Which source should a Bangladesh Bank Senior Officer candidate consult first to verify the latest policy repo, SLF, and SDF rates before an examination?
+A. Bangladesh Bank's latest official Monetary Policy Statement and applicable circulars B. An undated social-media post C. An old coaching-centre handout without references D. A commercial bank advertisement from an unspecified year
+Correct Answer: A. Bangladesh Bank's latest official Monetary Policy Statement and applicable circulars
+Explanation: Official Bangladesh Bank publications are the primary sources for its monetary-policy decisions. Candidates should check the publication date, applicable quarter, effective date, and subsequent circulars rather than relying on older notes.

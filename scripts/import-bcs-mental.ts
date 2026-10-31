@@ -15,15 +15,25 @@
  * balancing (grading is text-based; explanations never reference positions) →
  * batched idempotent upserts by [subjectId, sourceKey].
  *
+ * Figures (optional) ride alongside the text file — see
+ * scripts/media-attachments.ts and docs/QUESTION-IMPORT-FORMAT.md §3:
+ *
+ *   <file>.figures/q014.png              → attaches to record 14
+ *   <file>.figures.json                  → alt text / extra entries / overrides
+ *
+ * Files are copied into public/question-media/bcs-mental/<slug>/ and the
+ * resulting URL is written to Question.media. Text-only files are unaffected.
+ *
  * Run: `npx tsx scripts/import-bcs-mental.ts` (uses DATABASE_URL).
  * ----------------------------------------------------------------------------
  */
 import { readdirSync, readFileSync } from "fs";
-import { join } from "path";
+import { basename, join } from "path";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { balanceOptions } from "./import-bank-ict";
 import { scanMca } from "./qb-forensics/import-gate";
+import { resolveFigureMedia, type MediaEntry } from "./media-attachments";
 
 const MENTAL_DIR = join(process.cwd(), "database", "data", "ques", "Mental Ablity");
 const BCS_MENTAL_NAMEBN = "মানসিক দক্ষতা";
@@ -193,6 +203,10 @@ export type MentalImportReport = {
   updated: number;
   skippedRecords: number;
   topics: Record<string, number>;
+  /** Records that received at least one figure. */
+  figuresAttached: number;
+  /** Figure files copied into public/question-media. */
+  figuresCopied: number;
 };
 
 export async function importBcsMental(prisma: PrismaClient): Promise<MentalImportReport> {
@@ -207,7 +221,16 @@ export async function importBcsMental(prisma: PrismaClient): Promise<MentalImpor
   const topicIdByPath = new Map(topicRows.map((t) => [t.path, t.id]));
 
   const files = readdirSync(MENTAL_DIR).filter((f) => f.endsWith(".txt")).sort();
-  const report: MentalImportReport = { files: files.length, parsed: 0, inserted: 0, updated: 0, skippedRecords: 0, topics: {} };
+  const report: MentalImportReport = {
+    files: files.length,
+    parsed: 0,
+    inserted: 0,
+    updated: 0,
+    skippedRecords: 0,
+    topics: {},
+    figuresAttached: 0,
+    figuresCopied: 0,
+  };
 
   type Op = { key: string; topicPath: string; data: Prisma.QuestionCreateManyInput };
   const ops: Op[] = [];
@@ -215,6 +238,13 @@ export async function importBcsMental(prisma: PrismaClient): Promise<MentalImpor
   for (const file of files) {
     const slug = fileSlug(file);
     const parsed = parseMentalFile(file, readFileSync(join(MENTAL_DIR, file), "utf8"));
+    const figureMedia = resolveFigureMedia({
+      sourceDir: MENTAL_DIR,
+      stem: basename(file, ".txt"),
+      slug: `bcs-mental/${slug}`,
+    });
+    report.figuresCopied += figureMedia.copied;
+    for (const w of figureMedia.warnings) console.warn(`  [figure] ${file}: ${w}`);
     report.parsed += parsed.records.length;
     report.skippedRecords += parsed.skipped.length;
     for (const s of parsed.skipped) console.warn(`  [skip] ${file}: ${s}`);
@@ -252,27 +282,38 @@ export async function importBcsMental(prisma: PrismaClient): Promise<MentalImpor
         continue;
       }
       const norm = gate.normalized;
+      // Figures attach by record number. Written only when present so a rerun
+      // never clears media set by hand on a text-only question.
+      const media: MediaEntry[] = figureMedia.byNumber.get(r.n) ?? [];
+      if (media.length > 0) report.figuresAttached++;
+      const data: Prisma.QuestionCreateManyInput = {
+        sourceKey: "",
+        ecosystemId: bcs.id,
+        subjectId: subject.id,
+        topicId: topicIdByPath.get(topicPath) ?? null,
+        topic: topicPath.split("/").pop() ?? "",
+        subtopic: "",
+        path: topicPath,
+        question: norm.question ?? r.question,
+        options: (norm.options ?? r.options) as [string, string, string, string],
+        correctAnswer: norm.correctAnswer ?? answerText,
+        explanation: norm.explanation ?? r.explanation,
+        difficulty: "MEDIUM",
+        year: null,
+        sourceExam: `BCS Mental · ${slug}`,
+        questionNumber: r.n,
+      };
+      if (media.length > 0) data.media = media as unknown as Prisma.InputJsonValue;
       ops.push({
         key: sourceKey(subject.id, "bcs-mental", slug, r.n, r.question),
         topicPath,
-        data: {
-          sourceKey: "",
-          ecosystemId: bcs.id,
-          subjectId: subject.id,
-          topicId: topicIdByPath.get(topicPath) ?? null,
-          topic: topicPath.split("/").pop() ?? "",
-          subtopic: "",
-          path: topicPath,
-          question: norm.question ?? r.question,
-          options: (norm.options ?? r.options) as [string, string, string, string],
-          correctAnswer: norm.correctAnswer ?? answerText,
-          explanation: norm.explanation ?? r.explanation,
-          difficulty: "MEDIUM",
-          year: null,
-          sourceExam: `BCS Mental · ${slug}`,
-          questionNumber: r.n,
-        },
+        data,
       });
+    }
+    for (const n of figureMedia.byNumber.keys()) {
+      if (!parsed.records.some((r) => r.n === n)) {
+        console.warn(`  [figure] ${file}: #${n} has a figure but no parsed record`);
+      }
     }
     console.log(`  ✓ ${file}: ${parsed.records.length} parsed`);
   }
@@ -323,6 +364,9 @@ async function main() {
   try {
     const report = await importBcsMental(prisma);
     console.log(`\n✓ Done. files=${report.files} parsed=${report.parsed} inserted=${report.inserted} updated=${report.updated} skipped=${report.skippedRecords}`);
+    if (report.figuresAttached > 0 || report.figuresCopied > 0) {
+      console.log(`  figures: ${report.figuresAttached} record(s) attached, ${report.figuresCopied} file(s) copied to public/question-media`);
+    }
     for (const [t, c] of Object.entries(report.topics)) console.log(`    ${c} × ${t}`);
   } finally {
     await prisma.$disconnect();

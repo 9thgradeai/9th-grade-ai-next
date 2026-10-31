@@ -1,0 +1,1067 @@
+﻿Part 1 — Questions 1–50
+Historical foundations and Bangladesh Bank legislation
+1. Which legal instrument established Bangladesh Bank?
+A. Bank Company Act, 1991
+B. Bangladesh Bank Order, 1972
+C. Financial Institutions Act, 1993
+D. Negotiable Instruments Act, 1881
+Correct Answer: B. Bangladesh Bank Order, 1972
+Explanation: The Bangladesh Bank Order, 1972 (President's Order No. 127 of 1972) established the legal foundation of Bangladesh's central bank. Article 3 provides for the establishment and incorporation of Bangladesh Bank.
+2. What is the number of the Bangladesh Bank Order, 1972?
+A. President's Order No. 26 of 1972
+B. President's Order No. 127 of 1972
+C. Act No. 14 of 1991
+D. President's Order No. 27 of 1973
+Correct Answer: B. President's Order No. 127 of 1972
+Explanation: Bangladesh Bank Order, 1972 is President's Order No. 127 of 1972. It is the foundational instrument governing the central bank, subject to subsequent amendments and other applicable laws.
+3. Which article of the Bangladesh Bank Order, 1972, provides for the establishment and incorporation of Bangladesh Bank?
+A. Article 3
+B. Article 10
+C. Article 23
+D. Article 36
+Correct Answer: A. Article 3
+Explanation: Article 3 provides for the establishment of Bangladesh Bank as a body corporate with perpetual succession and a common seal. Article references should be studied alongside subsequent amendments.
+4. Which institution is primarily responsible for conducting monetary policy in Bangladesh?
+A. Bangladesh Securities and Exchange Commission
+B. National Board of Revenue
+C. Bangladesh Bank
+D. Ministry of Commerce
+Correct Answer: C. Bangladesh Bank
+Explanation: Bangladesh Bank is the country's central bank and conducts monetary policy as part of its responsibilities for monetary and financial stability. The BSEC regulates the securities market, while the NBR administers major tax and customs functions.
+5. Which law primarily governs the licensing and regulation of banking companies in Bangladesh?
+A. Bank Company Act, 1991
+B. Companies Act, 1994 alone
+C. Insurance Act, 2010
+D. Securities and Exchange Ordinance, 1969
+Correct Answer: A. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 establishes the principal statutory framework for banking companies, including licensing, management, supervision and other regulatory matters. It operates alongside the Bangladesh Bank Order, 1972 and other applicable legislation.
+6. Which Act is the principal legislation governing negotiable instruments such as cheques and promissory notes?
+A. Contract Act, 1872
+B. Transfer of Property Act, 1882
+C. Partnership Act, 1932
+D. Negotiable Instruments Act, 1881
+Correct Answer: D. Negotiable Instruments Act, 1881
+Explanation: The Negotiable Instruments Act, 1881 governs instruments such as promissory notes, bills of exchange and cheques. It provides rules concerning their creation, transfer, presentment, payment and related liabilities.
+7. Which legislation historically governed non-bank financial institutions in Bangladesh before the Finance Company Act, 2023?
+A. Bank Company Act, 1991
+B. Financial Institutions Act, 1993
+C. Bangladesh Bank Order, 1972 alone
+D. Insurance Act, 2010
+Correct Answer: B. Financial Institutions Act, 1993
+Explanation: The Financial Institutions Act, 1993 was the principal historical statutory framework for financial institutions. The Finance Company Act, 2023 is the later legislation to study for the updated framework. Candidates should distinguish historical questions from current-law questions.
+8. Which law is specifically associated with the recovery of loans by financial institutions through specialised courts in Bangladesh?
+A. Limitation Act, 1908 alone
+B. Evidence Act, 1872
+C. Money Loan Court Act, 2003
+D. Negotiable Instruments Act, 1881 alone
+Correct Answer: C. Money Loan Court Act, 2003
+Explanation: The Money Loan Court Act, 2003 establishes the specialised legal framework for adjudicating money-loan recovery disputes within its scope. It is particularly important for banking credit recovery and litigation.
+9. Which law primarily addresses the prevention of money laundering in Bangladesh?
+A. Money Laundering Prevention Act, 2012
+B. Bank Company Act, 1991 alone
+C. Companies Act, 1994 alone
+D. Negotiable Instruments Act, 1881
+Correct Answer: A. Money Laundering Prevention Act, 2012
+Explanation: The Money Laundering Prevention Act, 2012 provides the statutory framework for preventing and addressing money laundering. Banks must also follow applicable Bangladesh Bank directives and requirements concerning customer due diligence, transaction monitoring and reporting.
+10. Which legislation is directly relevant to combating the financing of terrorism in Bangladesh?
+A. Foreign Exchange Regulation Act, 1947 alone
+B. Companies Act, 1994
+C. Negotiable Instruments Act, 1881
+D. Anti-Terrorism Act, 2009
+Correct Answer: D. Anti-Terrorism Act, 2009
+Explanation: The Anti-Terrorism Act, 2009 provides a legal framework for addressing terrorism-related offences, including relevant terrorist-financing offences. Banks must comply with applicable anti-terrorist-financing obligations and regulatory instructions.
+Banking companies and financial institutions
+11. In which year was the Bank Company Act enacted?
+A. 1972
+B. 1991
+C. 1993
+D. 2003
+Correct Answer: B. 1991
+Explanation: The Bank Company Act, 1991 is Act No. 14 of 1991. It remains a core statute for banking regulation, as amended over time. The original enactment date and later amendments are separate facts.
+12. Which legislation governs the formation and general corporate affairs of companies in Bangladesh, including many banking companies where applicable?
+A. Money Loan Court Act, 2003
+B. Foreign Exchange Regulation Act, 1947
+C. Companies Act, 1994
+D. Anti-Terrorism Act, 2009
+Correct Answer: C. Companies Act, 1994
+Explanation: The Companies Act, 1994 governs company incorporation and many aspects of corporate administration. Banking companies are also subject to specialised banking legislation, and where a banking law provides a specific rule, that special rule must be considered.
+13. Which legislation is the current statutory reference for finance companies following the 2023 reform?
+A. Finance Company Act, 2023
+B. Bank Company Act, 1991 only
+C. Financial Institutions Act, 1993 only
+D. Insurance Act, 2010
+Correct Answer: A. Finance Company Act, 2023
+Explanation: The Finance Company Act, 2023 is listed by Bangladesh Bank among the country's banking and financial-sector laws. It is important to distinguish this newer legislation from the historical Financial Institutions Act, 1993. Verify the current operative provisions and transitional arrangements in the official text.
+14. Which Act established a statutory framework specifically for offshore banking in Bangladesh in 2024?
+A. Companies Act, 1994
+B. Bank Deposit Insurance Act, 2000
+C. Financial Reporting Act, 2015
+D. Offshore Banking Act, 2024
+Correct Answer: D. Offshore Banking Act, 2024
+Explanation: The Offshore Banking Act, 2024 provides a dedicated legislative framework for offshore banking. It should be studied separately from ordinary domestic banking rules, while noting that applicable Bangladesh Bank regulations and other laws may also apply.
+15. Which law is particularly relevant to the regulation of microcredit organisations in Bangladesh?
+A. Bank Company Act, 1991
+B. Microcredit Regulatory Authority Act, 2006
+C. Negotiable Instruments Act, 1881
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: B. Microcredit Regulatory Authority Act, 2006
+Explanation: The Microcredit Regulatory Authority Act, 2006 provides the legal basis for regulating licensed microcredit organisations within its scope. These organisations should not automatically be treated as commercial banks governed identically under the Bank Company Act.
+16. Which Act specifically governs Grameen Bank?
+A. Finance Company Act, 2023
+B. Companies Act, 1994 alone
+C. Grameen Bank Act, 2013
+D. Bank Deposit Insurance Act, 2000
+Correct Answer: C. Grameen Bank Act, 2013
+Explanation: Grameen Bank has its own specific legislation, the Grameen Bank Act, 2013. This is an example of a specialised institutional framework rather than the assumption that every financial institution is governed by exactly the same statute.
+17. Which law is principally associated with the establishment and operation of the Bangladesh Krishi Bank?
+A. Bangladesh Krishi Bank Order, 1973
+B. Negotiable Instruments Act, 1881
+C. Financial Reporting Act, 2015
+D. Bankers' Books Evidence Act, 2021
+Correct Answer: A. Bangladesh Krishi Bank Order, 1973
+Explanation: The Bangladesh Krishi Bank Order, 1973 is the institutional legal instrument associated with Bangladesh Krishi Bank. Specialised banks may operate under their own founding instruments in addition to applicable general laws and regulatory directions.
+18. Which legislation is associated with the establishment of the Employment Bank in Bangladesh?
+A. Grameen Bank Act, 2013
+B. Bangladesh Bank Order, 1972
+C. Finance Company Act, 2023
+D. Employment Bank Act, 1998
+Correct Answer: D. Employment Bank Act, 1998
+Explanation: The Employment Bank Act, 1998 is the institutional statute associated with the Employment Bank, also known as Karmasangsthan Bank. Such institution-specific laws are useful for questions distinguishing specialised banks from ordinary commercial banks.
+19. Which law is associated with the establishment of the Probashi Kallyan Bank?
+A. Bank Company Act, 1991 alone
+B. Probashi Kallyan Bank Act, 2010
+C. Offshore Banking Act, 2024
+D. Financial Reporting Act, 2015
+Correct Answer: B. Probashi Kallyan Bank Act, 2010
+Explanation: The Probashi Kallyan Bank Act, 2010 provides the institutional statutory basis for the bank serving expatriate Bangladeshis and related objectives. Remember the distinction between an institution's founding law and general banking regulation.
+20. Which Act is relevant to the regulation of financial reporting and the institutional framework for financial reporting oversight in Bangladesh?
+A. Negotiable Instruments Act, 1881
+B. Money Loan Court Act, 2003
+C. Financial Reporting Act, 2015
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: C. Financial Reporting Act, 2015
+Explanation: The Financial Reporting Act, 2015 establishes a statutory framework concerning financial reporting. It is relevant to financial transparency and reporting oversight, but it should not be confused with the Bank Company Act's broader prudential regulation of banking companies.
+Negotiable instruments and banking evidence
+21. The Negotiable Instruments Act, 1881 is which Act number?
+A. Act No. XXVI of 1881
+B. Act No. XIV of 1991
+C. Act No. XXVII of 1993
+D. Act No. VIII of 2003
+Correct Answer: A. Act No. XXVI of 1881
+Explanation: The official text identifies the Negotiable Instruments Act, 1881 as Act No. XXVI of 1881. Memorising the title, year and Act number helps distinguish it from the later banking and financial-sector statutes.
+22. Under the Negotiable Instruments Act, 1881, which of the following is a negotiable instrument expressly recognised by the Act?
+A. Land registration deed
+B. Company memorandum
+C. Insurance survey report
+D. Cheque
+Correct Answer: D. Cheque
+Explanation: A cheque is a negotiable instrument governed by the Act. Other principal categories include promissory notes and bills of exchange. A land deed or insurance report does not become a negotiable instrument merely because it records a financial interest.
+23. Under the Negotiable Instruments Act, 1881, which instrument contains an unconditional undertaking to pay a certain sum of money?
+A. Cheque
+B. Promissory note
+C. Bank statement
+D. Letter of credit
+Correct Answer: B. Promissory note
+Explanation: A promissory note contains an unconditional undertaking by its maker to pay a certain sum of money to a specified person, that person's order, or the bearer, subject to the Act's requirements. A cheque is instead a form of bill of exchange drawn on a specified banker.
+24. Under the Negotiable Instruments Act, 1881, a cheque is a particular form of which instrument?
+A. Promissory note
+B. Mortgage deed
+C. Bill of exchange
+D. Bond of indemnity
+Correct Answer: C. Bill of exchange
+Explanation: A cheque is a bill of exchange drawn on a specified banker and payable on demand, within the statutory definition. This distinction is important because a cheque involves a drawer, drawee bank and payee or holder.
+25. Which section of the Negotiable Instruments Act, 1881 is commonly associated with the statutory definition of a cheque?
+A. Section 6
+B. Section 20
+C. Section 85
+D. Section 138
+Correct Answer: A. Section 6
+Explanation: Section 6 defines a cheque within the Act's framework. Section 138, by contrast, concerns penalties associated with dishonour of certain cheques for insufficiency of funds or other specified grounds, subject to statutory conditions and amendments.
+26. Which section of the Negotiable Instruments Act, 1881 is associated with penalties for dishonour of certain cheques?
+A. Section 4
+B. Section 5
+C. Section 13
+D. Section 138
+Correct Answer: D. Section 138
+Explanation: Section 138 is the key provision associated with criminal penalties for qualifying cheque dishonour. Liability is not automatic for every returned cheque; the statutory conditions, procedural requirements, applicable amendments and judicial interpretation must be considered.
+27. Which law specifically deals with the evidentiary use of bankers' books in legal proceedings under the newer statutory framework?
+A. Evidence Act, 1872 alone
+B. Bankers' Books Evidence Act, 2021
+C. Finance Company Act, 2023
+D. Offshore Banking Act, 2024
+Correct Answer: B. Bankers' Books Evidence Act, 2021
+Explanation: Bangladesh Bank lists the Bankers' Books Evidence Act, 2021 among relevant financial-sector legislation. It concerns the evidentiary treatment of bankers' books. Do not confuse it with the historical Bankers' Books Evidence Act, 1891.
+28. Which statute is the historical predecessor to the Bankers' Books Evidence Act, 2021?
+A. Bank Company Act, 1991
+B. Money Loan Court Act, 2003
+C. Bankers' Books Evidence Act, 1891
+D. Financial Reporting Act, 2015
+Correct Answer: C. Bankers' Books Evidence Act, 1891
+Explanation: The Bankers' Books Evidence Act, 1891 is the earlier statute listed in official government legal inventories. For current legal applications, check the 2021 Act and any repeal, savings or transitional provisions rather than assuming the older law remains wholly operative.
+29. Which legislation is particularly relevant when a bank initiates a specialised legal proceeding to recover a defaulted loan?
+A. Money Loan Court Act, 2003
+B. Financial Reporting Act, 2015
+C. Microcredit Regulatory Authority Act, 2006 alone
+D. Insurance Act, 2010
+Correct Answer: A. Money Loan Court Act, 2003
+Explanation: The Money Loan Court Act, 2003 provides the specialised recovery framework applicable to qualifying money-loan disputes. The Negotiable Instruments Act may be relevant to a separate cheque-dishonour issue, but it is not a substitute for the loan-recovery statute.
+30. Which law is most directly relevant to determining the legal consequences of endorsing a negotiable instrument?
+A. Companies Act, 1994
+B. Financial Institutions Act, 1993
+C. Money Laundering Prevention Act, 2012
+D. Negotiable Instruments Act, 1881
+Correct Answer: D. Negotiable Instruments Act, 1881
+Explanation: Endorsement and negotiation are governed by the Negotiable Instruments Act. An endorsement may transfer rights in an instrument or serve another legally recognised purpose, depending on its wording, the instrument and the applicable statutory rules.
+Foreign exchange, AML and financial crime
+31. Which principal legislation historically regulates foreign exchange dealings in Bangladesh?
+A. Financial Reporting Act, 2015
+B. Foreign Exchange Regulation Act, 1947
+C. Bank Deposit Insurance Act, 2000
+D. Money Loan Court Act, 2003
+Correct Answer: B. Foreign Exchange Regulation Act, 1947
+Explanation: The Foreign Exchange Regulation Act, 1947 is a foundational statute governing foreign-exchange transactions within its scope. It must be read alongside amendments, Bangladesh Bank permissions, circulars and other applicable legislation.
+32. Which law is most directly relevant to the prevention of money laundering through bank accounts?
+A. Companies Act, 1994 alone
+B. Negotiable Instruments Act, 1881 alone
+C. Money Laundering Prevention Act, 2012
+D. Bangladesh Krishi Bank Order, 1973
+Correct Answer: C. Money Laundering Prevention Act, 2012
+Explanation: The Money Laundering Prevention Act, 2012 is central to Bangladesh's anti-money-laundering framework. Banks must apply relevant customer identification, risk assessment, monitoring and reporting requirements under applicable laws and Bangladesh Financial Intelligence Unit or Bangladesh Bank instructions.
+33. Which institution is Bangladesh's national financial intelligence unit?
+A. Bangladesh Financial Intelligence Unit (BFIU)
+B. Bangladesh Securities and Exchange Commission
+C. Bangladesh Investment Development Authority
+D. National Board of Revenue
+Correct Answer: A. Bangladesh Financial Intelligence Unit (BFIU)
+Explanation: The BFIU is Bangladesh's financial intelligence unit and plays a central role in receiving, analysing and disseminating relevant financial intelligence under the applicable legal framework. It is not the securities-market regulator or the tax authority.
+34. Which law is particularly relevant to terrorist-financing offences in Bangladesh?
+A. Companies Act, 1994
+B. Bank Deposit Insurance Act, 2000
+C. Negotiable Instruments Act, 1881
+D. Anti-Terrorism Act, 2009
+Correct Answer: D. Anti-Terrorism Act, 2009
+Explanation: The Anti-Terrorism Act, 2009 addresses terrorism-related offences, including relevant financing offences. AML and counter-terrorist-financing compliance also depends on other applicable laws, rules, regulatory directives and reporting requirements.
+35. Which law is especially relevant to the regulatory framework for secured transactions involving movable property?
+A. Insurance Act, 2010
+B. Secured Transactions (Movable Property) Act, 2023
+C. Bangladesh Bank Order, 1972 alone
+D. Negotiable Instruments Act, 1881 alone
+Correct Answer: B. Secured Transactions (Movable Property) Act, 2023
+Explanation: The Secured Transactions (Movable Property) Act, 2023 is listed in official Bangladesh financial-sector legal inventories. It is relevant to the legal framework for taking security over movable assets. Specific registration, priority and enforcement rules should be checked in the enacted text.
+36. Which Act is primarily relevant to insurance business regulation in Bangladesh?
+A. Bank Company Act, 1991
+B. Finance Company Act, 2023
+C. Insurance Act, 2010
+D. Money Loan Court Act, 2003
+Correct Answer: C. Insurance Act, 2010
+Explanation: The Insurance Act, 2010 is a principal statute governing insurance business. The insurance sector has its own regulator, the Insurance Development and Regulatory Authority; Bangladesh Bank's banking supervisory role should not be confused with that authority's responsibilities.
+37. Which law is relevant to bankruptcy and insolvency matters in Bangladesh?
+A. Bankruptcy Act, 1997
+B. Foreign Exchange Regulation Act, 1947
+C. Bankers' Books Evidence Act, 1891
+D. Anti-Terrorism Act, 2009
+Correct Answer: A. Bankruptcy Act, 1997
+Explanation: The Bankruptcy Act, 1997 is relevant to bankruptcy proceedings. It should be distinguished from the Money Loan Court Act, 2003, which specifically addresses money-loan recovery within its scope. The applicable procedure depends on the nature of the claim and parties.
+38. Which law provides the framework for regulating securities-market activities in Bangladesh?
+A. Money Loan Court Act, 2003
+B. Bank Company Act, 1991 alone
+C. Financial Institutions Act, 1993
+D. Securities and Exchange Ordinance, 1969
+Correct Answer: D. Securities and Exchange Ordinance, 1969
+Explanation: The Securities and Exchange Ordinance, 1969 is a foundational securities-market instrument. It operates alongside later securities laws, rules and BSEC regulations. Securities-market regulation is distinct from Bangladesh Bank's prudential supervision of banks.
+39. Which authority primarily regulates the securities market in Bangladesh?
+A. Bangladesh Financial Intelligence Unit
+B. Bangladesh Securities and Exchange Commission
+C. Bangladesh Bank alone
+D. Microcredit Regulatory Authority
+Correct Answer: B. Bangladesh Securities and Exchange Commission
+Explanation: The BSEC is the principal securities-market regulator. Bangladesh Bank regulates banks and relevant financial-sector activities within its statutory remit, while the BSEC oversees the securities market and its participants.
+40. Which law is directly relevant to regulating the activities of licensed microcredit institutions?
+A. Negotiable Instruments Act, 1881
+B. Offshore Banking Act, 2024
+C. Microcredit Regulatory Authority Act, 2006
+D. Bankers' Books Evidence Act, 2021
+Correct Answer: C. Microcredit Regulatory Authority Act, 2006
+Explanation: The Microcredit Regulatory Authority Act, 2006 establishes the statutory basis for regulation of licensed microcredit institutions. It is not a general replacement for the Bank Company Act or the legislation governing finance companies.
+Payment systems, deposit protection and recent reforms
+41. Which law is listed by Bangladesh Bank as the specific legislation for payment and settlement systems enacted in 2024?
+A. Payment and Settlement Systems Act, 2024
+B. Bank Company Act, 1991
+C. Negotiable Instruments Act, 1881
+D. Financial Reporting Act, 2015
+Correct Answer: A. Payment and Settlement Systems Act, 2024
+Explanation: Bangladesh Bank's official legal inventory lists the Payment and Settlement Systems Act, 2024. It is an important legislative reference for the payment and settlement framework, distinct from earlier payment-system regulations and operating rules.
+42. Which earlier Act was listed by the Financial Institutions Division as a payment-system law before the 2024 legislation?
+A. Insurance Act, 2010
+B. Finance Company Act, 2023
+C. Money Loan Court Act, 2003
+D. Payment and Settlement Systems Act, 2019
+Correct Answer: D. Payment and Settlement Systems Act, 2019
+Explanation: The Financial Institutions Division's legal inventory lists the Payment and Settlement Systems Act, 2019, while Bangladesh Bank's newer legal inventory identifies the 2024 Act. For a current-law question, verify commencement, repeal and transitional provisions rather than assuming both Acts operate concurrently in full.
+43. Which legislation is associated with deposit protection in Bangladesh's historical banking-law framework?
+A. Companies Act, 1994
+B. Bank Deposit Insurance Act, 2000
+C. Foreign Exchange Regulation Act, 1947
+D. Anti-Terrorism Act, 2009
+Correct Answer: B. Bank Deposit Insurance Act, 2000
+Explanation: The Bank Deposit Insurance Act, 2000 is the historical statute associated with deposit insurance. Since deposit-protection legislation may be replaced or amended, candidates must check the current operative law and the applicable coverage limits before memorising present-day figures.
+44. Which law is associated with Bangladesh's 2026 reform of the bank resolution framework?
+A. Negotiable Instruments Act, 1881
+B. Financial Institutions Act, 1993
+C. Bank Resolution Act, 2026
+D. Insurance Act, 2010
+Correct Answer: C. Bank Resolution Act, 2026
+Explanation: Bangladesh Bank's official legal inventory lists the Bank Resolution Act, 2026 and the Bank Resolution Ordinance, 2025. The Act is an important recent development for the framework addressing troubled banks and resolution measures. For detailed legal powers, consult the enacted text.
+45. Which ordinance preceded the Bank Resolution Act, 2026 in Bangladesh Bank's official legal inventory?
+A. Bank Resolution Ordinance, 2025
+B. Finance Ordinance, 1991
+C. Offshore Banking Ordinance, 2010
+D. Payment Systems Ordinance, 2003
+Correct Answer: A. Bank Resolution Ordinance, 2025
+Explanation: Bangladesh Bank's official list includes both the Bank Resolution Ordinance, 2025 and the subsequent Bank Resolution Act, 2026. An ordinance and a later Act are not automatically interchangeable; their legal status and transition must be checked against the final legislation.
+46. Which Act further amended the Bangladesh Bank Order, 1972 in April 2026?
+A. Bank Company (Amendment) Act, 2013
+B. Finance Company Act, 2023
+C. Payment and Settlement Systems Act, 2024
+D. Bangladesh Bank (Amendment) Act, 2026
+Correct Answer: D. Bangladesh Bank (Amendment) Act, 2026
+Explanation: The official Bangladesh Laws database lists the Bangladesh Bank (Amendment) Act, 2026 as Act No. 83 of 2026, dated 10 April 2026. It amended Article 10 of the Bangladesh Bank Order, 1972. This is a particularly important recent-law revision for the stated cutoff date.
+47. According to the official Bangladesh Laws entry, which article of the Bangladesh Bank Order, 1972 was amended by the Bangladesh Bank (Amendment) Act, 2026?
+A. Article 3
+B. Article 10
+C. Article 23
+D. Article 36
+Correct Answer: B. Article 10
+Explanation: The Bangladesh Bank (Amendment) Act, 2026 specifically amended Article 10, clause (5), replacing a colon with a full stop and deleting a proviso. The example illustrates why candidates should consult the actual amendment text instead of relying only on a summary of the parent Order.
+48. Which Act is listed by Bangladesh Bank as the principal banking-company legislation amended up to 2023?
+A. Negotiable Instruments Act, 1881
+B. Bankers' Books Evidence Act, 2021
+C. Bank Company Act, 1991
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: C. Bank Company Act, 1991
+Explanation: Bangladesh Bank's legal inventory lists the Bank Company Act, 1991 as amended up to 2023. The original year remains 1991, even though subsequent amendments have changed parts of the law. This distinction is common in legal MCQs.
+49. Which Act is listed among the newer laws concerning financial-sector transactions involving movable assets?
+A. Secured Transactions (Movable Property) Act, 2023
+B. Partnership Act, 1932
+C. Limitation Act, 1908
+D. Contract Act, 1872 alone
+Correct Answer: A. Secured Transactions (Movable Property) Act, 2023
+Explanation: The Secured Transactions (Movable Property) Act, 2023 is included in official financial-sector legal inventories. It is relevant to modern secured lending and movable-asset collateral, rather than being a general statute for incorporation or licensing of banks.
+50. Which source is the most appropriate starting point for verifying the latest Bangladesh Bank laws, regulations and guidelines before an examination?
+A. An undated social-media post
+B. An anonymous coaching note
+C. An unverified MCQ compilation
+D. Bangladesh Bank's official laws and regulations pages and the official Bangladesh Laws database
+Correct Answer: D. Bangladesh Bank's official laws and regulations pages and the official Bangladesh Laws database
+Explanation: Bangladesh Bank publishes its laws, acts and regulatory guidance, while the official Bangladesh Laws database provides statutory texts. Use these primary sources to check amendments, commencement dates and the current legal status of a provision.
+Part 2 — Questions 51–100
+Bangladesh Bank's powers and regulatory framework
+51. Which legislation authorises Bangladesh Bank to operate as the country's central bank?
+A. Companies Act, 1994
+B. Bangladesh Bank Order, 1972
+C. Insurance Act, 2010
+D. Bankruptcy Act, 1997
+Correct Answer: B. Bangladesh Bank Order, 1972
+Explanation: The Bangladesh Bank Order, 1972 establishes the central bank and provides its foundational statutory framework. The Bank Company Act, 1991 separately regulates banking companies.
+52. Which institution is principally responsible for supervising scheduled banks in Bangladesh?
+A. Bangladesh Securities and Exchange Commission
+B. Registrar of Joint Stock Companies and Firms
+C. Bangladesh Bank
+D. National Board of Revenue
+Correct Answer: C. Bangladesh Bank
+Explanation: Bangladesh Bank exercises banking supervision under its governing legislation and the applicable banking laws. Its supervisory activities include prudential oversight, regulatory compliance and examination of banking institutions.
+53. Which law provides the primary statutory framework for Bangladesh Bank's central banking functions?
+A. Bangladesh Bank Order, 1972
+B. Negotiable Instruments Act, 1881
+C. Companies Act, 1994
+D. Microcredit Regulatory Authority Act, 2006
+Correct Answer: A. Bangladesh Bank Order, 1972
+Explanation: The Bangladesh Bank Order, 1972 is the foundational legal instrument for the central bank. Its provisions must be read together with subsequent amendments, including the Bangladesh Bank (Amendment) Act, 2026.
+54. Which legislation is most directly relevant to licensing a banking company in Bangladesh?
+A. Contract Act, 1872
+B. Insurance Act, 2010
+C. Bankruptcy Act, 1997
+D. Bank Company Act, 1991
+Correct Answer: D. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 provides the statutory framework for banking companies, including licensing requirements. Applicants must also comply with applicable Bangladesh Bank policies and directions.
+55. Which of the following is a regulatory instrument issued by Bangladesh Bank rather than a separate Act of Parliament?
+A. Companies Act, 1994
+B. A Bangladesh Bank circular
+C. Negotiable Instruments Act, 1881
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: B. A Bangladesh Bank circular
+Explanation: A Bangladesh Bank circular communicates regulatory instructions, requirements or clarifications within the Bank's authority. A circular is not the same kind of legal instrument as an Act, although compliance may be mandatory where it is validly issued under applicable law.
+56. Which statement correctly distinguishes an Act from a regulatory guideline?
+A. Every guideline automatically repeals an Act.
+B. An Act has no legal effect until a bank accepts it.
+C. An Act is legislation, while a guideline explains or directs practices within the applicable legal framework.
+D. A guideline always overrides an Act.
+Correct Answer: C. An Act is legislation, while a guideline explains or directs practices within the applicable legal framework.
+Explanation: An Act is enacted through the legislative process. A guideline generally provides regulatory expectations or operational directions under the relevant framework. A guideline cannot ordinarily override a conflicting statutory provision merely because it is more recent.
+57. Which law is the principal general statute for company incorporation and corporate administration in Bangladesh?
+A. Companies Act, 1994
+B. Bangladesh Bank Order, 1972
+C. Money Loan Court Act, 2003
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: A. Companies Act, 1994
+Explanation: The Companies Act, 1994 governs company formation and corporate administration. Banking companies must also comply with specialised banking legislation, which may modify or supplement general company-law requirements.
+58. Which institution is responsible for issuing Bangladesh's national currency notes within the applicable legal framework?
+A. Bangladesh Securities and Exchange Commission
+B. Bangladesh Financial Intelligence Unit
+C. National Board of Revenue
+D. Bangladesh Bank
+Correct Answer: D. Bangladesh Bank
+Explanation: Bangladesh Bank is responsible for currency issuance within the framework of the Bangladesh Bank Order, 1972 and applicable laws. The statutory position regarding notes and coins should be distinguished when answering more detailed currency-law questions.
+59. Which legislation is most directly relevant to the legal framework for the management and regulation of commercial banking companies?
+A. Partnership Act, 1932 alone
+B. Bank Company Act, 1991
+C. Insurance Act, 2010
+D. Transfer of Property Act, 1882 alone
+Correct Answer: B. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 is the main specialised statute governing banking companies. It should be studied alongside the Bangladesh Bank Order, 1972 and subsequent amendments.
+60. What is the correct approach when a Bangladesh Bank circular appears inconsistent with an applicable Act?
+A. Always follow the circular, regardless of the Act.
+B. Ignore all Bangladesh Bank circulars.
+C. Examine the statutory authority, applicable provisions and legal hierarchy.
+D. Apply whichever rule was issued first.
+Correct Answer: C. Examine the statutory authority, applicable provisions and legal hierarchy.
+Explanation: The legal effect of a circular depends on its authority and the governing law. A valid regulatory direction may implement a statute, but an administrative instrument cannot simply override a conflicting Act.
+Bank governance and prudential regulation
+61. Which legislation is most directly associated with the legal regulation of banking-company directors and management?
+A. Bank Company Act, 1991
+B. Negotiable Instruments Act, 1881
+C. Insurance Act, 2010
+D. Limitation Act, 1908
+Correct Answer: A. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 contains provisions relevant to bank management, governance and regulatory oversight. Candidates should verify the current text because governance requirements may change through amendments and regulatory directions.
+62. Which of the following best describes the purpose of prudential banking regulation?
+A. To guarantee every bank a profit
+B. To eliminate all commercial lending
+C. To replace the bank's internal management
+D. To promote the safety, soundness and resilience of banks
+Correct Answer: D. To promote the safety, soundness and resilience of banks
+Explanation: Prudential regulation addresses risks such as inadequate capital, excessive lending concentration and insufficient liquidity. It aims to strengthen financial stability rather than guarantee profits or eliminate ordinary banking risks.
+63. What does CAMELS represent in bank supervisory assessment?
+A. Capital, Assets, Money, Earnings, Lending, Securities
+B. Capital adequacy, Asset quality, Management, Earnings, Liquidity, Sensitivity to market risk
+C. Credit, Audit, Management, Equity, Legal status, Solvency
+D. Capital, Accounting, Markets, Expenditure, Loans, Settlement
+Correct Answer: B. Capital adequacy, Asset quality, Management, Earnings, Liquidity, Sensitivity to market risk
+Explanation: CAMELS is a supervisory assessment framework. It evaluates a bank's capital, asset quality, management, earnings, liquidity and sensitivity to market risk. It is a supervisory methodology, not a standalone Act of Parliament.
+64. Which concept describes supervisory assessment based on a bank's particular risk profile?
+A. Universal fixed-rate lending
+B. Deposit mobilisation only
+C. Risk-based supervision
+D. Mandatory government ownership
+Correct Answer: C. Risk-based supervision
+Explanation: Risk-based supervision prioritises supervisory attention according to the significance and likelihood of risks faced by individual institutions. Bangladesh Bank lists supervisory guidance and regulations among its official regulatory resources.
+65. Which international body developed the Basel framework for bank capital regulation?
+A. Basel Committee on Banking Supervision
+B. World Trade Organization
+C. International Labour Organization
+D. United Nations Development Programme
+Correct Answer: A. Basel Committee on Banking Supervision
+Explanation: The Basel Committee develops international standards and guidance on banking supervision, including capital adequacy. These standards are implemented through national regulatory frameworks rather than automatically becoming domestic legislation in every country.
+66. What is the principal purpose of a minimum capital requirement for banks?
+A. To ensure that every borrower receives a loan
+B. To eliminate the need for credit appraisal
+C. To guarantee dividends to shareholders
+D. To provide a financial buffer against losses
+Correct Answer: D. To provide a financial buffer against losses
+Explanation: Bank capital absorbs losses and supports resilience. Minimum capital requirements help ensure that banks maintain resources in relation to their risks. Actual requirements depend on the applicable Bangladesh Bank framework and should be verified before the examination.
+67. Which of the following is primarily a liquidity-related regulatory requirement for banks?
+A. Company incorporation certificate
+B. Cash Reserve Ratio
+C. Trademark registration
+D. Share-transfer agreement
+Correct Answer: B. Cash Reserve Ratio
+Explanation: The Cash Reserve Ratio (CRR) requires banks to maintain a prescribed level of reserves under the applicable central-bank rules. The current rate and calculation method are changeable regulatory facts and must be verified from the latest Bangladesh Bank circular.
+68. Which requirement generally concerns the maintenance of specified liquid assets by banks?
+A. Corporate income tax
+B. Trade-mark registration
+C. Statutory Liquidity Ratio
+D. Export registration
+Correct Answer: C. Statutory Liquidity Ratio
+Explanation: The Statutory Liquidity Ratio (SLR) concerns the maintenance of prescribed liquid assets under the applicable banking framework. Do not confuse it with CRR, which concerns required reserves. Current ratios and eligible assets should be checked against current directives.
+69. Which law is particularly relevant to the legal framework for banking-company inspection and regulatory intervention?
+A. Bank Company Act, 1991
+B. Copyright Act, 2023
+C. Partnership Act, 1932 alone
+D. Sale of Goods Act, 1930 alone
+Correct Answer: A. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 provides statutory powers relevant to the supervision and regulation of banking companies. Bangladesh Bank's powers must be exercised within the limits and procedures established by applicable legislation.
+70. Which statement about Bangladesh Bank's prudential guidelines is most accurate?
+A. They are identical to criminal statutes.
+B. They apply only when voluntarily accepted by depositors.
+C. They cannot concern bank capital or liquidity.
+D. They establish supervisory requirements within the applicable legal framework.
+Correct Answer: D. They establish supervisory requirements within the applicable legal framework.
+Explanation: Prudential guidelines set regulatory expectations concerning matters such as capital, liquidity and risk management. Their legal status depends on their enabling authority and the applicable legislation. Bangladesh Bank publishes prudential regulations and supervisory guidance on its official website.
+AML, KYC and compliance legislation
+71. Which law provides the central statutory framework for money laundering prevention in Bangladesh?
+A. Companies Act, 1994
+B. Money Laundering Prevention Act, 2012
+C. Insurance Act, 2010
+D. Partnership Act, 1932
+Correct Answer: B. Money Laundering Prevention Act, 2012
+Explanation: The Money Laundering Prevention Act, 2012 is a core statute for AML compliance. It should be studied with subsequent amendments, applicable rules and Bangladesh Bank or BFIU instructions.
+72. What is the primary purpose of customer due diligence in banking?
+A. To guarantee a customer's creditworthiness
+B. To remove all documentation requirements
+C. To identify and assess customers and relevant financial-crime risks
+D. To eliminate the need for transaction monitoring
+Correct Answer: C. To identify and assess customers and relevant financial-crime risks
+Explanation: Customer due diligence supports identification, verification and risk assessment. It is part of a wider AML/CFT framework and does not replace transaction monitoring, suspicious-transaction reporting or other legal obligations.
+73. Which institution is most directly associated with receiving and analysing suspicious transaction reports in Bangladesh?
+A. Bangladesh Financial Intelligence Unit
+B. Bangladesh Securities and Exchange Commission
+C. Bangladesh Investment Development Authority
+D. Bangladesh Public Service Commission
+Correct Answer: A. Bangladesh Financial Intelligence Unit
+Explanation: The BFIU is Bangladesh's financial intelligence unit. Its role includes handling financial intelligence under the relevant AML/CFT framework. Banks must comply with the applicable reporting procedures and confidentiality requirements.
+74. Which legislation is relevant to the financing of terrorism?
+A. Contract Act, 1872 alone
+B. Companies Act, 1994 alone
+C. Insurance Act, 2010 alone
+D. Anti-Terrorism Act, 2009
+Correct Answer: D. Anti-Terrorism Act, 2009
+Explanation: The Anti-Terrorism Act, 2009 provides the legal framework for terrorism-related offences, including relevant terrorist-financing provisions. AML/CFT controls also involve additional laws and regulatory instructions.
+75. Which international organisation develops standards for combating money laundering and terrorist financing?
+A. International Telecommunication Union
+B. Financial Action Task Force
+C. International Maritime Organization
+D. World Intellectual Property Organization
+Correct Answer: B. Financial Action Task Force
+Explanation: The Financial Action Task Force (FATF) develops international AML/CFT standards. National authorities implement these standards through domestic laws, regulations and supervisory practices.
+76. Which statement best describes a suspicious transaction report?
+A. It proves that a customer has committed a crime.
+B. It is required only when a bank makes a loss.
+C. It communicates a suspicion under the applicable reporting framework.
+D. It automatically freezes every account mentioned in it.
+Correct Answer: C. It communicates a suspicion under the applicable reporting framework.
+Explanation: A suspicious transaction report communicates suspicion according to applicable rules. Filing a report does not itself establish guilt or automatically determine the legal status of an account; any further action depends on the law and competent authorities.
+77. Which legislation is most directly relevant to foreign exchange restrictions and regulated foreign-currency dealings?
+A. Foreign Exchange Regulation Act, 1947
+B. Money Loan Court Act, 2003
+C. Insurance Act, 2010
+D. Companies Act, 1994 alone
+Correct Answer: A. Foreign Exchange Regulation Act, 1947
+Explanation: The Foreign Exchange Regulation Act, 1947 is a foundational foreign-exchange statute. Specific transactions may also be governed by later amendments, Bangladesh Bank permissions and applicable foreign-exchange circulars.
+78. What is the principal regulatory purpose of sanctions screening by a bank?
+A. To guarantee investment returns
+B. To determine a customer's tax refund
+C. To replace identity verification
+D. To identify potential matches against applicable sanctions restrictions
+Correct Answer: D. To identify potential matches against applicable sanctions restrictions
+Explanation: Sanctions screening helps identify individuals, entities and transactions that may be subject to applicable restrictions. Banks must follow the relevant domestic law, regulatory instructions and legally applicable international sanctions obligations.
+79. Which law is particularly relevant when a qualifying cheque is dishonoured and criminal liability is alleged under the cheque-dishonour provision?
+A. Companies Act, 1994
+B. Negotiable Instruments Act, 1881
+C. Insurance Act, 2010
+D. Finance Company Act, 2023
+Correct Answer: B. Negotiable Instruments Act, 1881
+Explanation: Section 138 of the Negotiable Instruments Act, 1881 is associated with penalties for qualifying cheque dishonour. The claimant must satisfy the applicable statutory requirements; not every returned cheque automatically establishes an offence.
+80. Which approach is appropriate when a bank identifies a potential AML/CFT compliance breach?
+A. Ignore the issue until the financial year ends.
+B. Inform the customer of every confidential investigation detail.
+C. Follow the applicable escalation, investigation and reporting procedures.
+D. Destroy the transaction records immediately.
+Correct Answer: C. Follow the applicable escalation, investigation and reporting procedures.
+Explanation: Banks should follow applicable law, internal controls and regulatory reporting requirements. Confidentiality, record preservation and appropriate escalation are essential; unauthorised disclosure or destruction of records can create further compliance risks.
+Payment systems and digital banking laws
+81. Which Act is listed in Bangladesh Bank's official inventory as the payment and settlement legislation enacted in 2024?
+A. Payment and Settlement Systems Act, 2024
+B. Companies Act, 1994
+C. Negotiable Instruments Act, 1881
+D. Money Loan Court Act, 2003
+Correct Answer: A. Payment and Settlement Systems Act, 2024
+Explanation: Bangladesh Bank lists the Payment and Settlement Systems Act, 2024 among its relevant laws. Candidates should distinguish it from the earlier payment-system regulatory framework and verify any transitional provisions.
+82. Which system is associated with automated cheque processing in Bangladesh?
+A. SWIFT only
+B. International Monetary Fund payment platform
+C. National Board of Revenue e-payment platform only
+D. Bangladesh Automated Cheque Processing System (BACPS)
+Correct Answer: D. Bangladesh Automated Cheque Processing System (BACPS)
+Explanation: BACPS supports automated cheque processing. Bangladesh Bank also publishes operating rules and procedures for cheque processing. System operating rules are not the same as the primary legislation governing the entire payment and settlement sector.
+83. Which system is associated with electronic funds transfer in Bangladesh?
+A. Bangladesh Securities Settlement System
+B. Bangladesh Electronic Funds Transfer Network (BEFTN)
+C. Bangladesh Public Service Commission
+D. Bangladesh Automated Taxation Register
+Correct Answer: B. Bangladesh Electronic Funds Transfer Network (BEFTN)
+Explanation: BEFTN is an electronic funds transfer network. Bangladesh Bank has issued operating rules for it, which sit within the broader payment-system regulatory framework.
+84. Which system supports real-time gross settlement of eligible high-value payments in Bangladesh?
+A. BACPS only
+B. A paper-based cheque register
+C. Bangladesh Real Time Gross Settlement (BD-RTGS) system
+D. A bank's internal fixed-deposit register
+Correct Answer: C. Bangladesh Real Time Gross Settlement (BD-RTGS) system
+Explanation: BD-RTGS supports real-time gross settlement of eligible payments. Bangladesh Bank publishes system rules governing its operation. Its operational rules should not be confused with the general payment-system statute.
+85. Which payment arrangement connects participating banks for certain interoperable payment services in Bangladesh?
+A. National Payment Switch Bangladesh (NPSB)
+B. Bankruptcy Court Register
+C. Bangladesh Securities and Exchange Commission
+D. Companies Registry
+Correct Answer: A. National Payment Switch Bangladesh (NPSB)
+Explanation: NPSB facilitates interoperability among participating financial institutions for supported payment services. Its operation is governed by applicable system rules and Bangladesh Bank directions.
+86. Which of the following is an example of a regulatory guideline rather than a standalone primary Act?
+A. Negotiable Instruments Act, 1881
+B. Companies Act, 1994
+C. Bangladesh Bank Order, 1972
+D. Guidelines on Electronic Know-Your-Customer (e-KYC)
+Correct Answer: D. Guidelines on Electronic Know-Your-Customer (e-KYC)
+Explanation: Bangladesh Bank lists e-KYC guidelines among its regulatory guidance. They address electronic customer-identification processes and must be applied in accordance with the relevant laws and applicable regulatory requirements.
+87. Which technology is directly relevant to the secure electronic transmission of banking instructions?
+A. A printed company memorandum alone
+B. Electronic authentication and secure communication controls
+C. Manual filing without access controls
+D. Unencrypted public posting of customer details
+Correct Answer: B. Electronic authentication and secure communication controls
+Explanation: Electronic authentication and secure communication controls help protect the integrity, confidentiality and authenticity of banking instructions. Applicable cybersecurity obligations arise from the relevant legal, regulatory and operational frameworks.
+88. Which Bangladesh Bank resource is most appropriate for checking current agent-banking prudential guidance?
+A. An unrelated foreign bank's annual report
+B. An undated social-media infographic
+C. Bangladesh Bank's official guidelines and regulatory pages
+D. A private company's incorporation certificate
+Correct Answer: C. Bangladesh Bank's official guidelines and regulatory pages
+Explanation: Bangladesh Bank publishes prudential guidelines for agent banking and other banking activities. The official regulatory pages are preferable to unverified summaries when checking current requirements.
+89. Which law is particularly relevant to the legal framework for transactions secured by movable property?
+A. Secured Transactions (Movable Property) Act, 2023
+B. Insurance Act, 2010
+C. Anti-Terrorism Act, 2009
+D. Grameen Bank Act, 2013
+Correct Answer: A. Secured Transactions (Movable Property) Act, 2023
+Explanation: The Act is included in official legal inventories and is relevant to secured transactions involving movable assets. Its detailed operation depends on the provisions concerning security interests, registration, priority and enforcement.
+90. What is the primary distinction between clearing and settlement in payment systems?
+A. They always mean exactly the same thing.
+B. Clearing is the same as opening a deposit account.
+C. Settlement is the process of approving a loan.
+D. Clearing determines or processes payment obligations, while settlement discharges those obligations.
+Correct Answer: D. Clearing determines or processes payment obligations, while settlement discharges those obligations.
+Explanation: Clearing involves processing payment instructions and determining obligations; settlement involves the discharge of those obligations through the relevant transfer of funds. The exact process depends on the payment system's rules and design.
+Recent legislation and specialised financial laws
+91. Which Act is associated with the recent statutory framework for resolving troubled banks in Bangladesh?
+A. Financial Reporting Act, 2015
+B. Bank Resolution Act, 2026
+C. Partnership Act, 1932
+D. Negotiable Instruments Act, 1881
+Correct Answer: B. Bank Resolution Act, 2026
+Explanation: Bangladesh Bank's official legal inventory lists the Bank Resolution Act, 2026. Its provisions are relevant to the modern legal framework for bank resolution. Detailed powers and procedures should be verified from the enacted law.
+92. Which legislation was enacted in 2024 to provide a specific framework for offshore banking?
+A. Bank Deposit Insurance Act, 2000
+B. Financial Reporting Act, 2015
+C. Offshore Banking Act, 2024
+D. Money Loan Court Act, 2003
+Correct Answer: C. Offshore Banking Act, 2024
+Explanation: The Offshore Banking Act, 2024 is included in Bangladesh Bank's list of important legislation. It should be distinguished from the general domestic banking framework and studied with its applicable regulations.
+93. Which law is the newer statutory framework for finance companies listed by Bangladesh Bank?
+A. Finance Company Act, 2023
+B. Financial Institutions Act, 1993 alone
+C. Companies Act, 1994 alone
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: A. Finance Company Act, 2023
+Explanation: Bangladesh Bank lists the Finance Company Act, 2023 among the important financial-sector statutes. The earlier Financial Institutions Act, 1993 remains important for historical questions; current legal status should be verified from the applicable legislation.
+94. Which law is relevant to the statutory framework governing Bangladesh's deposit protection arrangements?
+A. Companies Act, 1994 alone
+B. Negotiable Instruments Act, 1881
+C. Foreign Exchange Regulation Act, 1947
+D. Bank Deposit Insurance Act, 2000
+Correct Answer: D. Bank Deposit Insurance Act, 2000
+Explanation: The Bank Deposit Insurance Act, 2000 is the historical deposit-insurance statute listed in official legal inventories. Check for later legislation, amendments and current coverage rules before answering questions about present-day depositor protection.
+95. Which Act is relevant to the legal framework for financial reporting oversight in Bangladesh?
+A. Offshore Banking Act, 2024
+B. Financial Reporting Act, 2015
+C. Bangladesh Krishi Bank Order, 1973
+D. Anti-Terrorism Act, 2009
+Correct Answer: B. Financial Reporting Act, 2015
+Explanation: The Financial Reporting Act, 2015 concerns financial reporting and related oversight. It is distinct from banking-company legislation, although reliable financial reporting is important for bank supervision and investor confidence.
+96. Which Act is associated with the protection of secured interests in movable property under Bangladesh's newer framework?
+A. Partnership Act, 1932
+B. Insurance Act, 2010
+C. Secured Transactions (Movable Property) Act, 2023
+D. Bankers' Books Evidence Act, 1891
+Correct Answer: C. Secured Transactions (Movable Property) Act, 2023
+Explanation: This legislation addresses secured transactions involving movable assets. It is particularly relevant to collateral arrangements and secured finance, subject to the detailed rules and procedures in the enacted statute.
+97. Which law is associated with the regulation of the banking business of Grameen Bank?
+A. Grameen Bank Act, 2013
+B. Finance Company Act, 2023 alone
+C. Companies Act, 1994 alone
+D. Payment and Settlement Systems Act, 2024 alone
+Correct Answer: A. Grameen Bank Act, 2013
+Explanation: Grameen Bank operates under its institution-specific statutory framework. The Grameen Bank Act, 2013 is listed in the government's inventory of relevant financial-sector legislation.
+98. Which legislation is relevant to the institutional framework of the Bangladesh House Building Finance Corporation?
+A. Negotiable Instruments Act, 1881
+B. Anti-Terrorism Act, 2009
+C. Foreign Exchange Regulation Act, 1947
+D. Bangladesh House Building Finance Corporation Order, 1973
+Correct Answer: D. Bangladesh House Building Finance Corporation Order, 1973
+Explanation: The Bangladesh House Building Finance Corporation Order, 1973 is an institutional legal instrument listed in official government legal inventories. Specialised financial institutions may have distinct founding instruments in addition to generally applicable laws.
+99. Which legislation is associated with the establishment of the Rajshahi Krishi Unnayan Bank?
+A. Finance Company Act, 2023
+B. Rajshahi Krishi Unnayan Bank Ordinance, 1986
+C. Bank Deposit Insurance Act, 2000
+D. Financial Reporting Act, 2015
+Correct Answer: B. Rajshahi Krishi Unnayan Bank Ordinance, 1986
+Explanation: The Rajshahi Krishi Unnayan Bank Ordinance, 1986 is listed in the government's legal inventory. It is an example of an institution-specific instrument associated with a specialised bank.
+100. Which legislation is associated with the Bangladesh Bank amendment enacted in April 2026?
+A. Finance Company Act, 2023
+B. Bank Resolution Act, 2026
+C. Bangladesh Bank (Amendment) Act, 2026
+D. Bank Company Act, 1991 alone
+Correct Answer: C. Bangladesh Bank (Amendment) Act, 2026
+Explanation: The official Bangladesh Laws database lists the Bangladesh Bank (Amendment) Act, 2026, Act No. 83 of 2026, dated 10 April 2026. It amended Article 10 of the Bangladesh Bank Order, 1972.
+Part 3 — Questions 101–150
+Application of banking laws
+101. A bank wants to open a banking business in Bangladesh. Which law should it consult first for the statutory licensing framework?
+A. Bank Company Act, 1991
+B. Negotiable Instruments Act, 1881
+C. Insurance Act, 2010
+D. Bankruptcy Act, 1997
+Correct Answer: A. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 provides the main statutory framework for banking companies, including licensing. The institution must also satisfy applicable Bangladesh Bank licensing policies and other legal requirements.
+102. A customer alleges that a bank improperly refused payment of a cheque. Which legislation is most directly relevant to the instrument's legal characteristics?
+A. Finance Company Act, 2023
+B. Companies Act, 1994
+C. Negotiable Instruments Act, 1881
+D. Bankruptcy Act, 1997
+Correct Answer: C. Negotiable Instruments Act, 1881
+Explanation: The Negotiable Instruments Act, 1881 governs cheques and related rights and obligations. The actual dispute may also involve account terms, evidence and other applicable laws, depending on the facts.
+103. A bank seeks recovery of a qualifying defaulted loan through the specialised money-loan court system. Which law is most directly relevant?
+A. Insurance Act, 2010
+B. Money Loan Court Act, 2003
+C. Financial Reporting Act, 2015
+D. Foreign Exchange Regulation Act, 1947
+Correct Answer: B. Money Loan Court Act, 2003
+Explanation: The Money Loan Court Act, 2003 establishes the specialised legal framework for qualifying money-loan recovery disputes. The correct procedural route depends on the claim, parties and applicable statutory provisions.
+104. A bank discovers transactions that may involve proceeds of crime. Which law is central to its money-laundering compliance framework?
+A. Partnership Act, 1932
+B. Companies Act, 1994 alone
+C. Insurance Act, 2010
+D. Money Laundering Prevention Act, 2012
+Correct Answer: D. Money Laundering Prevention Act, 2012
+Explanation: The Money Laundering Prevention Act, 2012 is a core AML statute. The bank must also follow applicable customer due diligence, monitoring, reporting and recordkeeping instructions.
+105. A financial institution offers credit against movable assets. Which newer legislation is particularly relevant to the security framework?
+A. Secured Transactions (Movable Property) Act, 2023
+B. Negotiable Instruments Act, 1881 alone
+C. Grameen Bank Act, 2013
+D. Insurance Act, 2010 alone
+Correct Answer: A. Secured Transactions (Movable Property) Act, 2023
+Explanation: The Secured Transactions (Movable Property) Act, 2023 is relevant to security interests in movable assets. Its practical application depends on the nature of the collateral and the statutory requirements for creation, registration and enforcement.
+106. A company is incorporated to operate a non-bank finance business. Which statute is the newer principal reference in Bangladesh's financial-sector legal inventory?
+A. Bank Company Act, 1991 alone
+B. Negotiable Instruments Act, 1881
+C. Finance Company Act, 2023
+D. Anti-Terrorism Act, 2009
+Correct Answer: C. Finance Company Act, 2023
+Explanation: The Finance Company Act, 2023 is the newer statutory reference for finance companies. The founders must also meet applicable licensing and regulatory requirements.
+107. A bank processes a high-value payment through a real-time gross settlement system. Which system is relevant in Bangladesh?
+A. BACPS only
+B. BD-RTGS
+C. BFIU
+D. BSEC
+Correct Answer: B. BD-RTGS
+Explanation: BD-RTGS is Bangladesh's real-time gross settlement system. Bangladesh Bank publishes system-specific rules for its operation.
+108. A bank must evaluate a suspicious transaction for financial intelligence reporting. Which institution is its key national financial intelligence counterpart?
+A. Bangladesh Securities and Exchange Commission
+B. Bangladesh Public Service Commission
+C. Bangladesh Investment Development Authority
+D. Bangladesh Financial Intelligence Unit
+Correct Answer: D. Bangladesh Financial Intelligence Unit
+Explanation: The BFIU is Bangladesh's financial intelligence unit. Banks must follow applicable procedures for reporting and handling suspicious transactions, including confidentiality and recordkeeping obligations.
+109. A bank is assessing its capital adequacy, asset quality, management and liquidity. Which framework is associated with this supervisory assessment?
+A. CAMELS
+B. SWOT alone
+C. FIFO
+D. GDP deflator
+Correct Answer: A. CAMELS
+Explanation: CAMELS assesses capital adequacy, asset quality, management, earnings, liquidity and sensitivity to market risk. It is a supervisory assessment framework rather than a standalone statute.
+110. A bank wants to know whether it must maintain a prescribed cash reserve. Which concept should it examine?
+A. Return on equity
+B. Debt-to-equity ratio
+C. Cash Reserve Ratio
+D. Price-to-earnings ratio
+Correct Answer: C. Cash Reserve Ratio
+Explanation: CRR is a reserve requirement imposed under the applicable regulatory framework. Its current rate and calculation basis are subject to Bangladesh Bank directions and should be verified before the examination.
+Historical Acts and legal distinctions
+111. Which pair correctly matches a law with its year?
+A. Bank Company Act — 1972
+B. Negotiable Instruments Act — 1881
+C. Finance Company Act — 1991
+D. Money Loan Court Act — 2012
+Correct Answer: B. Negotiable Instruments Act — 1881
+Explanation: The Negotiable Instruments Act was enacted in 1881. The other pairs are incorrect: the Bank Company Act is from 1991, the Finance Company Act is from 2023, and the Money Loan Court Act is from 2003.
+112. Which pair is correctly matched?
+A. Bangladesh Bank Order — 1991
+B. Foreign Exchange Regulation Act — 2023
+C. Companies Act — 1972
+D. Bangladesh Bank Order — 1972
+Correct Answer: D. Bangladesh Bank Order — 1972
+Explanation: Bangladesh Bank Order, 1972 is President's Order No. 127 of 1972. It remains the foundational instrument for the central bank, subject to amendments.
+113. Which pair is correctly matched?
+A. Financial Institutions Act — 1993
+B. Money Loan Court Act — 1991
+C. Offshore Banking Act — 2000
+D. Finance Company Act — 1947
+Correct Answer: A. Financial Institutions Act — 1993
+Explanation: The Financial Institutions Act was enacted in 1993. It is especially important for historical questions, while the Finance Company Act, 2023 is the newer statutory reference.
+114. Which pair is correctly matched?
+A. Financial Reporting Act — 2003
+B. Offshore Banking Act — 1993
+C. Financial Reporting Act — 2015
+D. Bank Resolution Act — 1991
+Correct Answer: C. Financial Reporting Act — 2015
+Explanation: The Financial Reporting Act was enacted in 2015. Bangladesh Bank lists it among the relevant laws of the financial sector.
+115. Which pair is correctly matched?
+A. Anti-Terrorism Act — 2012
+B. Anti-Terrorism Act — 2009
+C. Money Laundering Prevention Act — 1991
+D. Insurance Act — 2024
+Correct Answer: B. Anti-Terrorism Act — 2009
+Explanation: The Anti-Terrorism Act was enacted in 2009. The Money Laundering Prevention Act is from 2012, and the Insurance Act is from 2010.
+116. Which pair is correctly matched?
+A. Microcredit Regulatory Authority Act — 1993
+B. Grameen Bank Act — 2006
+C. Offshore Banking Act — 2015
+D. Microcredit Regulatory Authority Act — 2006
+Correct Answer: D. Microcredit Regulatory Authority Act — 2006
+Explanation: The Microcredit Regulatory Authority Act, 2006 provides the statutory framework for the regulation of licensed microcredit institutions.
+117. Which pair is correctly matched?
+A. Money Loan Court Act — 2003
+B. Money Loan Court Act — 1993
+C. Bank Deposit Insurance Act — 2015
+D. Finance Company Act — 2000
+Correct Answer: A. Money Loan Court Act — 2003
+Explanation: The Money Loan Court Act was enacted in 2003. It is relevant to specialised proceedings for recovery of money loans.
+118. Which pair is correctly matched?
+A. Foreign Exchange Regulation Act — 1972
+B. Bank Company Act — 2003
+C. Foreign Exchange Regulation Act — 1947
+D. Payment and Settlement Systems Act — 1991
+Correct Answer: C. Foreign Exchange Regulation Act — 1947
+Explanation: The Foreign Exchange Regulation Act dates to 1947. Its operation must be considered with subsequent amendments and applicable foreign-exchange regulations and Bangladesh Bank directions.
+119. Which pair is correctly matched?
+A. Bank Resolution Act — 2000
+B. Bank Resolution Act — 2026
+C. Offshore Banking Act — 1991
+D. Finance Company Act — 2012
+Correct Answer: B. Bank Resolution Act — 2026
+Explanation: Bangladesh Bank's official legal inventory lists the Bank Resolution Act, 2026, alongside the Bank Resolution Ordinance, 2025.
+120. Which pair is correctly matched?
+A. Payment and Settlement Systems Act — 2003
+B. Payment and Settlement Systems Act — 1991
+C. Payment and Settlement Systems Act — 2015
+D. Payment and Settlement Systems Act — 2024
+Correct Answer: D. Payment and Settlement Systems Act — 2024
+Explanation: Bangladesh Bank lists the Payment and Settlement Systems Act, 2024 as payment-system legislation. The earlier 2019 Act is also listed in the Financial Institutions Division's legal inventory, making verification of repeal and transition important.
+Advanced legal concepts and exam applications
+121. A bank's articles of association conflict with an applicable mandatory provision of the Bank Company Act, 1991. Which principle should be applied?
+A. The bank's articles always prevail.
+B. A customer may choose whichever rule is preferred.
+C. The applicable statutory provision prevails to the extent of inconsistency.
+D. Both provisions automatically become void.
+Correct Answer: C. The applicable statutory provision prevails to the extent of inconsistency.
+Explanation: Section 6 of the Bank Company Act, 1991 addresses the effect of the Act over inconsistent provisions in a banking company's memorandum, articles, agreements or resolutions, subject to the statute's terms and exceptions.
+122. Which statement about a scheduled bank is most accurate?
+A. It is a bank recognised as scheduled under the applicable Bangladesh Bank Order framework.
+B. It is any company that lends money.
+C. It is necessarily a foreign-owned bank.
+D. It is a bank that never requires regulatory supervision.
+Correct Answer: A. It is a bank recognised as scheduled under the applicable Bangladesh Bank Order framework.
+Explanation: The Bank Company Act, 1991 uses the term scheduled bank by reference to the Bangladesh Bank Order, 1972. Scheduling is a legal and regulatory status, not merely a description of a bank's business activities.
+123. Which statement correctly describes the relationship between Bangladesh Bank Order, 1972 and Bank Company Act, 1991?
+A. They are identical laws.
+B. The 1991 Act repealed every provision of the 1972 Order.
+C. The 1972 Order governs only insurance companies.
+D. The Order provides the central-bank framework, while the Act specifically regulates banking companies.
+Correct Answer: D. The Order provides the central-bank framework, while the Act specifically regulates banking companies.
+Explanation: The Bangladesh Bank Order establishes the central bank's statutory foundation. The Bank Company Act governs banking companies within its scope. Both must be read with amendments and other applicable laws.
+124. Which statement best distinguishes a central bank from a commercial bank?
+A. A central bank primarily sells insurance.
+B. A central bank conducts central banking functions, including monetary policy and banking-system oversight.
+C. A commercial bank determines national legislation.
+D. A commercial bank automatically regulates every other bank.
+Correct Answer: B. A central bank conducts central banking functions, including monetary policy and banking-system oversight.
+Explanation: Bangladesh Bank performs central banking functions, while commercial banks primarily provide services such as deposits, lending and payments. Their legal powers and obligations differ.
+125. Which legal source should be checked to confirm the exact wording of an amendment to the Bangladesh Bank Order, 1972?
+A. The official enacted amending Act and authoritative consolidated legal text
+B. An unsourced coaching-centre summary
+C. An anonymous social-media comment
+D. A bank advertisement
+Correct Answer: A. The official enacted amending Act and authoritative consolidated legal text
+Explanation: The enacted amendment provides the authoritative wording of the change. The official Bangladesh Laws database, for example, records the Bangladesh Bank (Amendment) Act, 2026 and its amendment to Article 10.
+126. A candidate sees an old question claiming that the Financial Institutions Act, 1993 is the newest finance-company law. What should the candidate do?
+A. Memorise the statement without checking.
+B. Assume the 1993 Act can never be amended or replaced.
+C. Check the Finance Company Act, 2023 and the current official legal status.
+D. Ignore all government legal inventories.
+Correct Answer: C. Check the Finance Company Act, 2023 and the current official legal status.
+Explanation: Bangladesh Bank lists the Finance Company Act, 2023 as a newer financial-sector statute. Candidates should distinguish historical law from current law and verify repeal, savings and transitional provisions.
+127. A candidate is asked about the current deposit-protection coverage limit. Which approach is most reliable?
+A. Use a figure remembered from any year.
+B. Verify the current operative deposit-protection law and official rules.
+C. Assume every deposit is unlimitedly insured.
+D. Use another country's insurance limit.
+Correct Answer: B. Verify the current operative deposit-protection law and official rules.
+Explanation: Deposit-protection laws and coverage limits can change. The Bank Deposit Insurance Act, 2000 is an important historical reference, but current coverage must be checked against the operative legislation and official rules.
+128. A question asks for Bangladesh Bank's current CRR. What is the safest examination-preparation method?
+A. Memorise a rate from an undated textbook.
+B. Derive it from the bank's profit margin.
+C. Assume it equals the SLR.
+D. Verify the latest applicable Bangladesh Bank circular.
+Correct Answer: D. Verify the latest applicable Bangladesh Bank circular.
+Explanation: CRR is a changeable regulatory requirement. Its applicable rate, averaging method and calculation basis should be confirmed from current official directives rather than inferred from historical rates.
+129. Which statement about Basel standards is correct?
+A. They are international supervisory standards that require implementation through the relevant national framework.
+B. They are Bangladesh's Negotiable Instruments Act.
+C. They regulate only insurance claims.
+D. They automatically replace all domestic banking laws.
+Correct Answer: A. They are international supervisory standards that require implementation through the relevant national framework.
+Explanation: The Basel framework provides international banking-supervision standards, including capital and risk-management principles. Domestic regulators implement these standards through applicable national rules and requirements.
+130. Which principle is most important when a bank applies a legal rule to a customer dispute?
+A. Apply whichever outcome is commercially convenient.
+B. Prefer a social-media summary over legislation.
+C. Identify the applicable law, relevant facts and statutory requirements.
+D. Assume all disputes are governed by the same Act.
+Correct Answer: C. Identify the applicable law, relevant facts and statutory requirements.
+Explanation: Legal analysis requires identifying the governing statute, its current wording, the facts and any relevant exceptions or procedural requirements. A banking dispute may involve several laws at once.
+Comprehensive mixed revision
+131. Which of the following is a primary legal instrument rather than a supervisory assessment framework?
+A. CAMELS
+B. Bangladesh Bank Order, 1972
+C. Risk-based supervision
+D. Credit scoring
+Correct Answer: B. Bangladesh Bank Order, 1972
+Explanation: Bangladesh Bank Order, 1972 is a legal instrument. CAMELS, risk-based supervision and credit scoring are supervisory or risk-assessment concepts rather than standalone Acts.
+132. Which institution-specific law is associated with Bangladesh Krishi Bank?
+A. Insurance Act, 2010
+B. Offshore Banking Act, 2024
+C. Financial Reporting Act, 2015
+D. Bangladesh Krishi Bank Order, 1973
+Correct Answer: D. Bangladesh Krishi Bank Order, 1973
+Explanation: The Bangladesh Krishi Bank Order, 1973 is the institution-specific instrument associated with Bangladesh Krishi Bank. The government's legal inventory lists this order.
+133. Which law is most relevant to a dispute over whether a cheque satisfies statutory requirements as a negotiable instrument?
+A. Negotiable Instruments Act, 1881
+B. Finance Company Act, 2023
+C. Offshore Banking Act, 2024
+D. Microcredit Regulatory Authority Act, 2006
+Correct Answer: A. Negotiable Instruments Act, 1881
+Explanation: The Negotiable Instruments Act, 1881 sets out the statutory framework for cheques and other negotiable instruments. Whether a particular instrument qualifies depends on its features and the applicable statutory definitions.
+134. Which law is most relevant to the legal framework governing licensed microcredit organisations?
+A. Bank Resolution Act, 2026
+B. Foreign Exchange Regulation Act, 1947
+C. Microcredit Regulatory Authority Act, 2006
+D. Bangladesh Bank Order, 1972 alone
+Correct Answer: C. Microcredit Regulatory Authority Act, 2006
+Explanation: The Microcredit Regulatory Authority Act, 2006 is the principal statute associated with the regulatory framework for licensed microcredit organisations.
+135. Which legislation is most directly relevant to offshore banking activities in Bangladesh?
+A. Companies Act, 1994 alone
+B. Offshore Banking Act, 2024
+C. Money Loan Court Act, 2003
+D. Negotiable Instruments Act, 1881 alone
+Correct Answer: B. Offshore Banking Act, 2024
+Explanation: The Offshore Banking Act, 2024 is the dedicated statutory reference listed by Bangladesh Bank. Its detailed requirements should be read with applicable regulations and directions.
+136. Which legislation is most directly relevant to financial reporting oversight?
+A. Bangladesh Krishi Bank Order, 1973
+B. Anti-Terrorism Act, 2009
+C. Bankers' Books Evidence Act, 2021
+D. Financial Reporting Act, 2015
+Correct Answer: D. Financial Reporting Act, 2015
+Explanation: The Financial Reporting Act, 2015 provides the relevant financial-reporting statutory framework. It is distinct from laws dealing specifically with negotiable instruments, banking-company licensing or terrorist financing.
+137. Which law is associated with Bangladesh's modern statutory framework for resolving troubled banks?
+A. Bank Resolution Act, 2026
+B. Negotiable Instruments Act, 1881
+C. Companies Act, 1994 alone
+D. Partnership Act, 1932
+Correct Answer: A. Bank Resolution Act, 2026
+Explanation: Bangladesh Bank's official legal list includes the Bank Resolution Act, 2026. It is a key recent legislative development.
+138. Which law is relevant to deposit insurance in the historical Bangladesh banking framework?
+A. Companies Act, 1994
+B. Foreign Exchange Regulation Act, 1947
+C. Bank Deposit Insurance Act, 2000
+D. Financial Reporting Act, 2015
+Correct Answer: C. Bank Deposit Insurance Act, 2000
+Explanation: The Bank Deposit Insurance Act, 2000 is the historical statute associated with deposit insurance. Verify the current legal framework and coverage limits before relying on historical provisions.
+139. Which legislation is the key historical reference for Bangladesh's foreign-exchange regulatory framework?
+A. Money Loan Court Act, 2003
+B. Foreign Exchange Regulation Act, 1947
+C. Grameen Bank Act, 2013
+D. Financial Reporting Act, 2015
+Correct Answer: B. Foreign Exchange Regulation Act, 1947
+Explanation: The Foreign Exchange Regulation Act, 1947 is a foundational foreign-exchange statute. Its current operation depends on amendments, applicable rules and Bangladesh Bank's valid regulatory directions.
+140. Which law is the central statutory reference for the prevention of money laundering?
+A. Companies Act, 1994 alone
+B. Insurance Act, 2010
+C. Bankruptcy Act, 1997
+D. Money Laundering Prevention Act, 2012
+Correct Answer: D. Money Laundering Prevention Act, 2012
+Explanation: The Money Laundering Prevention Act, 2012 is a core component of Bangladesh's AML framework. Banks must also comply with applicable rules and regulatory directions.
+141. Which law is associated with the legal framework for terrorism-related offences and terrorist financing?
+A. Anti-Terrorism Act, 2009
+B. Finance Company Act, 2023
+C. Companies Act, 1994
+D. Bankers' Books Evidence Act, 1891
+Correct Answer: A. Anti-Terrorism Act, 2009
+Explanation: The Anti-Terrorism Act, 2009 addresses terrorism-related offences, including relevant terrorist-financing provisions. It operates alongside other applicable AML/CFT laws and regulatory requirements.
+142. Which law provides the principal statutory framework for banking-company regulation?
+A. Negotiable Instruments Act, 1881
+B. Foreign Exchange Regulation Act, 1947
+C. Bank Company Act, 1991
+D. Insurance Act, 2010
+Correct Answer: C. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991 regulates banking companies and is a key statute for bank licensing, governance and supervision. It has been amended over time.
+143. Which legislation is associated with the legal framework for payment and settlement systems enacted in 2024?
+A. Companies Act, 1994
+B. Payment and Settlement Systems Act, 2024
+C. Money Loan Court Act, 2003
+D. Financial Reporting Act, 2015
+Correct Answer: B. Payment and Settlement Systems Act, 2024
+Explanation: Bangladesh Bank lists the Payment and Settlement Systems Act, 2024 among its laws. The earlier 2019 legislation is also recorded in the Financial Institutions Division's inventory, so current status and transition provisions must be verified.
+144. Which legislation is associated with Bangladesh Bank's amendment in April 2026?
+A. Bank Deposit Insurance Act, 2000
+B. Finance Company Act, 2023
+C. Offshore Banking Act, 2024
+D. Bangladesh Bank (Amendment) Act, 2026
+Correct Answer: D. Bangladesh Bank (Amendment) Act, 2026
+Explanation: The Bangladesh Bank (Amendment) Act, 2026, Act No. 83 of 2026, amended Article 10 of the Bangladesh Bank Order, 1972.
+145. Which statute is most relevant to the evidentiary treatment of bankers' books under the newer framework?
+A. Bankers' Books Evidence Act, 2021
+B. Negotiable Instruments Act, 1881
+C. Offshore Banking Act, 2024
+D. Anti-Terrorism Act, 2009
+Correct Answer: A. Bankers' Books Evidence Act, 2021
+Explanation: Bangladesh Bank lists the Bankers' Books Evidence Act, 2021 among the financial-sector laws. It should be distinguished from the historical Bankers' Books Evidence Act, 1891.
+146. Which law is associated with the regulation of financial companies under Bangladesh's newer framework?
+A. Financial Reporting Act, 2015 alone
+B. Negotiable Instruments Act, 1881
+C. Finance Company Act, 2023
+D. Money Loan Court Act, 2003
+Correct Answer: C. Finance Company Act, 2023
+Explanation: The Finance Company Act, 2023 is the newer statute listed by Bangladesh Bank for finance companies. The earlier Financial Institutions Act, 1993 remains important for historical context and for understanding legal transition.
+147. Which law is associated with secured transactions involving movable property?
+A. Insurance Act, 2010
+B. Secured Transactions (Movable Property) Act, 2023
+C. Partnership Act, 1932
+D. Financial Institutions Act, 1993 alone
+Correct Answer: B. Secured Transactions (Movable Property) Act, 2023
+Explanation: This Act provides the statutory reference for secured transactions involving movable assets. It is particularly relevant to collateral-based lending and the legal treatment of security interests.
+148. Which legislation is associated with the statutory framework of Grameen Bank?
+A. Offshore Banking Act, 2024
+B. Bank Resolution Act, 2026
+C. Bank Company Act, 1991 alone
+D. Grameen Bank Act, 2013
+Correct Answer: D. Grameen Bank Act, 2013
+Explanation: Grameen Bank has an institution-specific statutory framework under the Grameen Bank Act, 2013, which is listed in official government legal inventories.
+149. Which statement best reflects sound preparation for questions on updated Bangladesh banking laws?
+A. Memorise the original Act and ignore every amendment.
+B. Treat every Bangladesh Bank circular as an Act of Parliament.
+C. Learn the original Act, subsequent amendments, commencement provisions and current regulatory requirements.
+D. Use unofficial summaries without checking the legal text.
+Correct Answer: C. Learn the original Act, subsequent amendments, commencement provisions and current regulatory requirements.
+Explanation: Legal questions may test the original enactment, later amendments or current requirements. Bangladesh Bank's laws page and the official Bangladesh Laws database are useful primary sources for verification.
+150. Which source combination is most appropriate for preparing a reliable, updated question bank on Bangladesh banking legislation?
+A. Bangladesh Bank's official laws and regulations pages, the official Bangladesh Laws database and relevant government publications
+B. Only old guidebooks
+C. Only social-media posts
+D. Only foreign banking websites without Bangladesh-specific legislation
+Correct Answer: A. Bangladesh Bank's official laws and regulations pages, the official Bangladesh Laws database and relevant government publications
+Explanation: Bangladesh Bank publishes banking laws, regulations and guidelines, while the official Bangladesh Laws database provides statutory texts. Government publications help cross-check newer legislation and amendments. Use primary sources to confirm current provisions before the examination.

@@ -1,0 +1,705 @@
+﻿Questions 1–25: BACPS, BEFTN, NPSB and BD-RTGS
+1. What is the primary function of the Bangladesh Automated Cheque Processing System (BACPS)?
+A. Processing international SWIFT messages
+B. Automating the clearing of paper cheques using cheque images and data
+C. Issuing mobile financial service accounts
+D. Managing government securities auctions
+Correct Answer: B. Automating the clearing of paper cheques using cheque images and data
+Explanation: BACPS uses cheque imaging and truncation technology to process paper-based cheques electronically, reducing the need for physical cheque transportation.
+2. Which payment system is primarily associated with electronic credit transfers and direct debits in Bangladesh?
+A. BACPS
+B. NPSB
+C. BEFTN
+D. SWIFT
+Correct Answer: C. BEFTN
+Explanation: The Bangladesh Electronic Funds Transfer Network (BEFTN) facilitates eligible electronic credit and debit transfers, including payroll, remittances and bill payments.
+3. What is the principal purpose of the National Payment Switch Bangladesh (NPSB)?
+A. Facilitating interoperability among participating banks' electronic payment channels
+B. Printing negotiable instruments
+C. Regulating insurance premiums
+D. Replacing all bank deposit accounts with mobile wallets
+Correct Answer: A. Facilitating interoperability among participating banks' electronic payment channels
+Explanation: NPSB connects participating institutions for supported electronic transactions, including ATM, POS and internet banking fund transfers.
+4. Which system is designed primarily for high-value, time-critical interbank payments settled individually in real time?
+A. BACPS
+B. BEFTN
+C. NPSB
+D. BD-RTGS
+Correct Answer: D. BD-RTGS
+Explanation: Bangladesh Real-Time Gross Settlement (BD-RTGS) processes eligible payment instructions individually in real time rather than waiting for net settlement at the end of a processing cycle.
+5. In the context of payment systems, what does RTGS stand for?
+A. Retail Transaction Guarantee Service
+B. Real-Time Gross Settlement
+C. Regional Transfer and Guarantee Scheme
+D. Real-Time General Switching
+Correct Answer: B. Real-Time Gross Settlement
+Explanation: RTGS stands for Real-Time Gross Settlement. “Real-time” refers to processing payments individually as they are received, while “gross” means that transactions are settled individually rather than offset against one another.
+6. Which statement best describes gross settlement?
+A. Payments are settled individually rather than accumulated into a net amount for settlement
+B. All payments are settled only at the end of the month
+C. Only cheque payments can be processed
+D. Every payment is settled through a physical cash transfer
+Correct Answer: A. Payments are settled individually rather than accumulated into a net amount for settlement
+Explanation: Gross settlement handles each transaction individually. In contrast, net settlement offsets eligible incoming and outgoing obligations before settling the resulting net amount.
+7. A bank receives many payment instructions throughout the day. Under net settlement, the settlement obligation is generally calculated by:
+A. Adding only the bank's incoming payments
+B. Settling every instruction separately in central bank money
+C. Offsetting eligible incoming and outgoing obligations
+D. Converting all transactions into foreign currency
+Correct Answer: C. Offsetting eligible incoming and outgoing obligations
+Explanation: Net settlement calculates the difference between eligible incoming and outgoing payment obligations. This can reduce liquidity requirements compared with settling every transaction individually.
+8. Which of the following is the most appropriate example of a retail electronic funds transfer?
+A. A central bank's foreign-exchange reserve valuation
+B. A bank's capital adequacy calculation
+C. A securities exchange's annual report
+D. A company electronically paying employees' salaries into their bank accounts
+Correct Answer: D. A company electronically paying employees' salaries into their bank accounts
+Explanation: Electronic salary payments are a common application of electronic funds transfer (EFT), allowing employers to transfer money directly into employees' accounts without distributing physical cash.
+9. Which statement best distinguishes clearing from settlement?
+A. Clearing determines or processes payment obligations; settlement discharges those obligations by transferring funds
+B. Clearing always means cash withdrawal, whereas settlement means depositing cash
+C. Clearing is exclusively international, whereas settlement is exclusively domestic
+D. The two terms always mean exactly the same thing
+Correct Answer: A. Clearing determines or processes payment obligations; settlement discharges those obligations by transferring funds
+Explanation: Clearing involves processing payment instructions and determining obligations. Settlement is the discharge of those obligations through the transfer of funds.
+10. Which institution is principally responsible for overseeing Bangladesh's national payment systems?
+A. Bangladesh Securities and Exchange Commission
+B. Bangladesh Bank
+C. Department of Immigration and Passports
+D. Insurance Development and Regulatory Authority
+Correct Answer: B. Bangladesh Bank
+Explanation: Bangladesh Bank plays a central role in payment-system regulation and oversight in Bangladesh, including the development and supervision of relevant payment infrastructure.
+11. A business needs to transfer a large payment urgently between two participating banks. Which system is conceptually the best fit, subject to applicable rules and access?
+A. A paper-based cheque collection process only
+B. A monthly salary-processing batch
+C. BD-RTGS
+D. A card's contactless payment feature
+Correct Answer: C. BD-RTGS
+Explanation: BD-RTGS is designed for eligible payments requiring real-time gross settlement. Actual availability depends on the system's operating rules, participating institutions and applicable transaction requirements.
+12. What is the principal benefit of automating cheque processing through image-based clearing?
+A. It eliminates the need for bank accounts
+B. It guarantees that every cheque has sufficient funds
+C. It removes every possibility of cheque fraud
+D. It reduces physical cheque movement and can speed up processing
+Correct Answer: D. It reduces physical cheque movement and can speed up processing
+Explanation: Image-based cheque clearing reduces the need to transport physical cheques between banks. However, it does not guarantee that a cheque is genuine or that sufficient funds are available.
+13. BEFTN is best described as a system supporting:
+A. Only international securities trading
+B. Electronic fund transfers processed under applicable system rules
+C. The printing of debit cards
+D. The physical delivery of banknotes between branches
+Correct Answer: B. Electronic fund transfers processed under applicable system rules
+Explanation: BEFTN supports eligible electronic credit and debit transfers. It is not a securities-trading platform or a physical cash-delivery service.
+14. Which situation most clearly illustrates interoperability in digital payments?
+A. A customer can use a supported payment channel across different participating institutions
+B. Every bank uses a separate, incompatible payment network
+C. A bank refuses transactions initiated by other participating institutions
+D. A customer can transact only at the branch where an account was opened
+Correct Answer: A. A customer can use a supported payment channel across different participating institutions
+Explanation: Interoperability enables compatible payment systems operated by different participating institutions to communicate and process supported transactions.
+15. Which statement about BD-RTGS is most accurate?
+A. It is principally a cheque-image capture system
+B. It is a telecommunications protocol for exchanging bank messages
+C. It supports real-time gross settlement of eligible payment instructions
+D. It is exclusively a mobile wallet application
+Correct Answer: C. It supports real-time gross settlement of eligible payment instructions
+Explanation: BD-RTGS is a settlement system for eligible payments. It is distinct from cheque-image processing, financial messaging and mobile wallet applications.
+16. Why are settlement finality and clear settlement rules important?
+A. They allow banks to ignore failed transactions
+B. They eliminate the need for liquidity management
+C. They guarantee that no participant will ever default
+D. They establish when payment obligations are considered irrevocably discharged under the applicable rules
+Correct Answer: D. They establish when payment obligations are considered irrevocably discharged under the applicable rules
+Explanation: Settlement-finality rules provide certainty about when obligations are discharged. This reduces legal uncertainty and helps participants manage settlement risk.
+17. Which is a major risk reduced by timely, reliable interbank settlement arrangements?
+A. All market and credit risks in the economy
+B. The possibility that a payment obligation remains unsettled and creates further obligations or losses
+C. The risk of every customer forgetting a PIN
+D. All risks associated with lending to businesses
+Correct Answer: B. The possibility that a payment obligation remains unsettled and creates further obligations or losses
+Explanation: Reliable settlement arrangements help limit the consequences of failed or delayed payments. They do not eliminate every financial or operational risk.
+18. A payment instruction is accepted by a bank's front-end application but has not yet been settled. What should an examiner conclude?
+A. Acceptance alone does not prove final settlement
+B. The beneficiary must already have received irrevocable funds
+C. The transaction must have been settled in cash
+D. The payment can no longer fail under any circumstances
+Correct Answer: A. Acceptance alone does not prove final settlement
+Explanation: Acceptance by a front-end application is a processing event, not proof of final interbank settlement or irrevocable beneficiary credit.
+19. Which feature is most closely associated with an automated clearing house arrangement?
+A. Exclusive use of physical cash
+B. Individual real-time gross settlement of every payment by definition
+C. Processing eligible payment instructions, often in batches
+D. Mandatory use of international banknotes
+Correct Answer: C. Processing eligible payment instructions, often in batches
+Explanation: Automated clearing house arrangements commonly process eligible payment instructions in batches. The timing and settlement model depend on the particular system.
+20. What is a settlement account used for in an interbank payment arrangement?
+A. Storing customers' card PINs
+B. Recording only employee attendance
+C. Replacing the legal identity of a bank
+D. Holding balances used to discharge settlement obligations
+Correct Answer: D. Holding balances used to discharge settlement obligations
+Explanation: Settlement accounts hold the funds used to discharge payment obligations between participating institutions. They are distinct from systems that store customer credentials or administrative records.
+21. Which statement about payment-system participation is correct?
+A. Every financial institution automatically has direct access to every payment system
+B. Access depends on the applicable eligibility, participation and operational rules
+C. Only individuals can participate in interbank settlement
+D. Participation rules are unnecessary when transactions are electronic
+Correct Answer: B. Access depends on the applicable eligibility, participation and operational rules
+Explanation: Direct participation is governed by the relevant system's legal, operational and eligibility requirements. Not every institution automatically has direct access.
+22. A bank has insufficient settlement funds to complete an otherwise valid urgent payment. Which risk is most directly implicated?
+A. Liquidity risk
+B. Spelling risk
+C. Inventory obsolescence risk
+D. Depreciation risk
+Correct Answer: A. Liquidity risk
+Explanation: Liquidity risk arises when a bank cannot meet its payment obligations when due because it lacks sufficient immediately available funds, even if it remains solvent overall.
+23. Why may a retail payment system use deferred net settlement instead of settling every instruction individually in real time?
+A. To ensure that all payments remain anonymous
+B. To eliminate transaction records
+C. To aggregate eligible obligations and settle net positions, potentially reducing liquidity needs
+D. To convert domestic transfers into international remittances
+Correct Answer: C. To aggregate eligible obligations and settle net positions, potentially reducing liquidity needs
+Explanation: Deferred net settlement offsets eligible payment obligations before settlement. This can reduce liquidity requirements, although the system must manage the risks associated with delayed settlement.
+24. Which statement best describes the relationship between Bangladesh Bank and a national payment system?
+A. Bangladesh Bank operates exclusively as a commercial retail bank
+B. Bangladesh Bank has no role in payment-system oversight
+C. Bangladesh Bank is responsible only for printing cheque books
+D. Bangladesh Bank has a central role in payment-system oversight and may operate or support relevant infrastructure
+Correct Answer: D. Bangladesh Bank has a central role in payment-system oversight and may operate or support relevant infrastructure
+Explanation: Bangladesh Bank is the country's central bank and plays a major role in payment-system regulation, oversight and infrastructure development.
+25. A beneficiary's bank account has been credited provisionally while a payment remains subject to applicable processing or reversal rules. Which conclusion is safest?
+A. Provisional credit always equals legally final settlement
+B. The customer-facing credit and interbank settlement finality must be assessed separately
+C. The payment must have travelled through SWIFT
+D. The payment can never be reversed or adjusted
+Correct Answer: B. The customer-facing credit and interbank settlement finality must be assessed separately
+Explanation: A provisional customer-account credit does not necessarily establish final interbank settlement. The transaction's status must be assessed under the applicable payment-system and account rules.
+Questions 26–45: Mobile Financial Services and Agent Banking
+26. What is the principal objective of Mobile Financial Services (MFS) in Bangladesh?
+A. To replace Bangladesh Bank's regulatory functions
+B. To provide convenient, accessible financial services through mobile-based channels
+C. To eliminate all bank accounts
+D. To restrict financial services to urban customers
+Correct Answer: B. To provide convenient, accessible financial services through mobile-based channels
+Explanation: MFS uses mobile-based channels to facilitate financial transactions and improve access to services, particularly for underserved populations.
+27. Which of the following is an example of a person-to-business (P2B) MFS transaction?
+A. A company paying salaries to employees
+B. A government paying a social allowance to a citizen
+C. An individual paying a merchant for goods
+D. A bank paying interest to a depositor
+Correct Answer: C. An individual paying a merchant for goods
+Explanation: P2B refers to payments made by individuals to businesses, such as paying a shopkeeper or merchant using a mobile financial service.
+28. Which transaction is an example of business-to-person (B2P) payment?
+A. An employer transferring salaries to employees' mobile accounts
+B. A customer paying a shopkeeper
+C. An individual transferring money to a friend
+D. A customer paying personal income tax
+Correct Answer: A. An employer transferring salaries to employees' mobile accounts
+Explanation: B2P payments involve a business paying an individual. Salary disbursement to employees is a common example.
+29. Under the Bangladesh Mobile Financial Services Regulations, 2022, which institution has a central regulatory role in MFS?
+A. Bangladesh Securities and Exchange Commission
+B. Dhaka Stock Exchange
+C. Bangladesh Insurance Development and Regulatory Authority
+D. Bangladesh Bank
+Correct Answer: D. Bangladesh Bank
+Explanation: Bangladesh Bank issued the Mobile Financial Services Regulations, 2022, and has a central role in regulating MFS activities in Bangladesh.
+30. Which practice is most important when opening an MFS account?
+A. Allowing anonymous transactions without any restrictions
+B. Complying with applicable customer identification and KYC requirements
+C. Sharing the customer's PIN with the agent
+D. Accepting fabricated identity information
+Correct Answer: B. Complying with applicable customer identification and KYC requirements
+Explanation: Know Your Customer (KYC) procedures help establish customer identity, reduce impersonation and support anti-money-laundering controls.
+31. What is the primary function of an MFS agent?
+A. To issue sovereign currency
+B. To independently determine national monetary policy
+C. To perform authorized services on behalf of an MFS provider
+D. To guarantee every customer's investment return
+Correct Answer: C. To perform authorized services on behalf of an MFS provider
+Explanation: An MFS agent performs permitted services on behalf of an authorized provider. The agent cannot independently exercise the powers of a central bank or guarantee investment returns.
+32. Which statement best distinguishes agent banking from MFS?
+A. Agent banking enables authorized agents to provide specified banking services on behalf of a bank, whereas MFS delivers financial services through a mobile-based account and service framework
+B. Agent banking is exclusively an international payment system
+C. MFS cannot be used for person-to-person transfers
+D. Agent banking always requires a full bank branch at the transaction location
+Correct Answer: A. Agent banking enables authorized agents to provide specified banking services on behalf of a bank, whereas MFS delivers financial services through a mobile-based account and service framework
+Explanation: Agent banking extends permitted bank services through authorized agents. MFS uses a mobile-based service framework. The two models can overlap in cash-in and cash-out services but are not identical.
+33. A rural customer deposits cash into a bank account through an authorized agent. Which benefit is most directly demonstrated?
+A. Elimination of customer identification requirements
+B. Automatic exemption from all banking charges
+C. Conversion of the deposit into equity shares
+D. Improved access to formal banking without visiting a conventional branch
+Correct Answer: D. Improved access to formal banking without visiting a conventional branch
+Explanation: Agent banking allows customers to access specified banking services closer to their communities, reducing the need to travel to a conventional branch.
+34. Which is the safest action when an MFS customer receives a call requesting their PIN or one-time password (OTP)?
+A. Share it if the caller knows the customer's name
+B. Refuse to disclose it and contact the provider through an official channel if necessary
+C. Send it to the caller after transferring a small amount
+D. Publish it in a customer-service group
+Correct Answer: B. Refuse to disclose it and contact the provider through an official channel if necessary
+Explanation: PINs and OTPs are sensitive authentication credentials. Sharing them can enable unauthorized transactions. Customers should verify suspicious requests independently.
+35. Which transaction is an example of government-to-person (G2P) payment?
+A. A customer buying groceries through a QR code
+B. A business paying its supplier
+C. A government disbursing an eligible social protection allowance to a beneficiary
+D. An individual repaying a personal loan
+Correct Answer: C. A government disbursing an eligible social protection allowance to a beneficiary
+Explanation: G2P refers to payments made by a government to individuals, including eligible social protection benefits and public allowances.
+36. Which is a key benefit of agent banking for underserved communities?
+A. Extending access to deposits, withdrawals and other permitted banking services
+B. Removing the need for banking supervision
+C. Allowing agents to lend unlimited amounts without authorization
+D. Guaranteeing that all customers will receive credit
+Correct Answer: A. Extending access to deposits, withdrawals and other permitted banking services
+Explanation: Agent banking can extend authorized banking services to locations where conventional branches are less accessible. It does not remove supervision or guarantee loan approval.
+37. Which statement about an agent's authority is correct?
+A. An agent may perform any financial activity without approval
+B. An agent may change Bangladesh Bank's regulations
+C. An agent automatically becomes a licensed commercial bank
+D. An agent must operate within the services and authority permitted by the applicable framework
+Correct Answer: D. An agent must operate within the services and authority permitted by the applicable framework
+Explanation: An agent's authority is limited to permitted services and activities. Operating outside the authorized scope can breach the relevant regulatory and contractual requirements.
+38. Why is transaction monitoring important in MFS?
+A. It makes all customer transactions tax-exempt
+B. It helps identify suspicious patterns and supports applicable AML/CFT controls
+C. It removes the need to maintain transaction records
+D. It guarantees that fraud is impossible
+Correct Answer: B. It helps identify suspicious patterns and supports applicable AML/CFT controls
+Explanation: Transaction monitoring helps identify unusual or potentially suspicious activity and supports anti-money-laundering and counter-terrorist-financing obligations.
+39. A customer sends money to the wrong mobile account number. What is the most appropriate first step?
+A. Immediately send the recipient's details publicly on social media
+B. Share the account PIN with a stranger who offers help
+C. Contact the provider promptly through official complaint channels and retain the transaction reference
+D. Assume every transfer will automatically reverse
+Correct Answer: C. Contact the provider promptly through official complaint channels and retain the transaction reference
+Explanation: Prompt reporting gives the provider an opportunity to investigate the transfer under its applicable procedures. Reversal is not guaranteed, so the customer should retain the transaction reference.
+40. Which feature most directly supports financial inclusion through digital payments?
+A. Access to appropriate financial services for people underserved by traditional channels
+B. Restricting electronic services to large corporations
+C. Requiring every customer to travel to a major city
+D. Removing access to small-value transactions
+Correct Answer: A. Access to appropriate financial services for people underserved by traditional channels
+Explanation: Digital payments can improve financial inclusion by making suitable services more accessible to underserved populations.
+41. What is a major operational risk for an agent banking outlet?
+A. A change in the spelling of a customer's name
+B. An increase in the number of bank branches nationwide
+C. A decline in the use of paper letterheads
+D. Cash shortages or inadequate liquidity preventing customer transactions
+Correct Answer: D. Cash shortages or inadequate liquidity preventing customer transactions
+Explanation: An agent may be unable to process a cash withdrawal when the outlet lacks sufficient physical cash, even if the customer has adequate funds in their bank account.
+42. An MFS provider maintains customer balances and processes transactions. Which control is particularly important for customer protection?
+A. Allowing unrestricted access to customer credentials
+B. Appropriate safeguarding of customer funds, accurate records and reconciliation under applicable rules
+C. Treating customer funds as the agent's personal property
+D. Disabling all transaction notifications
+Correct Answer: B. Appropriate safeguarding of customer funds, accurate records and reconciliation under applicable rules
+Explanation: Proper fund safeguarding, accurate transaction records and reconciliation help protect customer money and identify discrepancies or misuse.
+43. Which is the clearest example of cash-out in MFS?
+A. Paying a utility bill from a mobile account
+B. Sending a digital payment to a merchant
+C. Withdrawing funds from a mobile account through an authorized cash-out channel
+D. Receiving a digital salary without withdrawing it
+Correct Answer: C. Withdrawing funds from a mobile account through an authorized cash-out channel
+Explanation: Cash-out is the withdrawal of money from a mobile financial account into physical cash through an authorized channel.
+44. Why should agent banking transactions be reconciled with the bank's records?
+A. To detect discrepancies, unauthorized transactions and possible fraud
+B. To allow agents to keep unrecorded customer deposits
+C. To eliminate customer receipts
+D. To transfer responsibility for all deposits to customers
+Correct Answer: A. To detect discrepancies, unauthorized transactions and possible fraud
+Explanation: Reconciliation compares agent transaction records with the bank's records, helping identify missing entries, posting errors and suspicious transactions.
+45. Which statement about digital financial inclusion is most accurate?
+A. Digital access alone guarantees financial literacy
+B. Every digital transaction is risk-free
+C. Financial inclusion requires only the availability of smartphones
+D. Access, affordability, usability, consumer protection and appropriate safeguards all matter
+Correct Answer: D. Access, affordability, usability, consumer protection and appropriate safeguards all matter
+Explanation: Financial inclusion requires more than technology. Customers must be able to access and use services affordably and safely.
+Questions 46–65: Payment Cards, ATMs, POS and QR Payments
+46. What is the primary purpose of a debit card?
+A. To create unlimited borrowing without a credit assessment
+B. To access funds linked to the cardholder's account, subject to applicable limits and controls
+C. To guarantee a fixed return on investment
+D. To replace every form of bank identification
+Correct Answer: B. To access funds linked to the cardholder's account, subject to applicable limits and controls
+Explanation: A debit card normally enables transactions using funds available in a linked account, subject to the account balance, transaction limits and applicable controls.
+47. Which statement best describes a credit card?
+A. Every transaction is deducted immediately from a savings account in the same way as a debit card
+B. It can only be used to withdraw money from the issuing bank's branch
+C. It provides access to a credit facility subject to the issuer's terms and limits
+D. It represents a government bond
+Correct Answer: C. It provides access to a credit facility subject to the issuer's terms and limits
+Explanation: A credit card provides access to a borrowing facility. The cardholder must repay amounts used according to the issuer's billing and repayment terms.
+48. What does POS stand for in card payments?
+A. Point of Sale
+B. Payment of Securities
+C. Proof of Settlement
+D. Period of Savings
+Correct Answer: A. Point of Sale
+Explanation: Point of Sale refers to the merchant's payment-acceptance environment, including terminals used to process electronic card payments.
+49. What is the principal role of an ATM?
+A. To authorize government budgets
+B. To settle every interbank payment individually
+C. To issue corporate bonds
+D. To provide self-service banking functions such as cash withdrawal and balance inquiry
+Correct Answer: D. To provide self-service banking functions such as cash withdrawal and balance inquiry
+Explanation: Automated Teller Machines provide self-service banking facilities, commonly including cash withdrawal, balance inquiry and other permitted transactions.
+50. Which technology is commonly used in modern EMV payment cards to improve transaction security?
+A. A plain printed card number with no other controls
+B. An embedded chip that supports cryptographic transaction authentication
+C. A publicly displayed PIN
+D. A magnetic stripe that guarantees every transaction is genuine
+Correct Answer: B. An embedded chip that supports cryptographic transaction authentication
+Explanation: EMV chip technology supports cryptographic authentication during supported transactions. It improves security but does not eliminate every form of payment-card fraud.
+51. What is card skimming?
+A. A legitimate process for reconciling a merchant's daily sales
+B. The calculation of interest on a credit-card balance
+C. Illicit capture of card data using a compromised reader or similar device
+D. A method of protecting a cardholder's PIN
+Correct Answer: C. Illicit capture of card data using a compromised reader or similar device
+Explanation: Skimming involves illegally capturing payment-card information, often using a compromised terminal or device. The stolen data may then be used in fraudulent transactions.
+52. Which practice best reduces the risk of card fraud at an ATM?
+A. Shielding PIN entry, checking for suspicious devices and using transaction alerts
+B. Writing the PIN on the card
+C. Allowing strangers to operate the ATM session
+D. Sharing card details with unknown callers
+Correct Answer: A. Shielding PIN entry, checking for suspicious devices and using transaction alerts
+Explanation: Protecting PIN entry, inspecting the ATM and monitoring transaction notifications help reduce the risk of unauthorized card use.
+53. What is a card issuer?
+A. The customer purchasing goods
+B. The merchant's landlord
+C. The telecommunications operator providing mobile coverage
+D. The institution that issues the payment card to the cardholder
+Correct Answer: D. The institution that issues the payment card to the cardholder
+Explanation: The issuer provides the payment card and administers the associated deposit account or credit facility.
+54. In a typical card transaction, what is the merchant's acquiring institution responsible for?
+A. Issuing the customer's passport
+B. Providing acquiring services to the merchant and supporting card-payment acceptance
+C. Determining the country's policy rate
+D. Guaranteeing that the merchant never faces a chargeback
+Correct Answer: B. Providing acquiring services to the merchant and supporting card-payment acceptance
+Explanation: The acquiring institution enables the merchant to accept card payments and supports the processing and settlement of eligible transactions.
+55. What does a payment-card authorization primarily establish?
+A. That the transaction can never be disputed
+B. That the merchant has already received final settlement
+C. That the transaction has received the relevant approval at the authorization stage
+D. That every fraud risk has been eliminated
+Correct Answer: C. That the transaction has received the relevant approval at the authorization stage
+Explanation: Authorization is an approval stage in the payment process. It does not necessarily mean that the merchant has received final settlement or that the transaction cannot later be disputed.
+56. What is a chargeback?
+A. A transaction reversal or dispute-related recovery process under applicable card-scheme rules
+B. An automatic increase in a customer's deposit interest rate
+C. A government tax on all ATM withdrawals
+D. A mandatory cash deposit by every cardholder
+Correct Answer: A. A transaction reversal or dispute-related recovery process under applicable card-scheme rules
+Explanation: A chargeback is a dispute-related mechanism through which a card transaction may be reversed or funds recovered under the relevant card-scheme and institutional rules.
+57. What is the main advantage of contactless card payments?
+A. They remove the need for any transaction controls
+B. They make card theft irrelevant
+C. They guarantee that the cardholder never needs authentication
+D. They enable convenient short-range payments, subject to applicable security and transaction controls
+Correct Answer: D. They enable convenient short-range payments, subject to applicable security and transaction controls
+Explanation: Contactless technology enables convenient short-range payments. Authentication requirements and transaction limits depend on the applicable system and security rules.
+58. What does a QR code do in a QR-based payment?
+A. It independently guarantees the merchant's legal identity
+B. It encodes or provides access to payment information that a compatible application can use to initiate a transaction
+C. It replaces the customer's account and authentication requirements
+D. It guarantees immediate interbank settlement in every payment system
+Correct Answer: B. It encodes or provides access to payment information that a compatible application can use to initiate a transaction
+Explanation: A QR code can contain or link to payment details used by a compatible application. Customers must still verify the recipient and authorize the transaction appropriately.
+59. What is the key benefit of an interoperable domestic card scheme such as TakaPay?
+A. It eliminates all domestic payment-processing costs
+B. It makes bank accounts unnecessary
+C. It can support domestic card transactions and reduce reliance on international card networks for eligible domestic transactions
+D. It replaces Bangladesh Bank's oversight role
+Correct Answer: C. It can support domestic card transactions and reduce reliance on international card networks for eligible domestic transactions
+Explanation: TakaPay is Bangladesh's national card scheme. Its purpose includes supporting domestic electronic payments and reducing reliance on international networks for eligible domestic transactions.
+60. Bangladesh Bank introduced the TakaPay national card scheme in which year?
+A. 2024
+B. 2010
+C. 2015
+D. 2022
+Correct Answer: A. 2024
+Explanation: Bangladesh Bank launched TakaPay on 12 June 2024 as part of its efforts to develop domestic card-payment infrastructure.
+61. A cardholder's account is debited, but the merchant's system reports a failed transaction. What should the customer do first?
+A. Assume the funds are permanently lost
+B. Repeat the payment indefinitely without checking its status
+C. Give the card PIN to the merchant's staff
+D. Retain the receipt or reference and contact the relevant bank or provider through official channels
+Correct Answer: D. Retain the receipt or reference and contact the relevant bank or provider through official channels
+Explanation: A failed-looking transaction may involve delayed processing or a pending reversal. The customer should retain the reference and contact the relevant institution rather than repeatedly submitting the payment.
+62. Which security principle is most relevant to protecting cardholder data?
+A. Publicly storing PINs for easy recovery
+B. Restricting access to sensitive data and applying appropriate authentication and security controls
+C. Sharing complete card details with every merchant employee
+D. Disabling transaction monitoring
+Correct Answer: B. Restricting access to sensitive data and applying appropriate authentication and security controls
+Explanation: Access restrictions, secure data handling and appropriate authentication help prevent unauthorized disclosure or misuse of cardholder information.
+63. What is the primary purpose of a card payment switch?
+A. To print physical currency
+B. To decide the fiscal budget
+C. To route and process payment messages between connected participants
+D. To guarantee a customer's ability to repay loans
+Correct Answer: C. To route and process payment messages between connected participants
+Explanation: A payment switch routes transaction messages between connected institutions and supports transaction processing according to the system's rules.
+64. What is the principal distinction between a domestic card scheme and an international card scheme?
+A. Their network arrangements, rules, coverage and transaction-routing arrangements may differ
+B. Domestic cards can never use electronic processing
+C. International cards do not require authorization
+D. Domestic cards are always credit cards
+Correct Answer: A. Their network arrangements, rules, coverage and transaction-routing arrangements may differ
+Explanation: Domestic and international card schemes can differ in acceptance coverage, routing, fees and operating rules. A domestic card may be debit or credit, depending on its product design.
+65. Why is reconciliation important for card transactions?
+A. It removes the need for transaction logs
+B. It ensures that all cardholders have identical balances
+C. It eliminates the possibility of disputes
+D. It helps match transaction records, settlement amounts and account postings and identify discrepancies
+Correct Answer: D. It helps match transaction records, settlement amounts and account postings and identify discrepancies
+Explanation: Reconciliation compares transaction records with settlement and account-posting records to identify missing entries, duplicate postings and discrepancies.
+Questions 66–80: Clearing, Settlement, Messaging and International Connectivity
+66. Which statement about a payment message is correct?
+A. Sending a message always means funds have been settled
+B. A payment message communicates transaction instructions or information; it does not by itself prove settlement
+C. Every payment message is a negotiable instrument
+D. Payment messages can only be sent on paper
+Correct Answer: B. A payment message communicates transaction instructions or information; it does not by itself prove settlement
+Explanation: A payment message communicates information or instructions between institutions. Actual settlement depends on the relevant accounts, payment arrangements and processing stages.
+67. What is the primary function of SWIFT?
+A. To act as the central bank of every participating country
+B. To guarantee that every international payment is free of fraud
+C. To provide standardized, secure financial messaging between participating institutions
+D. To hold every bank's customer deposits in one global account
+Correct Answer: C. To provide standardized, secure financial messaging between participating institutions
+Explanation: SWIFT is a financial messaging network used by participating institutions to exchange standardized messages securely. It does not function as a universal settlement account or guarantee every payment.
+68. Which statement about SWIFT is most accurate?
+A. It primarily provides financial messaging and is not itself a universal settlement system
+B. It is identical to Bangladesh's BEFTN
+C. It is a domestic mobile wallet provider
+D. It guarantees the solvency of all member banks
+Correct Answer: A. It primarily provides financial messaging and is not itself a universal settlement system
+Explanation: SWIFT enables secure financial communication. Settlement occurs through the relevant banking relationships and payment or settlement systems.
+69. What is ISO 20022?
+A. A type of debit card
+B. A Bangladesh-specific bank deposit account
+C. An international settlement currency
+D. A standard for structured financial messages and related data definitions
+Correct Answer: D. A standard for structured financial messages and related data definitions
+Explanation: ISO 20022 is an international standard for financial messaging. It provides structured data definitions that can support more consistent and automated payment processing.
+70. Why is structured payment-message data important?
+A. It removes the need for transaction validation
+B. It can improve automation, reconciliation, compliance screening and data consistency
+C. It guarantees that every payment instruction is legitimate
+D. It makes beneficiary information unnecessary
+Correct Answer: B. It can improve automation, reconciliation, compliance screening and data consistency
+Explanation: Structured data supports automated processing and improves the consistency of transaction information. It does not remove the need for validation or fraud controls.
+71. Which statement correctly distinguishes payment authorization from settlement?
+A. Authorization and settlement are always simultaneous
+B. Authorization is the final transfer of central bank money in every system
+C. Authorization approves a transaction at a specified stage; settlement discharges the relevant payment obligations
+D. Settlement is merely the customer entering a PIN
+Correct Answer: C. Authorization approves a transaction at a specified stage; settlement discharges the relevant payment obligations
+Explanation: Authorization is an approval stage in a transaction. Settlement is the discharge of the corresponding payment obligations.
+72. What is correspondent banking?
+A. An arrangement in which one bank provides specified services, such as payment or account services, to another bank
+B. A system where every bank is legally merged into one institution
+C. A method of making payments without any financial institution
+D. A process limited exclusively to domestic cash withdrawals
+Correct Answer: A. An arrangement in which one bank provides specified services, such as payment or account services, to another bank
+Explanation: Correspondent banking enables one bank to provide services to another, including cross-border payments, account services and access to foreign-currency payment arrangements.
+73. What is the principal purpose of a nostro account?
+A. A customer's domestic savings account
+B. A merchant's card terminal
+C. An account used only to store paper cheques
+D. An account a bank holds with another bank, commonly denominated in the foreign currency relevant to its operations
+Correct Answer: D. An account a bank holds with another bank, commonly denominated in the foreign currency relevant to its operations
+Explanation: A nostro account is an account that a bank holds with another bank, often in a foreign currency. Such accounts support cross-border payments and international banking operations.
+74. Which risk is particularly relevant when processing international payments through correspondent banks?
+A. The risk that a cheque is printed in the wrong font
+B. Compliance, counterparty, operational and cross-border payment risks
+C. The risk that every payment must be settled through an ATM
+D. The risk that exchange rates cannot change
+Correct Answer: B. Compliance, counterparty, operational and cross-border payment risks
+Explanation: Cross-border payments may involve compliance screening, counterparty exposure, operational failures and foreign-exchange risk. Correspondent banking arrangements require appropriate controls.
+75. What does end-to-end transaction tracking help a payment system achieve?
+A. Automatic cancellation of every delayed payment
+B. Elimination of the need for customer complaints
+C. Better visibility into a payment's processing status and identification of where delays or failures occur
+D. Guaranteed immediate settlement of all transactions
+Correct Answer: C. Better visibility into a payment's processing status and identification of where delays or failures occur
+Explanation: End-to-end tracking provides visibility into transaction progress and helps institutions identify delays, failures and the stages requiring investigation.
+76. A bank's payment system shows “message sent,” but the receiving bank has not confirmed receipt or credit. Which conclusion is justified?
+A. The payment's final status requires further confirmation; sending the message alone is insufficient
+B. The beneficiary definitely received the funds
+C. The payment must have been settled in cash
+D. The transaction is legally void in every jurisdiction
+Correct Answer: A. The payment's final status requires further confirmation; sending the message alone is insufficient
+Explanation: Sending a message does not prove that the receiving institution accepted the instruction, credited the beneficiary or completed settlement. Further status confirmation is necessary.
+77. Which is the best example of straight-through processing (STP)?
+A. Every payment must be manually re-entered by three employees
+B. A bank processes every transaction only after printing it
+C. A transaction is approved without any validation or controls
+D. A payment flows electronically through processing stages with minimal manual intervention when required conditions are met
+Correct Answer: D. A payment flows electronically through processing stages with minimal manual intervention when required conditions are met
+Explanation: Straight-through processing automates transaction processing across stages, reducing manual intervention while retaining necessary validation and control procedures.
+78. What is the principal purpose of transaction reconciliation in a payment system?
+A. To increase the face value of banknotes
+B. To compare records across relevant systems and identify missing, duplicate or inconsistent entries
+C. To remove the need for settlement records
+D. To guarantee that every payment is profitable
+Correct Answer: B. To compare records across relevant systems and identify missing, duplicate or inconsistent entries
+Explanation: Reconciliation compares records across systems to identify inconsistencies, omissions and duplicate transactions and supports accurate accounting.
+79. Why are unique transaction references useful?
+A. They eliminate the need for beneficiary details
+B. They prevent all cyberattacks
+C. They help identify, trace, reconcile and investigate individual transactions
+D. They guarantee that duplicate instructions can never be submitted
+Correct Answer: C. They help identify, trace, reconcile and investigate individual transactions
+Explanation: Unique transaction references make it easier to trace payments, reconcile records and investigate complaints. They support duplicate prevention but do not independently guarantee it.
+80. What is the principal purpose of a payment-system contingency and disaster-recovery plan?
+A. To restore critical services and protect data after disruption, subject to the recovery plan
+B. To remove all regulatory requirements during an outage
+C. To ensure that backups are never tested
+D. To permit unrestricted access to customer information
+Correct Answer: A. To restore critical services and protect data after disruption, subject to the recovery plan
+Explanation: Contingency and disaster-recovery arrangements support the restoration of critical payment services and protection of data following system failures or other disruptions.
+Questions 81–100: Cybersecurity, Risk Management and Applied Scenarios
+81. What is phishing in digital banking?
+A. A legitimate bank reconciliation procedure
+B. A method of calculating a loan's effective interest rate
+C. A standard cheque-clearing technique
+D. A deceptive attempt to obtain sensitive information by impersonating a trusted entity
+Correct Answer: D. A deceptive attempt to obtain sensitive information by impersonating a trusted entity
+Explanation: Phishing involves deceptive messages, websites or communications designed to trick people into revealing credentials, account information or other sensitive data.
+82. A customer receives an unsolicited message asking them to click a link to “reactivate” their bank account. What is the safest response?
+A. Enter the PIN immediately to avoid account closure
+B. Avoid the suspicious link and verify the message through an independently obtained official channel
+C. Forward the message to all contacts
+D. Reply with the OTP to confirm identity
+Correct Answer: B. Avoid the suspicious link and verify the message through an independently obtained official channel
+Explanation: Customers should avoid suspicious links and verify unexpected account-related messages through independently obtained official contact details.
+83. Which control most directly reduces the risk associated with compromised passwords?
+A. Using the same password for every financial account
+B. Disabling login alerts
+C. Applying multifactor authentication alongside strong credential management
+D. Sharing passwords among branch employees
+Correct Answer: C. Applying multifactor authentication alongside strong credential management
+Explanation: Multifactor authentication requires additional verification beyond a password. Combined with strong credential management, it can reduce the impact of compromised passwords.
+84. What is the principle of least privilege?
+A. Users receive only the access necessary to perform their authorized duties
+B. All employees receive unrestricted administrator access
+C. Customers must have access to internal bank databases
+D. No user may access any banking system
+Correct Answer: A. Users receive only the access necessary to perform their authorized duties
+Explanation: The principle of least privilege limits user access to what is required for authorized work, reducing the potential damage caused by compromised or misused accounts.
+85. What is a key purpose of an audit trail in digital payments?
+A. To guarantee that no employee can make an error
+B. To eliminate the need for transaction approval
+C. To replace all financial statements
+D. To maintain traceable records of relevant actions and transactions for review and investigation
+Correct Answer: D. To maintain traceable records of relevant actions and transactions for review and investigation
+Explanation: Audit trails record relevant activities and transactions, supporting accountability, compliance reviews and investigations of suspicious events.
+86. A payment system receives the same payment instruction twice because of a network timeout. Which design property helps prevent duplicate financial effects?
+A. Unlimited retrying without transaction identifiers
+B. Idempotent processing using appropriate transaction identifiers and state controls
+C. Deleting all failed-transaction records
+D. Treating every repeated request as a new payment
+Correct Answer: B. Idempotent processing using appropriate transaction identifiers and state controls
+Explanation: Idempotent processing allows repeated requests to be recognized without creating duplicate financial effects. Transaction identifiers and appropriate transaction-state controls are essential to this approach.
+87. What is a denial-of-service attack intended to achieve?
+A. To improve transaction reconciliation
+B. To reduce a bank's operating costs legitimately
+C. To disrupt or prevent legitimate users from accessing a service
+D. To authenticate customers securely
+Correct Answer: C. To disrupt or prevent legitimate users from accessing a service
+Explanation: A denial-of-service attack aims to disrupt a system's availability, preventing legitimate users from accessing the affected service.
+88. Why is encryption used in digital banking?
+A. To protect the confidentiality of data in transit or storage when correctly implemented
+B. To guarantee that every customer is financially solvent
+C. To remove the need for access controls
+D. To make transaction monitoring impossible
+Correct Answer: A. To protect the confidentiality of data in transit or storage when correctly implemented
+Explanation: Encryption protects sensitive information against unauthorized access when implemented properly. It complements, rather than replaces, authentication and access controls.
+89. What is the main purpose of a fraud-monitoring system?
+A. To approve every transaction automatically
+B. To replace all KYC procedures
+C. To guarantee that no suspicious transaction occurs
+D. To identify potentially suspicious patterns for appropriate review or action
+Correct Answer: D. To identify potentially suspicious patterns for appropriate review or action
+Explanation: Fraud-monitoring systems identify potentially unusual or suspicious transactions for further review or intervention. They cannot guarantee that every fraudulent transaction will be detected.
+90. Which situation is an example of social engineering?
+A. A bank automatically calculating interest on a deposit
+B. A fraudster manipulating an employee into disclosing credentials or approving an unauthorized transaction
+C. A bank reconciling settlement records
+D. A customer using an authorized ATM
+Correct Answer: B. A fraudster manipulating an employee into disclosing credentials or approving an unauthorized transaction
+Explanation: Social engineering exploits human trust, behavior or authority to obtain sensitive information or persuade someone to perform an unauthorized action.
+91. A bank's payment system is unavailable because its primary data centre has failed. Which response best reflects operational resilience?
+A. Permanently delete the transaction database
+B. Allow staff to bypass all security controls
+C. Activate tested recovery arrangements, restore services and reconcile transactions
+D. Assume that every pending payment settled successfully
+Correct Answer: C. Activate tested recovery arrangements, restore services and reconcile transactions
+Explanation: Operational resilience requires appropriate recovery procedures, restoration of critical services and reconciliation of transaction records to determine the status of payments affected by the disruption.
+92. Which measure is most useful for reducing unauthorized employee-initiated payments?
+A. Segregation of duties, appropriate approval limits and independent monitoring
+B. Allowing one employee to create, approve and reconcile every payment without review
+C. Sharing administrator credentials
+D. Removing audit logs
+Correct Answer: A. Segregation of duties, appropriate approval limits and independent monitoring
+Explanation: Segregating payment initiation, approval and reconciliation duties reduces the risk of unauthorized activity and makes it easier to detect errors or fraud.
+93. A payment has been submitted, but the system times out before returning a response. What is the safest next step for an operator?
+A. Immediately submit the payment repeatedly
+B. Delete the customer's account
+C. Assume that the payment definitely failed
+D. Check the transaction status and reference before retrying, following the system's duplicate-prevention procedure
+Correct Answer: D. Check the transaction status and reference before retrying, following the system's duplicate-prevention procedure
+Explanation: A timeout does not necessarily mean that a payment failed. Checking the transaction status before retrying helps prevent duplicate payments.
+94. Which factor is most directly associated with settlement risk?
+A. A customer's preference for a blue payment card
+B. A participant's failure to complete its settlement obligation as expected
+C. A bank changing the design of its mobile application
+D. A customer forgetting the location of a branch
+Correct Answer: B. A participant's failure to complete its settlement obligation as expected
+Explanation: Settlement risk concerns the possibility that a participant will not complete its payment or settlement obligation as expected.
+95. A payment provider processes a large volume of low-value transactions. Which control is particularly useful for identifying unexpected transaction patterns?
+A. Reviewing only the annual profit figure
+B. Disabling all transaction alerts
+C. Risk-based monitoring using transaction patterns, thresholds and relevant customer information
+D. Approving every transaction solely on the basis of its small value
+Correct Answer: C. Risk-based monitoring using transaction patterns, thresholds and relevant customer information
+Explanation: Risk-based monitoring assesses transaction behavior and relevant customer information. Small transaction values do not automatically make transactions legitimate or risk-free.
+96. What is the main purpose of a business continuity plan for a bank's payment services?
+A. To maintain or restore critical operations within defined recovery objectives during disruption
+B. To ensure that the bank never experiences any operational incident
+C. To suspend every customer transaction indefinitely
+D. To replace regulatory reporting permanently
+Correct Answer: A. To maintain or restore critical operations within defined recovery objectives during disruption
+Explanation: A business continuity plan sets out how critical services will continue or be restored during disruptions, subject to established recovery objectives and procedures.
+97. A customer disputes a digital transfer they did not authorize. Which response is most appropriate for the bank?
+A. Reject the complaint without reviewing records
+B. Ask the customer to publish their password publicly
+C. Delete the transaction reference
+D. Follow the applicable dispute and fraud-investigation process, preserve evidence and apply relevant customer-protection rules
+Correct Answer: D. Follow the applicable dispute and fraud-investigation process, preserve evidence and apply relevant customer-protection rules
+Explanation: The bank should investigate the disputed transaction, preserve relevant evidence and apply the applicable complaint-handling, fraud-management and customer-protection requirements.
+98. Which statement best describes a token in payment-card security?
+A. It is always the cardholder's PIN
+B. It is a substitute value used in place of sensitive account data in supported payment arrangements
+C. It is a guarantee that every payment is authorized
+D. It is a type of paper cheque
+Correct Answer: B. It is a substitute value used in place of sensitive account data in supported payment arrangements
+Explanation: Payment tokenization substitutes a token for sensitive account information in supported payment arrangements, reducing exposure of the underlying data. Tokenization does not independently guarantee authorization or eliminate fraud.
+99. A bank wants to improve the security of digital payments without unnecessarily disrupting legitimate customers. Which approach is best?
+A. Eliminate all authentication requirements
+B. Block every electronic transaction
+C. Apply risk-based security controls, monitor suspicious activity and provide clear customer communication
+D. Allow unrestricted access whenever a device is recognized
+Correct Answer: C. Apply risk-based security controls, monitor suspicious activity and provide clear customer communication
+Explanation: Risk-based security applies appropriate controls according to the transaction and its risk. Monitoring and clear communication can improve protection without unnecessarily blocking legitimate payments.
+100. Which statement best captures the relationship between payment-system efficiency and safety?
+A. A sound payment system aims to process payments efficiently while controlling operational, liquidity, settlement and security risks
+B. Speed is the only relevant objective of a payment system
+C. Every payment should bypass validation to reduce processing time
+D. Settlement risk does not matter when transactions are digital
+Correct Answer: A. A sound payment system aims to process payments efficiently while controlling operational, liquidity, settlement and security risks
+Explanation: Effective payment systems balance speed and convenience with reliability, settlement finality, liquidity management, cybersecurity and operational resilience. Efficiency should not come at the expense of safety.

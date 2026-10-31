@@ -1,0 +1,705 @@
+﻿Questions 1–20: Bangladesh Bank — Establishment and Functions
+1. Bangladesh Bank is the central bank of which country?
+A. Bangladesh
+B. Nepal
+C. Sri Lanka
+D. Myanmar
+Correct Answer: A. Bangladesh
+Explanation: Bangladesh Bank is the central bank of Bangladesh. It performs central banking functions, including monetary policy, foreign-reserve management and banking supervision.
+2. Which legal instrument established Bangladesh Bank?
+A. Bank Company Act, 1991
+B. Bangladesh Bank Order, 1972
+C. Financial Institutions Act, 1993
+D. Negotiable Instruments Act, 1881
+Correct Answer: B. Bangladesh Bank Order, 1972
+Explanation: The Bangladesh Bank Order, 1972 (President's Order No. 127 of 1972) provides the foundational legal framework for Bangladesh Bank.
+3. From which date is Bangladesh Bank deemed to have been established?
+A. 26 March 1971
+B. 16 December 1972
+C. 16 December 1971
+D. 31 October 1972
+Correct Answer: C. 16 December 1971
+Explanation: The Bangladesh Bank Order deems the Bank established with effect from 16 December 1971. Do not confuse this date with the Order's promulgation in 1972.
+4. Which article of the Bangladesh Bank Order, 1972 specifies the Bank's main functions?
+A. Article 3
+B. Article 20
+C. Article 44
+D. Article 7A
+Correct Answer: D. Article 7A
+Explanation: Article 7A specifies the main functions of Bangladesh Bank. It includes monetary-policy formulation and implementation, foreign-exchange intervention, management of official reserves, and regulation and supervision of banks and financial institutions within its mandate.
+5. Which of the following is a core function of Bangladesh Bank?
+A. Formulating and implementing monetary policy
+B. Setting national income-tax rates
+C. Conducting all commercial lending directly to households
+D. Auditing every private company as its primary function
+Correct Answer: A. Formulating and implementing monetary policy
+Explanation: Bangladesh Bank manages monetary and credit conditions to support macroeconomic stability. Taxation is principally a fiscal-policy matter, while ordinary household lending is generally conducted by commercial banks and other authorised lenders.
+6. Which institution has the principal responsibility for managing Bangladesh's official foreign-exchange reserves?
+A. Bangladesh Securities and Exchange Commission
+B. Bangladesh Bank
+C. National Board of Revenue
+D. Dhaka Stock Exchange
+Correct Answer: B. Bangladesh Bank
+Explanation: Bangladesh Bank manages the country's official foreign reserves. These reserves support external payments, foreign-exchange management and broader economic stability.
+7. Which institution is responsible for issuing Bangladesh's banknotes within its statutory authority?
+A. Ministry of Commerce
+B. Sonali Bank PLC
+C. Bangladesh Bank
+D. Bangladesh Securities and Exchange Commission
+Correct Answer: C. Bangladesh Bank
+Explanation: Bangladesh Bank has statutory authority concerning banknote issuance. Commercial banks distribute banknotes through their banking operations but do not independently issue national banknotes.
+8. In its capacity as banker to the government, Bangladesh Bank may:
+A. Set every government expenditure priority independently
+B. Replace the Ministry of Finance
+C. Guarantee every government contractor's debt
+D. Handle government banking transactions and public-debt management as provided by law
+Correct Answer: D. Handle government banking transactions and public-debt management as provided by law
+Explanation: Bangladesh Bank performs specified government banking and public-debt functions under the applicable legal framework. It does not replace the government in determining overall taxation and expenditure policy.
+9. Which institution primarily regulates and supervises banking companies in Bangladesh?
+A. Bangladesh Bank
+B. Bangladesh Public Service Commission
+C. Bangladesh Competition Commission alone
+D. Bangladesh Bureau of Statistics
+Correct Answer: A. Bangladesh Bank
+Explanation: Bangladesh Bank exercises banking supervision under the Bangladesh Bank Order, 1972, the Bank Company Act, 1991, and other applicable legislation and directives.
+10. What is the principal purpose of monetary policy?
+A. Determining the ownership of every commercial bank
+B. Managing monetary and credit conditions in pursuit of macroeconomic stability
+C. Fixing every company's selling price
+D. Eliminating all commercial risks
+Correct Answer: B. Managing monetary and credit conditions in pursuit of macroeconomic stability
+Explanation: Monetary policy influences liquidity, credit conditions, interest rates and inflationary pressure. It cannot eliminate every economic risk or guarantee a specific outcome.
+11. When Bangladesh Bank increases its policy interest rate, the intended transmission mechanism may include:
+A. Automatically increasing every bank's profit
+B. Eliminating inflation immediately
+C. Raising borrowing costs and moderating credit demand
+D. Increasing the money supply without any offsetting effect
+Correct Answer: C. Raising borrowing costs and moderating credit demand
+Explanation: Higher policy rates may increase market borrowing costs, discouraging some consumption and investment. The actual effect depends on the strength and timing of monetary-policy transmission.
+12. Which instrument involves Bangladesh Bank buying or selling securities to influence liquidity?
+A. Company registration
+B. Income-tax assessment
+C. Export licensing
+D. Open-market operations
+Correct Answer: D. Open-market operations
+Explanation: Open-market operations involve securities purchases or sales to influence liquidity and monetary conditions. They are distinct from taxation and company-registration activities.
+13. If Bangladesh Bank sells securities to banks in a liquidity-absorbing operation, the immediate intended effect is generally to:
+A. Reduce banking-system liquidity
+B. Increase banks' excess reserves
+C. Eliminate credit risk
+D. Automatically increase government tax revenue
+Correct Answer: A. Reduce banking-system liquidity
+Explanation: Buyers pay for the securities, withdrawing funds from the banking system in a conventional liquidity-absorbing transaction. The precise effect depends on the operation's structure and settlement arrangements.
+14. What does a cash reserve requirement generally oblige a bank to do?
+A. Hold all deposits as physical cash in its branches
+B. Maintain a prescribed reserve with the central bank
+C. Invest all deposits in government bonds
+D. Keep every loan fully secured by property
+Correct Answer: B. Maintain a prescribed reserve with the central bank
+Explanation: The cash reserve requirement (CRR) concerns reserves maintained with Bangladesh Bank under applicable rules. It does not mean that all deposits must remain as physical cash in bank branches.
+15. The statutory liquidity requirement generally concerns a bank's obligation to maintain:
+A. A fixed number of branches
+B. Only foreign-currency deposits
+C. Prescribed liquid assets in accordance with applicable rules
+D. Only cash held in ATMs
+Correct Answer: C. Prescribed liquid assets in accordance with applicable rules
+Explanation: The statutory liquidity requirement (SLR) concerns qualifying liquid assets maintained under applicable regulations. It differs from CRR, which concerns prescribed central-bank reserves.
+16. Which statement about Bangladesh Bank's exchange-rate responsibilities is most accurate?
+A. It has no role in the foreign-exchange market
+B. It guarantees that the taka will never depreciate
+C. It sets global prices of foreign currencies
+D. It formulates and implements foreign-exchange intervention policies within its mandate
+Correct Answer: D. It formulates and implements foreign-exchange intervention policies within its mandate
+Explanation: Bangladesh Bank has responsibilities relating to foreign-exchange policy and intervention. These responsibilities do not constitute a guarantee that the taka will never depreciate.
+17. Bangladesh Bank's role in the national payment system includes:
+A. Promoting, regulating and ensuring secure and efficient payment systems
+B. Manufacturing all payment cards
+C. Approving every retail purchase
+D. Operating every private e-commerce website
+Correct Answer: A. Promoting, regulating and ensuring secure and efficient payment systems
+Explanation: Bangladesh Bank has responsibilities for payment-system regulation and development. Commercial banks and authorised payment-service providers deliver many customer-facing services.
+18. Which statement best describes Bangladesh Bank's responsibility for credit information?
+A. It determines every borrower's salary
+B. It collects and furnishes credit information under the applicable framework
+C. It guarantees repayment of every bank loan
+D. It replaces all banks' internal credit appraisal
+Correct Answer: B. It collects and furnishes credit information under the applicable framework
+Explanation: Credit information supports banks' lending decisions and risk assessment. It does not guarantee repayment or eliminate the need for independent credit appraisal.
+19. Which of the following is NOT a core central-bank function?
+A. Managing official foreign reserves
+B. Implementing monetary policy
+C. Operating a retail grocery business
+D. Supervising banks under its statutory authority
+Correct Answer: C. Operating a retail grocery business
+Explanation: Monetary policy, reserve management and banking supervision are recognised central-bank functions. Operating a grocery business is unrelated to Bangladesh Bank's institutional mandate.
+20. Which statement best distinguishes monetary policy from fiscal policy?
+A. Both are exclusively set by private commercial banks
+B. Monetary policy concerns taxation only
+C. Fiscal policy concerns reserve requirements only
+D. Monetary policy manages monetary and credit conditions; fiscal policy concerns government revenue and expenditure
+Correct Answer: D. Monetary policy manages monetary and credit conditions; fiscal policy concerns government revenue and expenditure
+Explanation: Monetary policy operates through instruments such as policy rates and liquidity management. Fiscal policy concerns taxation, public expenditure and government borrowing.
+Questions 21–40: Types of Banks and Institutional Classification
+21. What is the principal legal distinction between a scheduled bank and a non-scheduled bank in Bangladesh?
+A. A scheduled bank must be foreign-owned
+B. A non-scheduled bank must be privately owned
+C. A scheduled bank is included in the list maintained under the Bangladesh Bank Order, 1972
+D. A scheduled bank can operate only in urban areas
+Correct Answer: C. A scheduled bank is included in the list maintained under the Bangladesh Bank Order, 1972
+Explanation: Scheduled status is a legal classification, not a description of ownership or geographic coverage. A bank's status should be verified against Bangladesh Bank's official list.
+22. Which institution is the central bank rather than an ordinary commercial bank?
+A. Bangladesh Bank
+B. Agrani Bank PLC
+C. BRAC Bank PLC
+D. Eastern Bank PLC
+Correct Answer: A. Bangladesh Bank
+Explanation: Bangladesh Bank performs central banking functions. Agrani Bank, BRAC Bank and Eastern Bank are commercial banking institutions serving customers and businesses.
+23. Which of the following is a state-owned commercial bank?
+A. Standard Chartered Bank
+B. Eastern Bank PLC
+C. BRAC Bank PLC
+D. Sonali Bank PLC
+Correct Answer: D. Sonali Bank PLC
+Explanation: Sonali Bank is a state-owned commercial bank. Standard Chartered is a foreign bank, while Eastern Bank and BRAC Bank are private commercial banking institutions.
+24. Which institution is primarily associated with agricultural credit as a specialised banking mandate?
+A. Bangladesh Securities and Exchange Commission
+B. Bangladesh Krishi Bank
+C. Bangladesh Bank's Currency Museum
+D. Bangladesh Development Research Institute
+Correct Answer: B. Bangladesh Krishi Bank
+Explanation: Bangladesh Krishi Bank is a specialised bank focused on agricultural finance. Its role differs from the central bank's system-wide monetary and supervisory functions.
+25. Rajshahi Krishi Unnayan Bank primarily focuses on:
+A. Securities-market regulation
+B. International credit-rating services
+C. Agricultural development in its designated northwestern service area
+D. Foreign central-bank reserve management
+Correct Answer: C. Agricultural development in its designated northwestern service area
+Explanation: Rajshahi Krishi Unnayan Bank (RAKUB) supports agricultural and rural development in its designated region. It is not a securities regulator or a central bank.
+26. Which of the following is a foreign commercial bank operating in Bangladesh?
+A. Standard Chartered Bank
+B. Sonali Bank PLC
+C. Bangladesh Krishi Bank
+D. Rajshahi Krishi Unnayan Bank
+Correct Answer: A. Standard Chartered Bank
+Explanation: Standard Chartered is a foreign banking institution operating in Bangladesh. Sonali Bank is state-owned, while Bangladesh Krishi Bank and RAKUB have specialised agricultural mandates.
+27. A foreign commercial bank operating in Bangladesh generally differs from a locally incorporated private commercial bank because it:
+A. Is exempt from every Bangladesh banking law
+B. Cannot provide banking services to businesses
+C. Is regulated exclusively by its home-country government
+D. Operates as a branch or other authorised presence of a bank incorporated abroad
+Correct Answer: D. Operates as a branch or other authorised presence of a bank incorporated abroad
+Explanation: A foreign bank may operate through a branch or another authorised form. Its operations in Bangladesh remain subject to applicable local licensing and regulatory requirements.
+28. Which institution is associated with financing small and medium-sized enterprises in Bangladesh?
+A. Bangladesh Securities and Exchange Commission
+B. BRAC Bank PLC
+C. Bangladesh Bank's Monetary Policy Department alone
+D. Bangladesh Public Service Commission
+Correct Answer: B. BRAC Bank PLC
+Explanation: BRAC Bank is well known for its SME banking activities. However, SME finance is not exclusive to this institution; other banks and financial institutions also provide SME financing.
+29. Which of the following is a specialised bank rather than a conventional private commercial bank?
+A. Prime Bank PLC
+B. City Bank PLC
+C. Bangladesh Krishi Bank
+D. Dhaka Bank PLC
+Correct Answer: C. Bangladesh Krishi Bank
+Explanation: Bangladesh Krishi Bank has a specialised agricultural-financing mandate. Prime Bank, City Bank and Dhaka Bank are private commercial banking institutions.
+30. A bank is described as a state-owned commercial bank primarily because of its:
+A. Ownership structure and commercial banking role
+B. Exclusive use of mobile banking
+C. Foreign incorporation
+D. Prohibition on deposit-taking
+Correct Answer: A. Ownership structure and commercial banking role
+Explanation: The classification reflects government ownership and the institution's commercial banking function. It does not depend on whether the bank uses digital channels or accepts deposits.
+31. Which statement about Islamic banking in Bangladesh is correct?
+A. Every Islamic bank is a government department
+B. Islamic banks are outside the banking regulatory framework
+C. Islamic banks cannot finance trade
+D. Islamic banks conduct banking according to Shariah principles within the applicable regulatory framework
+Correct Answer: D. Islamic banks conduct banking according to Shariah principles within the applicable regulatory framework
+Explanation: Islamic banks use Shariah-compliant financing and investment structures. They remain subject to applicable banking laws and regulatory supervision.
+32. A conventional private commercial bank differs from a full-fledged Islamic bank principally in its:
+A. Nationality of customers
+B. Operating and financing principles
+C. Obligation to comply with applicable banking laws
+D. Need to maintain accurate accounts
+Correct Answer: B. Operating and financing principles
+Explanation: Conventional banking commonly uses interest-based arrangements, while Islamic banking uses Shariah-compliant structures. Both must comply with applicable banking laws.
+33. A bank that offers both conventional and Islamic banking services is commonly described as a bank with:
+A. No regulatory obligations
+B. Exclusive central-bank ownership
+C. Dual banking operations
+D. No deposit-taking authority
+Correct Answer: C. Dual banking operations
+Explanation: Dual banking operations refer to offering conventional and Islamic banking services within the applicable legal and regulatory framework. The term does not imply exemption from supervision.
+34. Which of the following is an example of a non-bank financial institution rather than a commercial bank?
+A. A licensed finance company
+B. Sonali Bank PLC
+C. City Bank PLC
+D. Standard Chartered Bank Bangladesh
+Correct Answer: A. A licensed finance company
+Explanation: A finance company is a non-bank financial institution operating under its applicable regulatory framework. Commercial banks have a different legal status and set of permitted activities.
+35. Which statement about finance companies in Bangladesh is generally correct?
+A. They may perform every function of a scheduled bank without restriction
+B. They are regulated only by stock exchanges
+C. They are the central bank of Bangladesh
+D. They operate under the applicable finance-company regulatory framework and face restrictions distinguishing them from banks
+Correct Answer: D. They operate under the applicable finance-company regulatory framework and face restrictions distinguishing them from banks
+Explanation: Finance companies are governed by the applicable finance-company legislation and Bangladesh Bank's relevant regulations. Their permitted activities differ from those of scheduled banks.
+36. Which activity generally distinguishes finance companies from banks under the applicable Bangladesh regulatory framework?
+A. Maintaining accounting records
+B. Receiving demand deposits and issuing cheques as a bank does
+C. Providing any financing whatsoever
+D. Being subject to regulation
+Correct Answer: B. Receiving demand deposits and issuing cheques as a bank does
+Explanation: Finance companies face restrictions on certain bank-like activities, including demand-deposit-taking and cheque issuance. The precise legal scope should be checked against current legislation and Bangladesh Bank directives.
+37. What is the principal purpose of a specialised bank?
+A. To replace the central bank
+B. To regulate the securities market
+C. To serve a defined development or sectoral financing mandate
+D. To set the country's tax policy
+Correct Answer: C. To serve a defined development or sectoral financing mandate
+Explanation: Specialised banks focus on defined sectors or development objectives, such as agriculture. They complement rather than replace the central bank and general-purpose commercial banks.
+38. Which statement about ownership and regulatory oversight is most accurate?
+A. Private ownership does not exempt a bank from Bangladesh Bank's applicable supervision
+B. Government ownership removes all prudential requirements
+C. Foreign ownership automatically removes local licensing requirements
+D. Islamic ownership prevents regulatory examination
+Correct Answer: A. Private ownership does not exempt a bank from Bangladesh Bank's applicable supervision
+Explanation: Banks remain subject to applicable licensing, prudential, reporting and governance requirements regardless of their ownership structure.
+39. Which of the following is NOT a valid classification based on a bank's ownership or institutional role?
+A. State-owned commercial bank
+B. Foreign commercial bank
+C. Specialised bank
+D. Bank classified according to the colour of its logo
+Correct Answer: D. Bank classified according to the colour of its logo
+Explanation: Banking classifications are based on legal status, ownership, purpose or operating model. A bank's logo colour has no legal significance for institutional classification.
+40. What is the best way to verify the current number of scheduled banks in Bangladesh before an examination?
+A. Rely on an undated coaching-centre infographic
+B. Consult Bangladesh Bank's latest official banking statistics or bank list
+C. Add up bank names remembered from previous years
+D. Assume that the number never changes
+Correct Answer: B. Consult Bangladesh Bank's latest official banking statistics or bank list
+Explanation: Banking licences, classifications and operating status may change. Official Bangladesh Bank publications are preferable to undated secondary sources.
+Questions 41–60: Laws, Regulators and Institutional Responsibilities
+41. Which law is a principal statute governing banking companies in Bangladesh?
+A. Companies Act, 1994, exclusively
+B. Income Tax Act, exclusively
+C. Bank Company Act, 1991
+D. Public Procurement Act, exclusively
+Correct Answer: C. Bank Company Act, 1991
+Explanation: The Bank Company Act, 1991, is a principal statute governing banking companies. Other laws and Bangladesh Bank directives may apply depending on the activity and issue.
+42. Which institution is the primary regulator of banks and finance companies in Bangladesh?
+A. Bangladesh Bank
+B. Bangladesh Securities and Exchange Commission
+C. Bangladesh Public Service Commission
+D. Election Commission of Bangladesh
+Correct Answer: A. Bangladesh Bank
+Explanation: Bangladesh Bank is the principal regulator of banks and finance companies under the applicable legal framework. BSEC regulates the securities market, while the other institutions have different mandates.
+43. The Bangladesh Securities and Exchange Commission (BSEC) principally regulates:
+A. Monetary-policy implementation
+B. Issuance of Bangladesh's banknotes
+C. Commercial-bank reserve accounts
+D. Securities and capital markets within its statutory mandate
+Correct Answer: D. Securities and capital markets within its statutory mandate
+Explanation: BSEC oversees securities-market activities and relevant market participants under its governing legislation. It does not issue Bangladesh's banknotes or implement monetary policy.
+44. Which institution is the central agency for financial intelligence relating to money laundering and terrorist financing in Bangladesh?
+A. Bangladesh Bureau of Statistics
+B. Bangladesh Financial Intelligence Unit (BFIU)
+C. Bangladesh Public Service Commission
+D. Bangladesh Tourism Board
+Correct Answer: B. Bangladesh Financial Intelligence Unit (BFIU)
+Explanation: BFIU receives and analyses relevant financial reports and disseminates financial intelligence to competent authorities under the applicable AML/CFT framework.
+45. BFIU's responsibilities include:
+A. Setting the national policy interest rate
+B. Issuing all government bonds
+C. Analysing suspicious transaction and activity reports and disseminating financial intelligence
+D. Conducting every bank's external financial audit
+Correct Answer: C. Analysing suspicious transaction and activity reports and disseminating financial intelligence
+Explanation: BFIU performs specialised financial-intelligence functions. It does not set monetary policy, issue government bonds as its principal function or replace independent external auditors.
+46. Which regulator is responsible for microcredit institutions licensed under the Microcredit Regulatory Authority framework?
+A. Microcredit Regulatory Authority (MRA)
+B. Bangladesh Securities and Exchange Commission
+C. Bangladesh Bank's Currency Department exclusively
+D. Bangladesh Public Service Commission
+Correct Answer: A. Microcredit Regulatory Authority (MRA)
+Explanation: MRA regulates licensed microcredit institutions under its legal framework. This role is distinct from Bangladesh Bank's principal responsibility for banking supervision.
+47. Which institution principally regulates insurance companies in Bangladesh?
+A. Bangladesh Financial Intelligence Unit
+B. Bangladesh Bank's foreign-reserve department
+C. Dhaka Stock Exchange
+D. Insurance Development and Regulatory Authority (IDRA)
+Correct Answer: D. Insurance Development and Regulatory Authority (IDRA)
+Explanation: IDRA is responsible for insurance-sector regulation. Bangladesh Bank supervises banks and finance companies, while the Dhaka Stock Exchange operates within the securities-market framework.
+48. Which statement correctly describes the relationship between Bangladesh Bank and BFIU?
+A. They are both stock exchanges
+B. Bangladesh Bank houses BFIU, which performs specialised financial-intelligence functions
+C. BFIU issues Bangladesh's banknotes
+D. BFIU replaces all commercial banks' compliance departments
+Correct Answer: B. Bangladesh Bank houses BFIU, which performs specialised financial-intelligence functions
+Explanation: BFIU operates within Bangladesh Bank's institutional framework and performs specialised financial-intelligence functions. Banks nevertheless retain their own AML/CFT compliance responsibilities.
+49. Which law is particularly relevant to preventing money laundering in Bangladesh?
+A. Bangladesh Labour Act, exclusively
+B. Trade Marks Act, exclusively
+C. Money Laundering Prevention Act, 2012, as applicable and amended
+D. Copyright Act, exclusively
+Correct Answer: C. Money Laundering Prevention Act, 2012, as applicable and amended
+Explanation: The Money Laundering Prevention Act, 2012, forms a central part of Bangladesh's AML framework. It must be read with applicable amendments, rules and related legislation.
+50. Which institution is responsible for supervising stock-exchange operators and securities-market intermediaries within its mandate?
+A. BSEC
+B. Bangladesh Krishi Bank
+C. Bangladesh Bank's currency-issuing function
+D. Sonali Bank PLC
+Correct Answer: A. BSEC
+Explanation: BSEC regulates securities-market activities and relevant intermediaries under its statutory authority. Commercial banks and specialised banks do not replace the securities regulator.
+51. What is the main purpose of bank prudential regulation?
+A. Guaranteeing that every bank earns a profit
+B. Eliminating all competition among banks
+C. Ensuring that banks lend only to government entities
+D. Promoting safety, soundness and depositor protection through applicable requirements
+Correct Answer: D. Promoting safety, soundness and depositor protection through applicable requirements
+Explanation: Prudential regulation addresses financial strength, capital, liquidity and risk management. It reduces vulnerabilities but cannot guarantee that every bank will remain profitable or avoid failure.
+52. Why are capital adequacy requirements imposed on banks?
+A. To ensure every loan is repaid
+B. To provide a loss-absorbing financial buffer against risks
+C. To remove the need for liquidity management
+D. To guarantee unlimited dividend payments
+Correct Answer: B. To provide a loss-absorbing financial buffer against risks
+Explanation: Capital absorbs losses and supports a bank's capacity to withstand financial stress. It does not guarantee repayment of every loan or eliminate liquidity risk.
+53. Which of the following is a supervisory tool available to Bangladesh Bank under the applicable legal framework?
+A. Appointing all members of Parliament
+B. Determining the curriculum of every university
+C. Examining banks' books, records and risk-management practices
+D. Setting all private-sector wages
+Correct Answer: C. Examining banks' books, records and risk-management practices
+Explanation: Bangladesh Bank's supervisory functions include examining records, evaluating compliance and assessing banks' risk-management practices and financial soundness.
+54. A bank breaches a binding prudential requirement. Which response is most consistent with the regulator's role?
+A. Take supervisory or enforcement action authorised by law
+B. Automatically forgive the breach because the bank is privately owned
+C. Transfer the matter exclusively to a stock exchange
+D. Allow the bank to determine whether the law applies
+Correct Answer: A. Take supervisory or enforcement action authorised by law
+Explanation: A breach may result in corrective directions or other legally authorised action. The response depends on the nature and severity of the breach and the applicable rules.
+55. Which statement about regulatory jurisdiction is most accurate?
+A. All financial institutions are regulated by BSEC alone
+B. All institutions are regulated exclusively by the Ministry of Commerce
+C. A financial institution's licence is irrelevant to its regulator
+D. Regulatory responsibility depends on the institution's activities and applicable legal framework
+Correct Answer: D. Regulatory responsibility depends on the institution's activities and applicable legal framework
+Explanation: Banks, insurers, securities intermediaries and microcredit institutions may have different primary regulators. Some activities can involve overlapping regulatory responsibilities.
+56. Which institution is most directly associated with regulating and supervising payment systems under Bangladesh's financial framework?
+A. Bangladesh Public Service Commission
+B. Bangladesh Bank
+C. Bangladesh Bureau of Statistics
+D. Bangladesh Tourism Board
+Correct Answer: B. Bangladesh Bank
+Explanation: Bangladesh Bank has statutory responsibilities concerning payment systems, including their regulation, security and efficiency.
+57. Which statement about the Foreign Exchange Regulation Act, 1947, is correct?
+A. It is the principal law governing securities-market listing
+B. It created the national insurance regulator
+C. It forms part of Bangladesh's legal framework for foreign-exchange regulation
+D. It regulates only agricultural land ownership
+Correct Answer: C. It forms part of Bangladesh's legal framework for foreign-exchange regulation
+Explanation: The Foreign Exchange Regulation Act, 1947, is relevant to foreign-exchange transactions and regulation in Bangladesh. Its provisions must be read with applicable amendments and rules.
+58. Which law provides the framework for regulating finance companies in Bangladesh?
+A. Finance Company Act, 2023
+B. Negotiable Instruments Act, 1881, exclusively
+C. Bangladesh Labour Act, exclusively
+D. Motor Vehicles Ordinance, exclusively
+Correct Answer: A. Finance Company Act, 2023
+Explanation: The Finance Company Act, 2023, is the principal modern statute identified for finance-company regulation. Applicable Bangladesh Bank directives and other relevant laws may also govern particular activities.
+59. Which legislation is especially relevant to the modern legal framework for payment and settlement systems in Bangladesh?
+A. Trade Organisations Act, exclusively
+B. Copyright Act, exclusively
+C. Agricultural Pests Act, exclusively
+D. Payment and Settlement System Act, 2024
+Correct Answer: D. Payment and Settlement System Act, 2024
+Explanation: The Payment and Settlement System Act, 2024, is relevant to the legal framework governing payment and settlement systems. Candidates should check its effective provisions and related rules before the examination.
+60. Why should an exam candidate distinguish a regulator's statutory power from its everyday administrative practice?
+A. Administrative practices always override statutes
+B. Statutory authority and actual procedures may differ, and legal powers must be grounded in applicable law
+C. A circular can never affect a bank
+D. All financial regulations are merely voluntary advice
+Correct Answer: B. Statutory authority and actual procedures may differ, and legal powers must be grounded in applicable law
+Explanation: Statutes establish legal authority, while circulars and procedures implement or clarify requirements within their lawful scope. Candidates should check the applicable law, amendments and effective dates rather than assume that every administrative practice has the same legal status.
+Questions 61–80: Governance, Management and Accountability
+61. Who heads Bangladesh Bank's Board of Directors according to its published institutional description?
+A. The Finance Secretary in every circumstance
+B. The Chairman of BSEC
+C. The Governor of Bangladesh Bank
+D. The Managing Director of Sonali Bank
+Correct Answer: C. The Governor of Bangladesh Bank
+Explanation: The Governor heads Bangladesh Bank and its Board of Directors according to the Bank's institutional description. The Governor's responsibilities differ from those of a commercial-bank managing director.
+62. According to Bangladesh Bank's published institutional description, how many members are on its Board of Directors?
+A. Nine
+B. Five
+C. Seven
+D. Fifteen
+Correct Answer: A. Nine
+Explanation: The cited institutional description identifies a nine-member Board of Directors. Since governance rules and appointments may change, candidates should verify the current statutory composition before the examination.
+63. Which statement best describes the Governor of Bangladesh Bank?
+A. The Governor heads BSEC
+B. The Governor is the chief executive officer of every commercial bank
+C. The Governor is the chairman of every listed company
+D. The Governor heads Bangladesh Bank and serves as its chief executive officer
+Correct Answer: D. The Governor heads Bangladesh Bank and serves as its chief executive officer
+Explanation: The Governor leads Bangladesh Bank and serves as its chief executive officer. The Governor does not automatically head commercial banks or other financial regulators.
+64. Why is a bank's Board of Directors important?
+A. It conducts every customer transaction personally
+B. It oversees strategy, risk governance and management accountability
+C. It replaces the external auditor
+D. It determines national fiscal policy
+Correct Answer: B. It oversees strategy, risk governance and management accountability
+Explanation: The board provides strategic direction and oversees management, risk and internal controls. It does not conduct routine transactions or replace independent auditors.
+65. Which responsibility is most appropriately assigned to a bank's senior management?
+A. Rewriting national banking legislation
+B. Setting the national inflation target independently
+C. Implementing approved strategy and managing day-to-day operations
+D. Replacing the board in all oversight matters
+Correct Answer: C. Implementing approved strategy and managing day-to-day operations
+Explanation: Senior management implements the bank's approved strategy and manages daily operations within delegated authority. The board retains its oversight responsibilities.
+66. What is the primary role of a bank's internal audit function?
+A. Independently assess internal controls, risk management and governance processes
+B. Sell investment products to every customer
+C. Guarantee that no employee will ever commit fraud
+D. Replace Bangladesh Bank's supervisory authority
+Correct Answer: A. Independently assess internal controls, risk management and governance processes
+Explanation: Internal audit evaluates the effectiveness of controls and governance arrangements. It provides assurance but cannot guarantee the complete absence of fraud or replace external supervision.
+67. What is the purpose of segregation of duties in banking?
+A. To prevent any employee from taking leave
+B. To allow one employee to initiate, approve and conceal every transaction
+C. To eliminate the need for reconciliation
+D. To reduce errors and fraud by separating incompatible responsibilities
+Correct Answer: D. To reduce errors and fraud by separating incompatible responsibilities
+Explanation: Segregation of duties separates activities such as transaction initiation, approval and reconciliation. This reduces opportunities for unauthorised activity and concealment.
+68. Which practice best supports sound credit governance?
+A. Approving all loans solely on the relationship manager's verbal recommendation
+B. Using documented appraisal, appropriate approval authority and ongoing monitoring
+C. Ignoring connected-party lending risks
+D. Allowing borrowers to set their own risk classifications
+Correct Answer: B. Using documented appraisal, appropriate approval authority and ongoing monitoring
+Explanation: Sound credit governance requires proper assessment, documentation, authorised approval and monitoring. Verbal recommendations alone are insufficient substitutes for the bank's credit process.
+69. A bank director has a personal financial interest in a proposed transaction. What is the most appropriate governance response?
+A. Conceal the interest from the board
+B. Approve the transaction without documentation
+C. Disclose and manage the conflict in accordance with applicable law and policy
+D. Transfer the transaction to an unrecorded account
+Correct Answer: C. Disclose and manage the conflict in accordance with applicable law and policy
+Explanation: Disclosure and appropriate management of conflicts help protect the integrity of decision-making. The exact restrictions and procedures depend on the applicable law and governance rules.
+70. What is the purpose of an independent external audit of a bank's financial statements?
+A. To provide an independent opinion on the financial statements under the applicable auditing framework
+B. To guarantee that the bank will never fail
+C. To determine the national policy rate
+D. To approve every new customer account
+Correct Answer: A. To provide an independent opinion on the financial statements under the applicable auditing framework
+Explanation: External auditors express an opinion on financial statements under the relevant auditing framework. An audit is not a guarantee against every fraud, error or future financial failure.
+71. Why should a bank maintain an effective risk-management framework?
+A. To eliminate the need for capital
+B. To avoid documenting credit decisions
+C. To ensure every investment produces a profit
+D. To identify, assess, monitor and control material risks
+Correct Answer: D. To identify, assess, monitor and control material risks
+Explanation: Banks face credit, market, liquidity, operational and other risks. An effective framework helps identify and mitigate these risks rather than assuming they can be eliminated completely.
+72. Which example best illustrates operational risk?
+A. A borrower repays a loan early
+B. A payment-processing system fails because of an internal systems error
+C. A bank's government bond increases in value
+D. A customer deposits money lawfully
+Correct Answer: B. A payment-processing system fails because of an internal systems error
+Explanation: Operational risk arises from failed or inadequate processes, people, systems or external events. A systems failure disrupting payments is a typical example.
+73. Which example best illustrates credit risk?
+A. A bank's printer runs out of paper
+B. A power failure temporarily interrupts office lighting
+C. A borrower defaults on a loan
+D. A bank changes its logo
+Correct Answer: C. A borrower defaults on a loan
+Explanation: Credit risk is the risk of financial loss when a borrower or counterparty fails to meet its obligations.
+74. What is liquidity risk for a bank?
+A. The risk of being unable to meet obligations when due without unacceptable loss
+B. The risk that every borrower will repay early
+C. The risk of a bank's logo becoming unpopular
+D. The risk that its staff will receive training
+Correct Answer: A. The risk of being unable to meet obligations when due without unacceptable loss
+Explanation: Liquidity risk concerns the bank's ability to meet payment obligations on time. A bank can have positive net worth but still face a liquidity shortage.
+75. Why is a compliance function important in a bank?
+A. It replaces all operational departments
+B. It sets monetary policy for the country
+C. It guarantees that every customer is creditworthy
+D. It helps ensure adherence to applicable laws, regulations and internal policies
+Correct Answer: D. It helps ensure adherence to applicable laws, regulations and internal policies
+Explanation: Compliance supports adherence to regulatory requirements and internal rules. It complements, rather than replaces, operational management and risk management.
+76. Which control is most effective in helping detect unauthorised changes to customer accounts?
+A. Allowing staff to share passwords
+B. Maintaining access controls, audit trails and independent transaction monitoring
+C. Disabling transaction alerts
+D. Removing all approval requirements
+Correct Answer: B. Maintaining access controls, audit trails and independent transaction monitoring
+Explanation: Role-based access, audit logs and transaction monitoring help identify suspicious account changes. Shared passwords and removal of approval controls weaken accountability.
+77. What is the principal purpose of a bank's board-level risk committee, where established under the applicable governance framework?
+A. To approve national taxation rates
+B. To manage every teller's daily cash drawer
+C. To oversee material risks and the effectiveness of risk management
+D. To replace the central bank
+Correct Answer: C. To oversee material risks and the effectiveness of risk management
+Explanation: A board-level risk committee oversees significant exposures and the effectiveness of the bank's risk framework. It does not replace management's daily operational responsibilities.
+78. Which statement best describes corporate governance in banking?
+A. The framework of direction, oversight, accountability and control within a bank
+B. A process limited to designing advertisements
+C. A substitute for banking laws
+D. A method of setting foreign-exchange rates worldwide
+Correct Answer: A. The framework of direction, oversight, accountability and control within a bank
+Explanation: Corporate governance establishes how a bank is directed and controlled, including responsibilities, decision-making authority and accountability mechanisms.
+79. Why is transparent financial reporting important to banking governance?
+A. It eliminates all business uncertainty
+B. It removes the need for internal controls
+C. It ensures every bank reports identical profits
+D. It supports accountability and informed decisions by stakeholders
+Correct Answer: D. It supports accountability and informed decisions by stakeholders
+Explanation: Transparent reporting helps stakeholders assess financial performance, position and risk. It does not eliminate uncertainty or make different banks' results identical.
+80. Which action most clearly undermines sound banking governance?
+A. Documenting board decisions
+B. Ignoring related-party conflicts and bypassing established approval controls
+C. Conducting independent risk reviews
+D. Maintaining an effective compliance programme
+Correct Answer: B. Ignoring related-party conflicts and bypassing established approval controls
+Explanation: Concealed conflicts and unauthorised approvals weaken internal control, accountability and prudent decision-making.
+Questions 81–100: Applied Institutional and Banking-System Concepts
+81. A bank wants to expand its branch network. Which consideration is most relevant from a regulatory perspective?
+A. Whether its new logo is attractive
+B. Whether all customers live in the capital
+C. Compliance with applicable licensing, branch-opening and supervisory requirements
+D. Whether the bank can avoid all reporting duties
+Correct Answer: C. Compliance with applicable licensing, branch-opening and supervisory requirements
+Explanation: Branch expansion must comply with applicable regulatory requirements. Branding and customer geography alone do not establish permission to open a branch.
+82. A customer complains about a bank's unsafe or unfair practice. Which institution is the most relevant first regulatory reference for a banking-supervision issue?
+A. Bangladesh Bank
+B. Bangladesh Securities and Exchange Commission in every case
+C. Bangladesh Tourism Board
+D. Bangladesh Public Service Commission
+Correct Answer: A. Bangladesh Bank
+Explanation: Bangladesh Bank is the relevant regulatory reference for many banking complaints and supervisory concerns. The appropriate complaint mechanism depends on the specific issue and applicable rules.
+83. A bank identifies a transaction that appears suspicious under its AML controls. What should it do?
+A. Automatically publish the customer's private information
+B. Ignore the transaction if the customer is wealthy
+C. Inform every other customer
+D. Follow applicable reporting and confidentiality requirements, including reporting to BFIU when required
+Correct Answer: D. Follow applicable reporting and confidentiality requirements, including reporting to BFIU when required
+Explanation: Banks must follow the prescribed AML/CFT reporting process and confidentiality requirements. Wealth or status does not exempt a customer from applicable monitoring and reporting obligations.
+84. Which statement best distinguishes a suspicious transaction report from an ordinary customer payment instruction?
+A. Both are instructions to transfer funds to the central bank
+B. A suspicious transaction report is a compliance report concerning suspected illicit activity
+C. A suspicious transaction report is a cheque drawn by the customer
+D. Both are securities-market orders
+Correct Answer: B. A suspicious transaction report is a compliance report concerning suspected illicit activity
+Explanation: A suspicious transaction report communicates concerns to the competent authority under the applicable AML framework. It is not an ordinary instruction to move funds.
+85. Which activity most directly supports financial inclusion?
+A. Excluding rural customers from banking services
+B. Restricting all accounts to large companies
+C. Expanding appropriate access to useful, affordable financial services
+D. Removing all consumer-protection measures
+Correct Answer: C. Expanding appropriate access to useful, affordable financial services
+Explanation: Financial inclusion aims to improve access to appropriate savings, payment, credit and other financial services. Access should be supported by consumer protection and responsible lending.
+86. Which institutional function is most directly linked to consumer protection in banking?
+A. Handling complaints, promoting fair practices and enforcing applicable consumer-protection requirements
+B. Setting university admission standards
+C. Managing agricultural crop production
+D. Issuing passports
+Correct Answer: A. Handling complaints, promoting fair practices and enforcing applicable consumer-protection requirements
+Explanation: Consumer protection in banking includes fair treatment, complaint mechanisms and compliance with applicable rules. The available remedy depends on the facts and regulatory framework.
+87. What is the primary purpose of a central bank's lender-of-last-resort role, where applicable?
+A. To finance every business without appraisal
+B. To replace the deposit-taking function of all banks
+C. To guarantee profits for bank shareholders
+D. To provide eligible liquidity support to financial institutions under specified conditions
+Correct Answer: D. To provide eligible liquidity support to financial institutions under specified conditions
+Explanation: Lender-of-last-resort facilities can provide liquidity to eligible institutions under specified conditions. They do not constitute unconditional financing or a guarantee of shareholder profits.
+88. Which statement about Bangladesh Bank and commercial banks is correct?
+A. Commercial banks collectively determine all statutory laws
+B. Bangladesh Bank conducts central banking, while commercial banks provide banking services to customers
+C. Bangladesh Bank is simply another private retail bank
+D. Commercial banks independently issue the country's legal-tender banknotes
+Correct Answer: B. Bangladesh Bank conducts central banking, while commercial banks provide banking services to customers
+Explanation: Bangladesh Bank performs central banking and regulatory functions. Commercial banks provide services such as deposits, loans, transfers and payments within their authorised activities.
+89. Which is the best example of a central bank acting as banker to banks?
+A. Selling groceries to bank employees
+B. Setting every bank's recruitment interview questions
+C. Maintaining eligible bank reserve accounts and providing central-bank facilities under applicable rules
+D. Guaranteeing every private bank's annual profit
+Correct Answer: C. Maintaining eligible bank reserve accounts and providing central-bank facilities under applicable rules
+Explanation: Central banks provide certain banking and settlement facilities to eligible banks. This institutional relationship differs from ordinary retail banking services.
+90. A scheduled bank is experiencing financial distress. Which statement is most accurate?
+A. Bangladesh Bank may exercise relevant supervisory powers, while resolution and other interventions depend on applicable law
+B. The bank automatically becomes a stock exchange
+C. Its shareholders may disregard all regulatory directions
+D. Financial distress automatically cancels every depositor's claim
+Correct Answer: A. Bangladesh Bank may exercise relevant supervisory powers, while resolution and other interventions depend on applicable law
+Explanation: Financial distress may trigger supervisory action and, where legally available, resolution measures. The applicable powers and procedures depend on the law in force; distress does not automatically extinguish depositors' claims.
+91. Which statement about Bangladesh's deposit-protection framework should an exam candidate follow?
+A. Assume the protection limit never changes
+B. Assume every type of investment is fully guaranteed
+C. Treat coaching notes as more authoritative than legislation
+D. Verify the currently effective deposit-protection law, coverage limit and conditions from official sources
+Correct Answer: D. Verify the currently effective deposit-protection law, coverage limit and conditions from official sources
+Explanation: Deposit-protection coverage and legal conditions can change. Candidates should verify the effective legislation, coverage limits, eligibility and exclusions rather than assume all investments are guaranteed.
+92. What is the main difference between a bank deposit and a share investment?
+A. Both are always identical legal claims
+B. A deposit is generally a claim against the bank; a share represents ownership interest in a company
+C. A share is always a bank deposit
+D. A deposit necessarily gives voting rights in the bank
+Correct Answer: B. A deposit is generally a claim against the bank; a share represents ownership interest in a company
+Explanation: A deposit is generally a liability owed by the bank to the depositor. A share represents ownership interest and may provide voting rights and dividends subject to the applicable rules and terms.
+93. Which statement about a bank's capital and deposits is correct?
+A. Deposits are always the bank's paid-up share capital
+B. Capital is always repayable to shareholders on demand
+C. Capital absorbs losses and supports the bank's risk-bearing capacity, while deposits are generally liabilities
+D. Deposits have no effect on liquidity management
+Correct Answer: C. Capital absorbs losses and supports the bank's risk-bearing capacity, while deposits are generally liabilities
+Explanation: Capital provides a buffer against losses, while deposits represent amounts the bank generally owes customers. Both affect financial management, but they are not interchangeable accounting categories.
+94. Why does Bangladesh Bank monitor banks' asset quality?
+A. To assess credit quality, potential losses and implications for financial soundness
+B. To determine the retail price of every product
+C. To set every company's dividend
+D. To select all bank customers' occupations
+Correct Answer: A. To assess credit quality, potential losses and implications for financial soundness
+Explanation: Asset-quality monitoring helps identify deteriorating loans and other exposures. Poor asset quality can increase provisions and reduce profitability and capital strength.
+95. What is the main purpose of a bank's credit-information system?
+A. To determine the borrower's political opinions
+B. To guarantee that borrowers never default
+C. To replace all loan documentation
+D. To support informed credit assessment by providing relevant borrower-credit information
+Correct Answer: D. To support informed credit assessment by providing relevant borrower-credit information
+Explanation: Credit information helps lenders evaluate repayment history and existing credit exposures. It supports but does not replace proper underwriting and verification.
+96. Which statement about banking supervision is correct?
+A. It is unnecessary if a bank is profitable
+B. It helps assess compliance, risk exposure and the soundness of banking operations
+C. It applies only to foreign banks
+D. It is conducted exclusively by depositors
+Correct Answer: B. It helps assess compliance, risk exposure and the soundness of banking operations
+Explanation: Banking supervision examines compliance, financial strength, risk exposure and internal controls. Profitability alone does not prove that a bank is safe or well managed.
+97. Why are fit-and-proper standards relevant to bank directors and senior executives?
+A. They guarantee that every business decision succeeds
+B. They replace financial reporting
+C. They help assess suitability, integrity and competence for key banking roles
+D. They exempt directors from accountability
+Correct Answer: C. They help assess suitability, integrity and competence for key banking roles
+Explanation: Fit-and-proper standards help ensure that key personnel meet relevant suitability and integrity requirements. They do not guarantee commercial success or exempt directors from accountability.
+98. A bank's management pressures credit officers to approve loans without adequate appraisal. Which principle is most directly threatened?
+A. Sound credit risk management and internal control
+B. Currency-note design
+C. Stock-exchange trading hours
+D. The legal definition of a fiscal year
+Correct Answer: A. Sound credit risk management and internal control
+Explanation: Bypassing credit appraisal weakens risk assessment, approval controls and documentation. It can increase default risk and undermine the bank's financial soundness.
+99. Which statement best describes the relationship between financial stability and banking supervision?
+A. Financial stability depends only on the number of bank branches
+B. Supervision guarantees that no bank can ever fail
+C. Financial stability is unrelated to bank risk
+D. Effective supervision can help identify and mitigate risks that threaten individual banks and the wider financial system
+Correct Answer: D. Effective supervision can help identify and mitigate risks that threaten individual banks and the wider financial system
+Explanation: Effective supervision can reduce vulnerabilities by identifying and addressing risks. It supports financial stability but cannot guarantee that no bank will ever fail.
+100. A candidate wants to memorise the number of scheduled banks, the current deposit-protection limit and the latest banking-law amendments. Which study method is most reliable?
+A. Memorise undated social-media posts
+B. Check the latest official Bangladesh Bank publications and applicable enacted legislation, noting dates and effective provisions
+C. Assume figures from an old annual report remain current
+D. Use only unofficial multiple-choice answer keys
+Correct Answer: B. Check the latest official Bangladesh Bank publications and applicable enacted legislation, noting dates and effective provisions
+Explanation: Official publications and enacted legislation provide the strongest basis for current regulatory facts. Candidates should record publication and effective dates and verify amendments rather than rely on outdated secondary material.

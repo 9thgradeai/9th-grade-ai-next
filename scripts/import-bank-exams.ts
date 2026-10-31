@@ -83,7 +83,7 @@ const BB_BANGLA = "01_বাংলা_ভাষা_ও_সাহিত্য";
 const BB_ENGLISH = "02_English_Language_and_Literature";
 const BB_MATH = "03_Mathematics";
 const BB_ANALYTICAL = "04_Analytical_Skills";
-const BB_BANKING = "06_Financial_Knowledge";
+const BB_BANKING = "06_Financial & Banking Knowledge";
 const BB_GK = "সাধারণ জ্ঞান";
 const BB_ICT = "05_ICT";
 

@@ -212,26 +212,27 @@ async function main() {
     });
     if (!bankEco) throw new Error("BANGLADESH_BANK ecosystem not found");
     
-    // Find or create Financial & Banking Knowledge subject
+    // Use the existing canonical Financial & Banking Knowledge subject.
     let subject = await prisma.subject.findFirst({
       where: {
         ecosystemId: bankEco.id,
         nameEn: "Financial & Banking Knowledge",
-        nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান",
+        // The Bangla name currently used in the DB for this subject
+        nameBn: "06_Financial & Banking Knowledge",
       },
     });
     
     if (!subject) {
-      console.log("Creating Financial & Banking Knowledge subject...");
+      console.log("Creating fallback Financial Knowledge subject (should not happen)...");
       subject = await prisma.subject.create({
         data: {
           ecosystemId: bankEco.id,
           nameEn: "Financial & Banking Knowledge",
-          nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান",
+          nameBn: "06_Financial & Banking Knowledge",
           icon: "🏦",
           color: "text-purple-400",
           bg: "bg-purple-500/10",
-          sortOrder: 7,
+          sortOrder: 6,
         },
       });
     }
@@ -367,8 +368,6 @@ async function main() {
         }
         
         inserted++;
-        existingMap.set(sourceKeyValue, { ...block, ...gateData });
-        existingMap.set(`sig_${mcaSignature(gateData)}`, { ...block, ...gateData });
         
         if (!dryRun) {
           await prisma.question.create({
@@ -389,6 +388,9 @@ async function main() {
               questionType: "SINGLE_CHOICE",
             },
           });
+          // After successful insert, update maps so later rows see it as existing
+          existingMap.set(sourceKeyValue, { ...block, ...gateData });
+          existingMap.set(`sig_${mcaSignature(gateData)}`, { ...block, ...gateData });
         }
         
         i = block.nextIndex - 1;

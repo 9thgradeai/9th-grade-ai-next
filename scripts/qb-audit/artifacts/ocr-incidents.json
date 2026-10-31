@@ -1,6 +1,33 @@
 [
   {
-    "recordId": 962,
+    "recordId": 1210,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_______",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 1245,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_______",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 1266,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_______",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 1910,
     "field": "question",
     "type": "PAGE_ARTIFACT",
     "original": "সরকারি চাকরি",
@@ -9,7 +36,7 @@
     "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
   },
   {
-    "recordId": 1157,
+    "recordId": 2105,
     "field": "options[0]",
     "type": "PAGE_ARTIFACT",
     "original": "সরকারি চাকরি",
@@ -18,7 +45,7 @@
     "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
   },
   {
-    "recordId": 1591,
+    "recordId": 2539,
     "field": "question",
     "type": "PAGE_ARTIFACT",
     "original": "সরকারি চাকরি",
@@ -27,7 +54,7 @@
     "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
   },
   {
-    "recordId": 1853,
+    "recordId": 2801,
     "field": "options[0]",
     "type": "PAGE_ARTIFACT",
     "original": "সরকারি চাকরি",
@@ -36,7 +63,7 @@
     "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
   },
   {
-    "recordId": 1957,
+    "recordId": 2905,
     "field": "question",
     "type": "PAGE_ARTIFACT",
     "original": "সরকারি চাকরি",
@@ -45,7 +72,7 @@
     "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
   },
   {
-    "recordId": 2189,
+    "recordId": 3137,
     "field": "question",
     "type": "PAGE_ARTIFACT",
     "original": "সরকারি চাকরি",
@@ -54,152 +81,17 @@
     "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
   },
   {
-    "recordId": 2241,
+    "recordId": 3228,
+    "field": "explanation",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "৩/৪ = ০.৭৫ এবং ৪/৫ = ০.৮০। অপশনগুলোর মধ্",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 3257,
     "field": "question",
-    "type": "DUPLICATED_CHAR",
-    "original": "_____",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 5 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2245,
-    "field": "question",
-    "type": "DUPLICATED_CHAR",
-    "original": "_____",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 5 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2247,
-    "field": "question",
-    "type": "DUPLICATED_CHAR",
-    "original": "_____",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 5 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2349,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "4 - 9",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"4 - 9\""
-  },
-  {
-    "recordId": 2351,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "8 - 6",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"8 - 6\""
-  },
-  {
-    "recordId": 2355,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "10-1",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"10-1\""
-  },
-  {
-    "recordId": 2358,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "5-3",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"5-3\""
-  },
-  {
-    "recordId": 2360,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "7-1",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"7-1\""
-  },
-  {
-    "recordId": 2376,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "30 - 60",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"30 - 60\""
-  },
-  {
-    "recordId": 2466,
-    "field": "question",
-    "type": "DUPLICATED_CHAR",
-    "original": "ইইইই",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 4 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2472,
-    "field": "explanation",
-    "type": "SOURCE_LEAK",
-    "original": "www.google.com)।",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Source reference leaked into content: \"www.google.com)।\""
-  },
-  {
-    "recordId": 2472,
-    "field": "explanation",
-    "type": "SOURCE_LEAK",
-    "original": "https://www.google.com)।",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Source reference leaked into content: \"https://www.google.com)।\""
-  },
-  {
-    "recordId": 2527,
-    "field": "correctAnswer",
-    "type": "DUPLICATED_CHAR",
-    "original": "১১১১",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 4 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2527,
-    "field": "explanation",
-    "type": "DUPLICATED_CHAR",
-    "original": "১১১১",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 4 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2527,
-    "field": "options[2]",
-    "type": "DUPLICATED_CHAR",
-    "original": "১১১১",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 4 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2580,
-    "field": "explanation",
-    "type": "SOURCE_LEAK",
-    "original": "https://google.com\">Google</a>)।",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Source reference leaked into content: \"https://google.com\">Google</a>)।\""
-  },
-  {
-    "recordId": 2592,
-    "field": "correctAnswer",
     "type": "DUPLICATED_CHAR",
     "original": "০০০০",
     "suspected": "",
@@ -207,7 +99,61 @@
     "reason": "Character duplicated 4 times (possible OCR stutter)"
   },
   {
-    "recordId": 2592,
+    "recordId": 3261,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3278,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3359,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "৯৯৯৯৯",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3400,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3400,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3400,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3449,
     "field": "options[1]",
     "type": "DUPLICATED_CHAR",
     "original": "০০০০",
@@ -216,7 +162,1879 @@
     "reason": "Character duplicated 4 times (possible OCR stutter)"
   },
   {
-    "recordId": 2592,
+    "recordId": 3454,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3455,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3593,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3633,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3694,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3758,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3758,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3759,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3762,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3768,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3768,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3768,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3768,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3769,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3780,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3780,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3780,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3780,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3781,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3786,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3791,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3791,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3791,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3792,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3792,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3792,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3792,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3792,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3794,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3802,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3804,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3806,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3806,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3838,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3842,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3885,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3885,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3886,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3886,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3887,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3887,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3895,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3896,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3897,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3897,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3899,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3903,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3906,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3909,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3911,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3915,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3915,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3922,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3922,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3927,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3927,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3929,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3931,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3931,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3933,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3939,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3947,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3948,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3951,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3951,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3967,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3968,
+    "field": "correctAnswer",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3968,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3968,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3969,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3979,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3979,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3985,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3985,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3993,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 3993,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4001,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4001,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4011,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4012,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4019,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4027,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4028,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4031,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4031,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4047,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4048,
+    "field": "correctAnswer",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4048,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4048,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4049,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4059,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4059,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4179,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4180,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4194,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "5-12",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"5-12\""
+  },
+  {
+    "recordId": 4324,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "5-2",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"5-2\""
+  },
+  {
+    "recordId": 4324,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "5 - 2",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"5 - 2\""
+  },
+  {
+    "recordId": 4338,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "6-2",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"6-2\""
+  },
+  {
+    "recordId": 4427,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "1-0",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"1-0\""
+  },
+  {
+    "recordId": 4470,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "1 - 1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"1 - 1\""
+  },
+  {
+    "recordId": 4474,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "25-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"25-1\""
+  },
+  {
+    "recordId": 4475,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "25-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"25-1\""
+  },
+  {
+    "recordId": 4477,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "2 - 3",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"2 - 3\""
+  },
+  {
+    "recordId": 4484,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "4 - 2",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"4 - 2\""
+  },
+  {
+    "recordId": 4486,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "3333",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4521,
+    "field": "explanation",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "... দিয়ে অনন্ত উপাদান বোঝানো {a,b,c,...",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 4521,
+    "field": "options[0]",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "A={a,b,c,...}",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 4521,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": ".....",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4521,
+    "field": "options[3]",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "A=(1,2,3,.....) |",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 4604,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_______",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4639,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_______",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 4660,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_______",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 5107,
+    "field": "explanation",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "৩টি করে বর্ণ পরপর লিখে ২টি করে বাদ দেওয়া",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 5226,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 5410,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "page 8",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"page 8\""
+  },
+  {
+    "recordId": 5411,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "page 8",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"page 8\""
+  },
+  {
+    "recordId": 5412,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "page 8",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"page 8\""
+  },
+  {
+    "recordId": 5421,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "....",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 5421,
+    "field": "question",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "Cricket is a kind of play. It is also a ",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 5693,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 5697,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 5699,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 5801,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "4 - 9",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"4 - 9\""
+  },
+  {
+    "recordId": 5803,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "8 - 6",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"8 - 6\""
+  },
+  {
+    "recordId": 5807,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "10-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"10-1\""
+  },
+  {
+    "recordId": 5810,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "5-3",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"5-3\""
+  },
+  {
+    "recordId": 5812,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "7-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"7-1\""
+  },
+  {
+    "recordId": 5828,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "30 - 60",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"30 - 60\""
+  },
+  {
+    "recordId": 5945,
+    "field": "options[3]",
+    "type": "PAGE_ARTIFACT",
+    "original": "0-9",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"0-9\""
+  },
+  {
+    "recordId": 6014,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6014,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6029,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6030,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6030,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6031,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6036,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6037,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6037,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6037,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6037,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6044,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "10 - 1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"10 - 1\""
+  },
+  {
+    "recordId": 6048,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6050,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6052,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6052,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6052,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6052,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6058,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6058,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6058,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6059,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6059,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6059,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6068,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6101,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6101,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6104,
+    "field": "options[1]",
+    "type": "PAGE_ARTIFACT",
+    "original": "0-31",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"0-31\""
+  },
+  {
+    "recordId": 6107,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6120,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6121,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6121,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6121,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6129,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6130,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "11111111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6131,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6131,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6131,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6131,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "00000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6132,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6147,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "11111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6147,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6147,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6156,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6163,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "11111111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6168,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6173,
+    "field": "options[3]",
+    "type": "PAGE_ARTIFACT",
+    "original": "4 - 1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"4 - 1\""
+  },
+  {
+    "recordId": 6173,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6175,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "00000000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6177,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "000000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 6 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6177,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "11111111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6177,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6177,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6180,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6180,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "00000000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6180,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6181,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6181,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6181,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6182,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6182,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6182,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6191,
+    "field": "options[0]",
+    "type": "DUPLICATED_CHAR",
+    "original": "11111111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6191,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "0000000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6191,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "00000000",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 8 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6191,
+    "field": "options[3]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 7 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6195,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "1111",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6277,
+    "field": "options[0]",
+    "type": "QUESTION_NUMBER_LEAK",
+    "original": "192.168.0.1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Question number leaked into non-question field"
+  },
+  {
+    "recordId": 6277,
+    "field": "options[1]",
+    "type": "QUESTION_NUMBER_LEAK",
+    "original": "127.0.0.1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Question number leaked into non-question field"
+  },
+  {
+    "recordId": 6277,
+    "field": "options[2]",
+    "type": "QUESTION_NUMBER_LEAK",
+    "original": "10.0.0.1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Question number leaked into non-question field"
+  },
+  {
+    "recordId": 6277,
+    "field": "options[3]",
+    "type": "QUESTION_NUMBER_LEAK",
+    "original": "255.255.255.255 Answer: B Expl",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Question number leaked into non-question field"
+  },
+  {
+    "recordId": 6327,
+    "field": "options[3]",
+    "type": "PAGE_ARTIFACT",
+    "original": "10-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"10-1\""
+  },
+  {
+    "recordId": 6354,
+    "field": "options[3]",
+    "type": "PAGE_ARTIFACT",
+    "original": "0-9",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"0-9\""
+  },
+  {
+    "recordId": 6373,
+    "field": "question",
+    "type": "SOURCE_LEAK",
+    "original": "https://'",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"https://'\""
+  },
+  {
+    "recordId": 6850,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "ইইইই",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6856,
+    "field": "explanation",
+    "type": "SOURCE_LEAK",
+    "original": "www.google.com)।",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"www.google.com)।\""
+  },
+  {
+    "recordId": 6856,
+    "field": "explanation",
+    "type": "SOURCE_LEAK",
+    "original": "https://www.google.com)।",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"https://www.google.com)।\""
+  },
+  {
+    "recordId": 6911,
+    "field": "correctAnswer",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6911,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6911,
     "field": "options[2]",
     "type": "DUPLICATED_CHAR",
     "original": "১১১১",
@@ -225,25 +2043,97 @@
     "reason": "Character duplicated 4 times (possible OCR stutter)"
   },
   {
-    "recordId": 2824,
+    "recordId": 6964,
     "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "21-40",
+    "type": "SOURCE_LEAK",
+    "original": "https://google.com\">Google</a>)।",
     "suspected": "",
     "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"21-40\""
+    "reason": "Source reference leaked into content: \"https://google.com\">Google</a>)।\""
   },
   {
-    "recordId": 2834,
-    "field": "explanation",
+    "recordId": 6976,
+    "field": "correctAnswer",
     "type": "DUPLICATED_CHAR",
-    "original": "____",
+    "original": "০০০০",
     "suspected": "",
     "confidence": "LOW",
     "reason": "Character duplicated 4 times (possible OCR stutter)"
   },
   {
-    "recordId": 2835,
+    "recordId": 6976,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 6976,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 9052,
+    "field": "question",
+    "type": "BROKEN_BOUNDARY",
+    "original": "Dilly-দally এর অর্থ কি?",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Suspicious Bangla-Latin character adjacency"
+  },
+  {
+    "recordId": 9145,
+    "field": "explanation",
+    "type": "BROKEN_BOUNDARY",
+    "original": "'File' শব্দের পারিভাষic প্রতিশব্দ হিসেবে 'নথি' ব্যবহৃত হয়.",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Suspicious Bangla-Latin character adjacency"
+  },
+  {
+    "recordId": 9795,
+    "field": "options[0]",
+    "type": "BROKEN_BOUNDARY",
+    "original": "হেষa",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Suspicious Bangla-Latin character adjacency"
+  },
+  {
+    "recordId": 12416,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 13328,
+    "field": "options[3]",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 13493,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 14290,
     "field": "explanation",
     "type": "SOURCE_LEAK",
     "original": "উৎস: ",
@@ -252,52 +2142,7 @@
     "reason": "Source reference leaked into content: \"উৎস: \""
   },
   {
-    "recordId": 2837,
-    "field": "question",
-    "type": "PAGE_ARTIFACT",
-    "original": "80710101190917- 34",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"80710101190917- 34\""
-  },
-  {
-    "recordId": 2857,
-    "field": "explanation",
-    "type": "RANDOM_PUNCTUATION",
-    "original": "এটি একটি গুণোন্তর ধারা, যেখানে প্রতিটি প",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Excessive consecutive punctuation marks"
-  },
-  {
-    "recordId": 2871,
-    "field": "question",
-    "type": "DUPLICATED_CHAR",
-    "original": ".....",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Character duplicated 5 times (possible OCR stutter)"
-  },
-  {
-    "recordId": 2871,
-    "field": "question",
-    "type": "RANDOM_PUNCTUATION",
-    "original": "3, ৭, ১০, ১৪,.....২৩ ধারার শুন্যস্থানের ",
-    "suspected": "",
-    "confidence": "LOW",
-    "reason": "Excessive consecutive punctuation marks"
-  },
-  {
-    "recordId": 2898,
-    "field": "explanation",
-    "type": "PAGE_ARTIFACT",
-    "original": "10 -16",
-    "suspected": "",
-    "confidence": "MEDIUM",
-    "reason": "Page header/footer artifact detected: \"10 -16\""
-  },
-  {
-    "recordId": 2915,
+    "recordId": 14325,
     "field": "explanation",
     "type": "PAGE_ARTIFACT",
     "original": "বিসিএস প্রিলিমিনারি",
@@ -306,7 +2151,7 @@
     "reason": "Page header/footer artifact detected: \"বিসিএস প্রিলিমিনারি\""
   },
   {
-    "recordId": 2923,
+    "recordId": 14327,
     "field": "explanation",
     "type": "PAGE_ARTIFACT",
     "original": "বিসিএস প্রিলিমিনারি",

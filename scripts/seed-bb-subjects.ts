@@ -84,16 +84,28 @@ export async function seedBbSubjects(prisma: PrismaClient): Promise<{ subjects: 
         `BB taxonomy drift: "${meta.architectureName}" not found in bb-taxonomy.json — regenerate with \`npx tsx scripts/generate-taxonomy.ts --ecosystem=bank\``,
       );
     }
-    const subject = await prisma.subject.upsert({
-      where: { ecosystemId_nameBn: { ecosystemId: bb.id, nameBn: meta.nameBn } },
-      update: { nameEn: meta.nameEn, sortOrder },
-      create: { ecosystemId: bb.id, nameBn: meta.nameBn, nameEn: meta.nameEn, sortOrder },
+    // The upsert key stays the architecture/legacy name (`meta.nameBn`) so a
+    // display rename (`displayNameBn`) never orphans the row and creates a
+    // duplicate on the next seed. Look up either alias, then apply the label.
+    const displayNameBn = meta.displayNameBn ?? meta.nameBn;
+    const displayNameEn = meta.displayNameEn ?? meta.nameEn;
+    const existing = await prisma.subject.findFirst({
+      where: { ecosystemId: bb.id, nameBn: { in: [meta.nameBn, displayNameBn] } },
+      select: { id: true },
     });
+    const subject = existing
+      ? await prisma.subject.update({
+          where: { id: existing.id },
+          data: { nameBn: displayNameBn, nameEn: displayNameEn, sortOrder },
+        })
+      : await prisma.subject.create({
+          data: { ecosystemId: bb.id, nameBn: displayNameBn, nameEn: displayNameEn, sortOrder },
+        });
     // Paths are stored from the subject root (subject segment included),
     // matching the Topic.path contract in database/prisma/schema.prisma.
     const nextSort = await createTopicTree(prisma, subject.id, node.children, null, 1, node.name, 1);
     totalTopics += nextSort - 1;
-    console.log(`  ✓ ${meta.nameBn} (${meta.nameEn}): id=${subject.id}`);
+    console.log(`  ✓ ${displayNameBn} (${displayNameEn}): id=${subject.id}`);
     sortOrder++;
   }
 

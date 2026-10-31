@@ -57,6 +57,11 @@ export type SubjectMeta = {
   icon: string;
   color: string;
   bg: string;
+  /** Optional dashboard label when it must differ from the architecture segment.
+   *  The seed still keys the Subject row on `nameBn`/`architectureName`, then
+   *  applies these display names, so re-seeding never creates a duplicate. */
+  displayNameBn?: string;
+  displayNameEn?: string;
 };
 
 export const SUBJECT_META: SubjectMeta[] = [
@@ -81,7 +86,9 @@ export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
 // (generated from database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt).
 // Display names (nameBn) are intentionally IDENTICAL to the architecture
 // segments: the Bank Practice section shows subject names exactly as they
-// appear in the taxonomy file.
+// appear in the taxonomy file. The one exception is Financial Knowledge, whose
+// dashboard label comes from `displayNameBn` while its topic paths stay rooted
+// at the `06_Financial_Knowledge` architecture segment.
 //
 // The Bangla root is the BCS-canonical Bengali segment (`01_বাংলা_ভাষা_ও_সাহিত্য`),
 // adopted with the exact-canonical taxonomy (2026-10-23) so both ecosystems
@@ -96,7 +103,7 @@ export const BB_SUBJECT_META: SubjectMeta[] = [
   { nameBn: "03_Mathematics", nameEn: "Mathematics", architectureName: "03_Mathematics", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
   { nameBn: "04_Analytical_Skills", nameEn: "Analytical Skills", architectureName: "04_Analytical_Skills", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
   { nameBn: "05_ICT", nameEn: "ICT", architectureName: "05_ICT", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
-  { nameBn: "06_Financial_Knowledge", nameEn: "Financial Knowledge", architectureName: "06_Financial_Knowledge", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
+  { nameBn: "06_Financial_Knowledge", nameEn: "Financial Knowledge", architectureName: "06_Financial_Knowledge", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10", displayNameBn: "06_Financial & Banking Knowledge", displayNameEn: "Financial & Banking Knowledge" },
 ];
 
 export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {

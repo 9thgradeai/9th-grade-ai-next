@@ -149,7 +149,10 @@ async function main() {
 
   // --- BB Subjects (Bangladesh Bank ecosystem — BB_SUBJECT_META, 6 subjects
   // + archive-only subjects; topics created by seed-bb-subjects.ts) ---
-  const bbSubjectMeta = [...BB_SUBJECT_META, ...BB_ARCHIVE_SUBJECT_META].map((m) => ({ nameBn: m.nameBn, nameEn: m.nameEn }));
+  const bbSubjectMeta = [...BB_SUBJECT_META, ...BB_ARCHIVE_SUBJECT_META].map((m) => {
+    const meta = m as { nameBn: string; nameEn: string; displayNameBn?: string; displayNameEn?: string };
+    return { nameBn: meta.displayNameBn ?? meta.nameBn, nameEn: meta.displayNameEn ?? meta.nameEn };
+  });
   let bbSortOrder = 1;
   for (const meta of bbSubjectMeta) {
     await prisma.subject.upsert({

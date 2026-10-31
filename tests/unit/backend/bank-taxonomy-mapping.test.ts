@@ -64,6 +64,13 @@ describe("bb-taxonomy.json", () => {
     expect(BB_SUBJECT_META.map((m) => m.nameBn)).toEqual(jsonRoots);
   });
 
+  it("carries the Financial display label without changing the architecture root", () => {
+    const financial = BB_SUBJECT_META.find((m) => m.architectureName === "06_Financial_Knowledge");
+    expect(financial?.displayNameBn).toBe("06_Financial & Banking Knowledge");
+    expect(financial?.displayNameEn).toBe("Financial & Banking Knowledge");
+    expect(financial?.nameBn).toBe("06_Financial_Knowledge");
+  });
+
   it("still maps rows written under the superseded latin root", () => {
     const mapped = mapBankQuestionPath({
       path: `${BB_BANGLA_ROOT_LATIN}/ভাষা/সমার্থক_শব্দ`,

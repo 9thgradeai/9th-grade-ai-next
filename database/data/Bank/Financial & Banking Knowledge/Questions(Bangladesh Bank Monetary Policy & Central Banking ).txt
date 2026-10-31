@@ -1,0 +1,1537 @@
+﻿Batch 1: Questions 1–50
+Inflation and monetary-policy fundamentals
+1. What is the primary objective of contractionary monetary policy when inflation is persistently high?
+A. Increase aggregate demand rapidly
+B. Reduce inflationary pressure
+C. Increase government expenditure
+D. Eliminate all unemployment
+Correct Answer: B. Reduce inflationary pressure
+Explanation: Contractionary monetary policy aims to moderate aggregate demand and reduce inflationary pressure. A central bank may raise policy rates, tighten liquidity or use other restrictive instruments. It cannot eliminate all unemployment or directly control every component of government expenditure.
+2. Which institution is responsible for conducting monetary policy in Bangladesh?
+A. Bangladesh Securities and Exchange Commission
+B. Ministry of Commerce
+C. Bangladesh Bank
+D. National Board of Revenue
+Correct Answer: C. Bangladesh Bank
+Explanation: Bangladesh Bank is the central bank of Bangladesh. It conducts monetary policy, manages official foreign-exchange reserves, oversees monetary and payment-system operations, and performs regulatory and supervisory functions under its legal mandate.
+3. Demand-pull inflation primarily occurs when—
+A. Aggregate demand exceeds the economy's productive capacity
+B. Production costs decline sharply
+C. Aggregate demand falls below aggregate supply
+D. The money supply remains unchanged under all conditions
+Correct Answer: A. Aggregate demand exceeds the economy's productive capacity
+Explanation: Demand-pull inflation occurs when aggregate demand grows faster than the economy's ability to supply goods and services. Strong consumption, investment or government spending can contribute to this pressure. Falling production costs generally reduce cost pressure rather than create it.
+4. Cost-push inflation may result from—
+A. A decline in energy prices
+B. A fall in production wages
+C. A sharp rise in productivity
+D. An increase in fuel and transportation costs
+Correct Answer: D. An increase in fuel and transportation costs
+Explanation: Higher fuel and transportation costs increase production and distribution expenses. Businesses may pass these additional costs to consumers, raising the general price level. The effect depends on competition, demand, exchange rates and the extent to which firms absorb the higher costs.
+5. The Consumer Price Index (CPI) primarily measures—
+A. The stock-market value of listed companies
+B. Changes in the prices of a representative basket of consumer goods and services
+C. Total government borrowing
+D. The quantity of currency notes issued
+Correct Answer: B. Changes in the prices of a representative basket of consumer goods and services
+Explanation: CPI measures changes in consumer prices over time using a representative basket of goods and services. CPI inflation is commonly calculated as the percentage change in the index over a specified period. It is different from stock-market movements, government borrowing and currency issuance.
+6. Disinflation means—
+A. A sustained decline in the general price level
+B. An increase in the rate of inflation
+C. A decline in the rate of inflation while prices may still rise
+D. The complete elimination of money
+Correct Answer: C. A decline in the rate of inflation while prices may still rise
+Explanation: Disinflation occurs when inflation slows. For example, if annual inflation falls from 10% to 7%, prices are still rising, but at a slower rate. A sustained decline in the general price level is called deflation.
+7. Deflation refers to—
+A. A persistent fall in the general price level
+B. A persistent rise in the general price level
+C. A temporary increase in one commodity's price
+D. A reduction in the fiscal deficit only
+Correct Answer: A. A persistent fall in the general price level
+Explanation: Deflation means a sustained decline in the overall price level. It differs from disinflation, which means a reduction in the rate of inflation. Deflation can increase the real burden of fixed nominal debt and may discourage spending if consumers expect prices to fall further.
+8. If nominal interest is 10% and expected inflation is 7%, the approximate expected real interest rate is—
+A. 17%
+B. 10%
+C. −3%
+D. 3%
+Correct Answer: D. 3%
+Explanation: The approximate Fisher relationship is:
+Expected real interest rate = Nominal interest rate − Expected inflation
+Therefore, \(10\%-7\%=\boxed{3\%}\). The exact Fisher calculation produces approximately 2.80%, but the standard approximation gives 3%.
+9. Under the Fisher relationship, the nominal interest rate is approximately equal to—
+A. The real interest rate minus expected inflation
+B. The real interest rate plus expected inflation
+C. Inflation multiplied by the money supply
+D. GDP growth minus unemployment
+Correct Answer: B. The real interest rate plus expected inflation
+Explanation: The approximate Fisher relationship is:
+Nominal interest rate ≈ Real interest rate + Expected inflation.
+For example, if the expected real return is 4% and expected inflation is 6%, the nominal interest rate is approximately 10%. The exact relationship is .
+10. Which policy combination is most consistent with reducing demand-driven inflation?
+A. Lower policy rates and expand liquidity
+B. Reduce reserve requirements and buy securities
+C. Raise policy rates and withdraw excess liquidity
+D. Increase unrestricted central-bank lending
+Correct Answer: C. Raise policy rates and withdraw excess liquidity
+Explanation: Raising policy rates and absorbing excess liquidity are generally contractionary measures. They can increase borrowing costs, restrain credit growth and moderate aggregate demand. The impact on inflation depends on transmission lags, inflation expectations and the source of the price pressure.
+11. Monetary-policy transmission describes—
+A. The transmission of tax revenue to local governments
+B. The conversion of foreign banknotes into domestic currency only
+C. The physical transportation of banknotes
+D. How policy decisions affect financial conditions and economic activity
+Correct Answer: D. How policy decisions affect financial conditions and economic activity
+Explanation: Monetary-policy transmission describes how central-bank decisions influence market interest rates, bank lending, exchange rates, asset prices, spending, output and inflation. These effects usually occur with a lag and vary with economic and financial conditions.
+12. A central bank's policy rate primarily influences—
+A. Short-term money-market interest rates and broader financing conditions
+B. The statutory rate of VAT directly
+C. The number of commercial banks automatically
+D. The face value of all existing currency notes
+Correct Answer: A. Short-term money-market interest rates and broader financing conditions
+Explanation: The policy rate is a key monetary-policy instrument. Changes in it influence short-term money-market rates and can affect deposit rates, lending rates and investment decisions. It does not directly determine VAT rates or the face value of currency notes.
+13. Which statement about monetary policy is most accurate?
+A. It can eliminate every supply shock immediately
+B. It affects economic activity through multiple channels and time lags
+C. It has no relationship with credit conditions
+D. It determines every commercial bank's lending rate exactly
+Correct Answer: B. It affects economic activity through multiple channels and time lags
+Explanation: Monetary policy works through interest rates, credit availability, exchange rates, expectations and asset prices. Its effects are not instantaneous, and commercial banks' lending rates also depend on funding costs, credit risk, competition and other factors.
+14. When inflation expectations become entrenched, a central bank may need to—
+A. Stop publishing economic data
+B. Guarantee negative real interest rates
+C. Maintain or tighten restrictive policy until inflation expectations are better anchored
+D. Eliminate reserve requirements permanently
+Correct Answer: C. Maintain or tighten restrictive policy until inflation expectations are better anchored
+Explanation: Persistent inflation expectations can influence wage negotiations, business pricing and household spending. A credible monetary-policy stance can help bring expectations under control. The appropriate degree of tightening depends on inflation trends, economic conditions and the central bank's mandate.
+15. Which is a potential limitation of monetary tightening?
+A. It always raises output immediately
+B. It guarantees lower unemployment in the short run
+C. It eliminates all exchange-rate fluctuations
+D. Its effects may be delayed and may weaken output and credit growth
+Correct Answer: D. Its effects may be delayed and may weaken output and credit growth
+Explanation: Monetary tightening can reduce inflationary pressure, but higher borrowing costs may also restrain consumption, investment and credit growth. Because monetary policy works with lags, policymakers must assess both its intended benefits and possible costs.
+Money supply and monetary aggregates
+16. Reserve money generally consists of—
+A. Currency in circulation plus banks' reserves at the central bank
+B. All shares and corporate bonds
+C. Only foreign-exchange reserves
+D. Only loans to private businesses
+Correct Answer: A. Currency in circulation plus banks' reserves at the central bank
+Explanation: Reserve money, also called the monetary base, generally comprises currency in circulation and commercial-bank reserve balances at the central bank. Its exact statistical presentation depends on the monetary survey's definitions. It is narrower than broad money.
+17. Broad money is generally broader than narrow money because it includes—
+A. Only physical banknotes
+B. Only the central bank's gold holdings
+C. Currency and qualifying bank deposits and other included monetary instruments
+D. Only government tax receipts
+Correct Answer: C. Currency and qualifying bank deposits and other included monetary instruments
+Explanation: Broad money includes currency held outside the banking system and qualifying deposits and other instruments defined in the relevant monetary statistics. It is broader than narrow money because it includes additional forms of liquid financial assets.
+18. In standard monetary terminology, M1 commonly includes—
+A. Only long-term government bonds
+B. Currency held by the public and qualifying transactions deposits
+C. All fixed assets owned by banks
+D. All foreign direct investment
+Correct Answer: B. Currency held by the public and qualifying transactions deposits
+Explanation: M1 is a narrow monetary aggregate that commonly includes currency held by the public and readily spendable transactions deposits. Exact definitions vary across countries and statistical frameworks. Long-term bonds, fixed assets and foreign direct investment are not normally components of M1.
+19. If a customer deposits cash into a demand-deposit account, what normally happens immediately, ignoring other transactions?
+A. Currency held by the public falls while bank deposits rise
+B. Both currency held by the public and bank deposits rise by the same amount
+C. Both automatically become zero
+D. The central bank's foreign reserves necessarily rise
+Correct Answer: A. Currency held by the public falls while bank deposits rise
+Explanation: A cash deposit transfers money from currency held by the public into a bank deposit. The composition of narrow money changes, but the transaction does not by itself necessarily increase the total amount of broad money. It also does not automatically affect foreign-exchange reserves.
+20. Which transaction can directly create a commercial bank deposit?
+A. A bank's purchase of office furniture from its existing cash balance, with no deposit payment
+B. A customer's withdrawal of cash from a deposit
+C. A bank's approval of a loan that has not yet been disbursed or credited
+D. A bank's disbursement of a loan by crediting the borrower's deposit account
+Correct Answer: D. A bank's disbursement of a loan by crediting the borrower's deposit account
+Explanation: When a bank disburses a loan by crediting a customer's account, it records a loan asset and a corresponding deposit liability. The deposit is created at that point. Mere approval of an undisbursed loan does not necessarily create a deposit.
+21. The simple money-multiplier model is commonly expressed as—
+A. Reserve ratio divided by the policy rate
+B. Currency ratio multiplied by inflation
+C. One divided by the required reserve ratio
+D. GDP divided by the exchange rate
+Correct Answer: C. One divided by the required reserve ratio
+Explanation: Under the simplest textbook assumptions, the money multiplier is , where  is the required reserve ratio expressed as a decimal. This model assumes, among other things, that banks lend all available excess reserves and that the public does not hold additional currency outside the model.
+22. Under the simplest textbook assumptions, if the required reserve ratio is 10%, the maximum theoretical deposit multiplier is—
+A. 0.1
+B. 10
+C. 5
+D. 100
+Correct Answer: B. 10
+Explanation: The simple multiplier is . With a reserve ratio of 10%, , so \(m=1/0.10=\boxed{10}\). This is a theoretical maximum, not a guarantee that actual bank deposits will multiply by exactly ten times.
+23. Why is the simple money multiplier not a reliable fixed predictor of actual broad-money growth?
+A. Banks never hold reserves
+B. All loans must be made in foreign currency
+C. Cash has no monetary role
+D. Actual lending depends on capital, liquidity, credit demand, risk and other behavioural factors
+Correct Answer: D. Actual lending depends on capital, liquidity, credit demand, risk and other behavioural factors
+Explanation: Actual bank lending is constrained by capital adequacy, liquidity, creditworthiness, risk appetite, regulation and demand for loans. Borrowers may also repay debt or hold cash. Consequently, the simple textbook multiplier does not provide a fixed mechanical prediction of broad-money growth.
+24. An increase in a central bank's net foreign assets can, other things equal, increase reserve money when—
+A. The corresponding domestic-currency impact is not fully sterilised
+B. All foreign assets are automatically destroyed
+C. Commercial-bank deposits are prohibited
+D. Government expenditure becomes zero
+Correct Answer: A. The corresponding domestic-currency impact is not fully sterilised
+Explanation: When a central bank acquires foreign assets and pays domestic currency, reserve money may increase. Sterilisation offsets some or all of that domestic-liquidity effect through other operations, such as selling securities. The actual result depends on the transaction and other balance-sheet movements.
+25. Sterilisation of a foreign-exchange intervention means—
+A. Banning all foreign trade
+B. Converting every foreign asset into gold
+C. Offsetting the intervention's domestic-liquidity effect through other policy operations
+D. Cancelling all commercial-bank loans
+Correct Answer: C. Offsetting the intervention's domestic-liquidity effect through other policy operations
+Explanation: Sterilisation means offsetting the effect of a foreign-exchange transaction on domestic monetary liquidity. For example, a central bank may purchase foreign currency and inject domestic currency, then sell domestic securities to absorb the injected liquidity.
+Policy rates, repo, SDF and SLF
+26. According to Bangladesh Bank's Quarterly Monetary Policy Statement for October–December 2026, the policy repo rate is—
+A. 7.50%
+B. 9.50%
+C. 11.00%
+D. 4.00%
+Correct Answer: B. 9.50%
+Explanation: The previous question set used 9.50% as the policy repo rate reported in the October–December 2026 monetary-policy statement. Since policy rates can change, verify the latest Bangladesh Bank statement and effective date before relying on this figure for the examination.
+27. In the same statement, the Standing Lending Facility (SLF) rate is—
+A. 7.50%
+B. 9.50%
+C. 4.00%
+D. 11.00%
+Correct Answer: D. 11.00%
+Explanation: The previous set used 11.00% as the SLF rate. The Standing Lending Facility provides eligible institutions with access to central-bank liquidity under specified conditions. The rate is distinct from the main policy repo rate and must be checked against the latest official publication.
+28. In the same statement, the Standing Deposit Facility (SDF) rate is—
+A. 7.50%
+B. 9.50%
+C. 11.00%
+D. 13.00%
+Correct Answer: A. 7.50%
+Explanation: The previous set used 7.50% as the SDF rate. The Standing Deposit Facility allows eligible institutions to place funds with the central bank under specified terms. Because facility rates can change, the figure should be verified against the latest official rate announcement.
+29. A repo transaction generally involves—
+A. An unsecured permanent grant to a commercial bank
+B. A commercial bank issuing shares to the central bank
+C. A sale of securities with an agreement to repurchase them later
+D. A mandatory conversion of deposits into equity
+Correct Answer: C. A sale of securities with an agreement to repurchase them later
+Explanation: A repurchase agreement, or repo, involves a securities transaction with a contractual agreement to reverse the transaction later at an agreed price. In monetary operations, a central bank can use repo to provide short-term liquidity against eligible securities.
+30. When Bangladesh Bank conducts a repo operation to inject liquidity, it generally—
+A. Sells securities outright without any repurchase agreement
+B. Provides funds against eligible securities under a repurchase agreement
+C. Collects income tax from depositors
+D. Cancels the borrowing bank's capital
+Correct Answer: B. Provides funds against eligible securities under a repurchase agreement
+Explanation: In a liquidity-injecting repo, the central bank provides funds against eligible securities under an agreement to reverse the securities transaction. This provides temporary liquidity to eligible counterparties. It is not an outright securities sale or a cancellation of bank capital.
+31. A reverse-repo-type liquidity absorption operation generally aims to—
+A. Increase bank lending immediately in all circumstances
+B. Finance household consumption directly
+C. Increase the fiscal deficit automatically
+D. Absorb liquidity from the banking system against securities under the applicable arrangement
+Correct Answer: D. Absorb liquidity from the banking system against securities under the applicable arrangement
+Explanation: A reverse-repo-type operation generally withdraws liquidity from the banking system. The precise transaction structure and terminology depend on the central bank's operational framework. It is important to distinguish such operations from liquidity-injecting repos and outright securities purchases.
+32. The Standing Deposit Facility primarily allows eligible counterparties to—
+A. Place funds with the central bank under specified terms
+B. Borrow unlimited funds without collateral
+C. Receive grants for non-performing loans
+D. Exchange shares for banknotes
+Correct Answer: A. Place funds with the central bank under specified terms
+Explanation: The SDF provides eligible counterparties with a facility for placing funds at the central bank under prescribed conditions. It can help absorb surplus liquidity and support the lower boundary of the interest-rate corridor.
+33. The Standing Lending Facility primarily provides—
+A. Retail deposits to households
+B. Permanent equity capital to private banks
+C. A facility for eligible institutions to obtain central-bank liquidity under specified terms
+D. Long-term consumer loans at a fixed retail rate
+Correct Answer: C. A facility for eligible institutions to obtain central-bank liquidity under specified terms
+Explanation: The SLF is a central-bank lending facility for eligible institutions. It can help them address short-term liquidity shortages, subject to the applicable eligibility, collateral and operational rules. It is not a retail lending product or a permanent capital injection.
+34. Under the usual interest-rate corridor arrangement, the SLF rate is above the policy rate and the SDF rate is below it. Using Bangladesh Bank's October–December 2026 settings, the corridor width between SLF and SDF is—
+A. 1 percentage point
+B. 3.5 percentage points
+C. 2 percentage points
+D. 4 percentage points
+Correct Answer: B. 3.5 percentage points
+Explanation: Using the rates in the previous question set:
+Corridor width = SLF rate − SDF rate
+= 11.00% − 7.50%
+= 3.50 percentage points.
+The corridor width is different from either facility's spread against the policy repo rate.
+35. Using the same published settings, the spread between the SLF rate and the policy repo rate is—
+A. 0.5 percentage point
+B. 2.5 percentage points
+C. 3.5 percentage points
+D. 1.5 percentage points
+Correct Answer: D. 1.5 percentage points
+Explanation: Spread = SLF rate − policy repo rate
+= 11.00% − 9.50%
+= 1.50 percentage points.
+Remember that the corridor's full width is 3.50 percentage points, while the SLF–repo spread is only 1.50 percentage points.
+36. If Bangladesh Bank raises its policy rate, the intended effect of a tightening move is generally to—
+A. Increase borrowing costs and moderate demand and inflationary pressure
+B. Make all loans interest-free
+C. Reduce every commercial bank's deposit rate to zero
+D. Increase the money multiplier without limit
+Correct Answer: A. Increase borrowing costs and moderate demand and inflationary pressure
+Explanation: A policy-rate increase generally tightens monetary conditions by influencing money-market and bank interest rates. Higher borrowing costs can restrain consumption, investment and credit demand, helping reduce inflationary pressure. The actual effect depends on transmission and economic conditions.
+37. Which rate is the appropriate benchmark in a question asking for Bangladesh Bank's main policy rate, rather than its emergency lending-facility rate?
+A. SDF rate
+B. SLF rate
+C. Policy repo rate
+D. A commercial bank's advertised deposit rate
+Correct Answer: C. Policy repo rate
+Explanation: The policy repo rate is the main policy-rate benchmark in the framework described in this question set. The SLF is a lending-facility rate, the SDF is a deposit-facility rate, and commercial banks' advertised deposit rates are retail rates rather than the central bank's main policy rate.
+38. The difference between the policy repo rate and the SDF rate under the October–December 2026 settings is—
+A. 3.5 percentage points
+B. 2 percentage points
+C. 1 percentage point
+D. 4 percentage points
+Correct Answer: B. 2 percentage points
+Explanation: Repo–SDF spread = Policy repo rate − SDF rate
+= 9.50% − 7.50%
+= 2 percentage points.
+Do not confuse this spread with the full corridor width, which is calculated using the SLF and SDF rates.
+39. Why can an SDF facility help place a floor under short-term money-market rates?
+A. It makes all commercial loans risk-free
+B. It abolishes interbank trading
+C. It guarantees that inflation is zero
+D. Eligible institutions have an alternative place to earn the facility rate on funds, subject to its terms
+Correct Answer: D. Eligible institutions have an alternative place to earn the facility rate on funds, subject to its terms
+Explanation: An eligible institution with surplus funds may compare the return available through the SDF with the return from lending in the money market. This alternative can help limit downward pressure on short-term market rates, subject to the facility's eligibility and operational conditions.
+40. Why might the SLF rate help limit upward pressure on overnight money-market rates?
+A. Eligible institutions have access to a central-bank lending option under specified conditions
+B. It requires all borrowers to repay their loans immediately
+C. It abolishes reserve requirements
+D. It guarantees unlimited unsecured lending to every institution
+Correct Answer: A. Eligible institutions have access to a central-bank lending option under specified conditions
+Explanation: The SLF can provide eligible institutions with a source of short-term central-bank liquidity. This option may limit excessive upward pressure on overnight rates. However, access is subject to the facility's rules and does not imply unlimited or unconditional lending.
+CRR, SLR and open-market operations
+41. CRR stands for—
+A. Capital Recovery Ratio
+B. Credit Risk Reserve
+C. Cash Reserve Ratio
+D. Currency Repayment Rate
+Correct Answer: C. Cash Reserve Ratio
+Explanation: CRR stands for Cash Reserve Ratio. It specifies the reserve requirement applicable to a bank under the relevant regulatory framework. The actual calculation must use the prescribed reservable liabilities and applicable rate.
+42. SLR stands for—
+A. Special Lending Rate
+B. Statutory Liquidity Ratio
+C. Securities Loss Reserve
+D. Standard Liability Return
+Correct Answer: B. Statutory Liquidity Ratio
+Explanation: SLR means Statutory Liquidity Ratio. It concerns the prescribed liquidity-asset requirement under applicable regulations. The eligible assets and liability base depend on the relevant rules and banking category.
+43. Bangladesh Bank's published reserve-ratio table lists the CRR for traditional commercial banking at—
+A. 4.0%
+B. 13.0%
+C. 5.5%
+D. 1.5%
+Correct Answer: A. 4.0%
+Explanation: The previous question set used 4.0% as the CRR for traditional commercial banking, based on the referenced Bangladesh Bank table. Because reserve requirements can change, verify the latest applicable circular and effective date before using this as a current regulatory fact.
+44. The same published table lists the SLR for traditional commercial banking at—
+A. 4.0%
+B. 5.0%
+C. 5.5%
+D. 13.0%
+Correct Answer: D. 13.0%
+Explanation: The previous set used 13.0% as the SLR for traditional commercial banking. SLR calculations depend on the relevant liability base and qualifying liquid assets. Check the latest Bangladesh Bank requirements, as well as any applicable exceptions, before the examination.
+45. According to the same table, the SLR listed for Islamic banking is—
+A. 13%
+B. 5.5%
+C. 4%
+D. 1.5%
+Correct Answer: B. 5.5%
+Explanation: The previous set used 5.5% as the SLR listed for Islamic banking. This is a time-sensitive regulatory figure based on the cited table, not a guarantee that the same rate remains effective. Verify the latest official rules for the relevant category.
+46. If a bank has a reservable deposit base of Tk 1,000 crore and a CRR of 4%, its required reserve amount is—
+A. Tk 40 crore
+B. Tk 4 crore
+C. Tk 400 crore
+D. Tk 104 crore
+Correct Answer: A. Tk 40 crore
+Explanation: Required reserves = Reservable deposit base × CRR.
+= Tk 1,000 crore × 4%
+= Tk 1,000 crore × 0.04
+= Tk 40 crore.
+The calculation assumes the entire stated base is subject to the given CRR.
+47. If the applicable SLR is 13% and the relevant liability base is Tk 2,000 crore, the SLR requirement calculated on that base is—
+A. Tk 26 crore
+B. Tk 130 crore
+C. Tk 260 crore
+D. Tk 1,300 crore
+Correct Answer: C. Tk 260 crore
+Explanation: Calculated SLR requirement = Relevant liability base × SLR.
+= Tk 2,000 crore × 13%
+= Tk 2,000 crore × 0.13
+= Tk 260 crore.
+This is a calculation using the stated base and rate; actual compliance depends on regulatory definitions and eligible assets.
+48. In a simplified textbook model, an increase in the required reserve ratio, all else equal, tends to—
+A. Increase the maximum theoretical deposit multiplier
+B. Have no possible effect on bank liquidity
+C. Eliminate the need for bank capital
+D. Reduce the maximum theoretical deposit multiplier
+Correct Answer: D. Reduce the maximum theoretical deposit multiplier
+Explanation: In the simple model, the multiplier is . If the reserve ratio rises, the multiplier falls. For example, a 10% reserve ratio gives a multiplier of 10, while a 20% ratio gives a multiplier of 5. Actual money creation also depends on other factors.
+49. Open-market operations (OMO) involve central-bank transactions in—
+A. Consumer goods in retail shops
+B. Securities in financial markets to influence liquidity and monetary conditions
+C. Residential property for household use only
+D. Physical exports of agricultural commodities
+Correct Answer: B. Securities in financial markets to influence liquidity and monetary conditions
+Explanation: Open-market operations involve central-bank transactions in securities to influence banking-system liquidity and monetary conditions. Purchases generally inject liquidity, while sales generally absorb it, assuming other factors remain unchanged.
+50. To absorb excess banking-system liquidity through an outright open-market sale, a central bank would generally—
+A. Sell securities to market participants
+B. Buy securities from market participants
+C. Reduce the amount of securities outstanding by gifting them
+D. Increase bank deposits through unsecured lending
+Correct Answer: A. Sell securities to market participants
+Explanation: In an outright OMO sale, the central bank sells securities and receives settlement funds from buyers. This generally withdraws reserve liquidity from the banking system. By contrast, an outright purchase generally injects liquidity.
+Batch 2: Questions 51–100
+Monetary operations and liquidity management
+51. When Bangladesh Bank purchases securities outright from a commercial bank, the immediate intended liquidity effect is generally to—
+A. Reduce the purchasing bank's reserves
+B. Increase its reserve balances, other things equal
+C. Reduce the government's tax revenue automatically
+D. Increase the CRR percentage automatically
+Correct Answer: B. Increase its reserve balances, other things equal
+Explanation: When Bangladesh Bank purchases securities and settles the transaction through the banking system, the seller generally receives funds that increase its reserve balance. This injects liquidity, assuming other transactions do not offset the effect.
+52. Which best distinguishes an outright OMO purchase from a repo liquidity injection?
+A. An outright purchase is always reversed the next day
+B. A repo cannot involve securities
+C. An outright purchase is a securities transaction without a contractual repurchase leg, whereas repo includes one
+D. Both terms always mean exactly the same contract
+Correct Answer: C. An outright purchase is a securities transaction without a contractual repurchase leg, whereas repo includes one
+Explanation: An outright purchase transfers securities without a contractual obligation to reverse the transaction on a specified date. A repo involves a sale with an agreement to repurchase the securities later. Both can inject liquidity, but their contractual structures differ.
+53. Which is the most direct purpose of routine liquidity-management operations by a central bank?
+A. Fix every company's profit margin
+B. Set the statutory income-tax rate
+C. Guarantee a trade surplus
+D. Steer money-market liquidity and short-term interest rates toward the policy stance
+Correct Answer: D. Steer money-market liquidity and short-term interest rates toward the policy stance
+Explanation: Central banks manage liquidity to keep short-term market conditions consistent with their monetary-policy objectives. These operations can reduce temporary liquidity imbalances and help guide money-market rates. They do not directly determine corporate profit margins, taxation or the trade balance.
+54. A temporary shortage of bank reserves may cause—
+A. Upward pressure on overnight funding rates, other things equal
+B. Automatic elimination of inflation
+C. A permanent rise in every bank's equity
+D. A fall in all reserve requirements without a policy decision
+Correct Answer: A. Upward pressure on overnight funding rates, other things equal
+Explanation: When banks need reserves to meet settlement obligations and available liquidity is scarce, they may compete for overnight funding. This can raise interbank rates. The result depends on liquidity distribution, central-bank operations and access to standing facilities.
+55. If a central bank raises CRR while the deposit base remains unchanged, the required cash reserves will generally—
+A. Decline
+B. Remain unchanged in every case
+C. Increase
+D. Become equal to the bank's share capital
+Correct Answer: C. Increase
+Explanation: Required reserves equal the applicable reservable base multiplied by the CRR. With the base unchanged, a higher CRR increases the required reserve amount. The effect on excess liquidity depends on how many eligible reserves the bank already holds.
+56. A reduction in SLR may give a bank more flexibility to—
+A. Ignore capital adequacy rules
+B. Hold fewer qualifying liquid assets and allocate funds elsewhere, subject to other constraints
+C. Avoid all credit risk
+D. Stop maintaining accounting records
+Correct Answer: B. Hold fewer qualifying liquid assets and allocate funds elsewhere, subject to other constraints
+Explanation: A lower SLR can reduce the amount of assets a bank must maintain in qualifying liquid forms. This may create greater flexibility in allocating funds. However, capital requirements, liquidity-risk rules and creditworthiness constraints continue to apply.
+57. Which statement about CRR and SLR is correct?
+A. They are both identical measures of bank profitability
+B. CRR is a tax on consumers, while SLR is a tax on exports
+C. Neither has any possible effect on liquidity management
+D. They are distinct regulatory reserve/liquidity requirements, with different definitions and eligible assets
+Correct Answer: D. They are distinct regulatory reserve/liquidity requirements, with different definitions and eligible assets
+Explanation: CRR concerns the prescribed cash-reserve requirement, while SLR concerns the prescribed liquidity-asset requirement under the relevant framework. Their calculation bases and eligible assets differ. Neither is a measure of bank profitability.
+58. If the central bank sells securities and receives settlement funds from banks, the direct effect, other things equal, is to—
+A. Drain reserve liquidity from the banking system
+B. Increase reserve liquidity
+C. Eliminate bank liabilities
+D. Increase foreign reserves by definition
+Correct Answer: A. Drain reserve liquidity from the banking system
+Explanation: Banks pay for securities purchased from the central bank. Settlement transfers funds to the central bank and generally reduces the banks' reserve balances. This is a liquidity-absorbing operation, assuming other transactions do not offset the effect.
+59. Which operation would normally inject liquidity into the banking system?
+A. An outright sale of securities by the central bank
+B. An increase in CRR
+C. An outright purchase of securities by the central bank
+D. A rise in the SDF rate alone, with no transaction
+Correct Answer: C. An outright purchase of securities by the central bank
+Explanation: An outright purchase generally injects liquidity because the central bank pays the seller through the settlement system. An outright sale generally absorbs liquidity. An increase in CRR tends to increase reserve requirements rather than inject liquidity.
+60. What is the most appropriate interpretation of an increase in the weighted-average call money rate?
+A. It proves that CPI inflation has fallen
+B. It may indicate tighter conditions in the overnight interbank lending market
+C. It proves that all banks have stopped lending
+D. It automatically raises the SLR
+Correct Answer: B. It may indicate tighter conditions in the overnight interbank lending market
+Explanation: The weighted-average call money rate reflects the cost of short-term interbank borrowing under the applicable calculation method. An increase may indicate tighter overnight liquidity or stronger demand for funds, but it does not by itself prove that inflation has fallen or that all banks have stopped lending.
+Monetary aggregates and credit
+61. In Bangladesh Bank's monetary-survey framework, broad money is commonly analysed through—
+A. Net foreign assets and net domestic assets
+B. Export earnings and VAT receipts only
+C. Stock-market indices only
+D. Public-sector salaries only
+Correct Answer: A. Net foreign assets and net domestic assets
+Explanation: Monetary surveys commonly analyse broad money in relation to net foreign assets and net domestic assets. Net foreign assets capture relevant foreign assets and liabilities, while net domestic assets include domestic monetary counterparts under the statistical framework.
+62. If broad money grows rapidly while real output growth remains weak, a possible macroeconomic risk is—
+A. Guaranteed deflation
+B. Automatic improvement in productivity
+C. Elimination of imported inflation
+D. Additional inflationary pressure, depending on money demand and supply conditions
+Correct Answer: D. Additional inflationary pressure, depending on money demand and supply conditions
+Explanation: Rapid broad-money growth alongside weak real output can create inflationary pressure if nominal spending rises faster than the supply of goods and services. However, the relationship is not automatic; money demand, velocity, credit conditions and supply shocks also matter.
+63. An increase in net domestic assets can contribute to broad-money growth through—
+A. A mandatory reduction in all bank deposits
+B. A complete ban on credit creation
+C. Domestic credit expansion, other things equal
+D. Automatic destruction of reserve money
+Correct Answer: C. Domestic credit expansion, other things equal
+Explanation: Domestic credit expansion can increase monetary assets and deposits in the banking system, contributing to growth in broad money. The precise accounting relationship depends on the monetary-survey framework and the corresponding balance-sheet entries.
+64. Net foreign assets of the banking system generally reflect—
+A. Only domestic household loans
+B. Foreign assets net of foreign liabilities under the relevant statistical definition
+C. The total value of domestic real estate
+D. Only banknote printing costs
+Correct Answer: B. Foreign assets net of foreign liabilities under the relevant statistical definition
+Explanation: Net foreign assets are calculated by subtracting relevant foreign liabilities from foreign assets. They are not the same as domestic loans, real estate holdings or banknote printing costs.
+65. Which is the best example of a monetary-policy transmission channel?
+A. Higher policy rates influence lending rates, spending and aggregate demand
+B. Higher policy rates directly rewrite the constitution
+C. Reserve ratios determine the rainfall level
+D. OMO directly determines crop yields
+Correct Answer: A. Higher policy rates influence lending rates, spending and aggregate demand
+Explanation: The interest-rate channel operates when changes in policy rates influence market and bank rates. Higher financing costs can reduce borrowing, consumption and investment, moderating aggregate demand and potentially reducing inflation over time.
+66. A central bank that purchases foreign currency from exporters or banks may initially—
+A. Reduce domestic-currency liquidity in all cases
+B. Have no possible balance-sheet effect
+C. Increase domestic-currency liquidity unless the effect is offset
+D. Eliminate all external liabilities
+Correct Answer: C. Increase domestic-currency liquidity unless the effect is offset
+Explanation: When the central bank purchases foreign currency and pays domestic currency, domestic reserve balances can increase. The central bank can sterilise the liquidity injection through offsetting operations. The final effect depends on settlement arrangements and other transactions.
+67. Which measure is most directly associated with the central bank's domestic monetary liabilities?
+A. The market capitalisation of the Dhaka Stock Exchange
+B. Bangladesh's total imports
+C. The number of listed companies
+D. Reserve money
+Correct Answer: D. Reserve money
+Explanation: Reserve money, or the monetary base, includes currency in circulation and commercial-bank reserve balances at the central bank. It is a central monetary measure associated with the central bank's monetary liabilities.
+68. If a central bank injects liquidity but simultaneously sells securities to absorb an equivalent amount, the policy operation is best described as—
+A. Full sterilisation of the liquidity injection
+B. A guaranteed expansion of broad money
+C. Fiscal monetisation in every case
+D. A default on bank deposits
+Correct Answer: A. Full sterilisation of the liquidity injection
+Explanation: If an operation injects Tk 500 crore and another operation absorbs Tk 500 crore, their direct liquidity effects offset each other. This is full sterilisation of the initial injection, assuming no other relevant transactions occur.
+69. In monetary analysis, the velocity of money is commonly defined as—
+A. Money supply divided by the policy rate
+B. Nominal GDP divided by a chosen money-stock measure
+C. The CRR divided by SLR
+D. Foreign reserves divided by exports only
+Correct Answer: B. Nominal GDP divided by a chosen money-stock measure
+Explanation: Velocity measures how frequently a unit of money is used to support nominal economic transactions over a period. A common proxy is nominal GDP divided by a selected monetary aggregate. The result depends on which money measure is used.
+70. If nominal GDP is Tk 30 trillion and the relevant money stock is Tk 10 trillion, the implied velocity is—
+A. 0.3
+B. 2
+C. 3
+D. 20
+Correct Answer: C. 3
+Explanation: Velocity = Nominal GDP ÷ Money stock.
+= Tk 30 trillion ÷ Tk 10 trillion
+= 3.
+The calculation assumes both figures cover compatible periods and that the specified monetary aggregate is the intended denominator.
+Inflation, expectations and policy stance
+71. Headline inflation generally refers to—
+A. Inflation excluding all food and energy items in every statistical system
+B. The increase in stock prices only
+C. Changes in nominal wages only
+D. The overall inflation measure, including the items covered by the published CPI
+Correct Answer: D. The overall inflation measure, including the items covered by the published CPI
+Explanation: Headline inflation refers to the overall published inflation measure, generally based on the full CPI basket. It differs from core inflation, which may exclude selected volatile components or use other adjustments to assess underlying price trends.
+72. Core inflation is often used to assess—
+A. Underlying inflation trends by reducing the influence of selected volatile components
+B. The country's total foreign debt only
+C. The return on government bonds only
+D. Changes in the number of bank branches
+Correct Answer: A. Underlying inflation trends by reducing the influence of selected volatile components
+Explanation: Core inflation measures seek to identify underlying inflationary pressures by reducing the influence of selected volatile prices. The exact methodology varies by country and statistical publication. Core inflation does not measure government debt or bank-branch growth.
+73. Which situation best illustrates imported inflation?
+A. A fall in international oil prices reduces domestic transport costs
+B. Domestic productivity rises
+C. Higher world fuel prices increase the domestic cost of imported energy
+D. The government reduces a domestic fee
+Correct Answer: C. Higher world fuel prices increase the domestic cost of imported energy
+Explanation: Imported inflation occurs when higher prices of imported goods or inputs raise domestic costs. Higher international fuel prices can increase energy and transportation costs. Exchange-rate depreciation may amplify this effect by making foreign goods more expensive in domestic currency.
+74. If the domestic currency depreciates, the local-currency price of imported goods may rise because—
+A. Imported goods become legally free
+B. More domestic currency may be required to purchase a unit of foreign currency
+C. The domestic price index ceases to exist
+D. All importers automatically receive subsidies
+Correct Answer: B. More domestic currency may be required to purchase a unit of foreign currency
+Explanation: When the domestic currency depreciates, a unit of foreign currency costs more domestic currency. If foreign prices and other costs remain unchanged, the domestic-currency cost of imports may increase. The extent of the pass-through depends on pricing, competition and other conditions.
+75. Which is a plausible reason monetary policy cannot fully eliminate supply-driven inflation immediately?
+A. Interest rates directly produce additional fuel
+B. Monetary policy controls the weather
+C. A policy-rate change instantly repairs supply chains
+D. Interest-rate changes cannot directly create the missing physical supply of goods
+Correct Answer: D. Interest-rate changes cannot directly create the missing physical supply of goods
+Explanation: Supply-driven inflation may arise from shortages, higher input costs or disruptions to production and distribution. Monetary tightening can restrain second-round effects and inflation expectations, but it cannot directly produce missing fuel, food or other goods.
+76. A credible inflation target can help monetary policy by—
+A. Anchoring expectations about future inflation
+B. Guaranteeing a fixed exchange rate forever
+C. Eliminating all uncertainty
+D. Replacing the need for economic data
+Correct Answer: A. Anchoring expectations about future inflation
+Explanation: A credible inflation target gives households, firms and financial markets a reference point for expected future inflation. Well-anchored expectations can make inflation easier to control. A target does not guarantee a fixed exchange rate or eliminate uncertainty.
+77. If inflation falls from 10% to 8% but the general price level continues rising, the economy is experiencing—
+A. Deflation
+B. Hyperinflation by definition
+C. Disinflation
+D. A permanent fall in nominal prices
+Correct Answer: C. Disinflation
+Explanation: Inflation has slowed from 10% to 8%, but prices are still increasing. This is disinflation. Deflation would require a sustained fall in the general price level rather than simply a slower rate of increase.
+78. Which policy stance is most consistent with expansionary monetary policy?
+A. Raising CRR and withdrawing liquidity simultaneously
+B. Reducing policy rates or injecting liquidity to ease monetary conditions
+C. Raising every borrowing cost to suppress demand
+D. Selling securities to drain liquidity in every circumstance
+Correct Answer: B. Reducing policy rates or injecting liquidity to ease monetary conditions
+Explanation: Expansionary monetary policy generally aims to ease financial conditions through lower policy rates, liquidity injections or other accommodative measures. The actual impact depends on whether banks and borrowers respond to the easier conditions.
+79. Which combination is generally contractionary, other things equal?
+A. Lower policy rates, lower CRR and OMO purchases
+B. Lower SDF and large-scale liquidity injections in all circumstances
+C. Higher bank lending subsidies with no offset
+D. Higher policy rates, higher reserve requirements and liquidity absorption
+Correct Answer: D. Higher policy rates, higher reserve requirements and liquidity absorption
+Explanation: Higher policy rates, higher reserve requirements and liquidity-absorbing operations generally tighten monetary conditions. The combined effect depends on the central bank's operational framework, reserve rules and other economic conditions.
+80. Why should the central bank consider both inflation and output conditions when setting policy?
+A. Monetary decisions involve trade-offs, uncertainty and different transmission lags
+B. Output and inflation always move in the same direction
+C. Output is never affected by interest rates
+D. Inflation is solely a bookkeeping concept
+Correct Answer: A. Monetary decisions involve trade-offs, uncertainty and different transmission lags
+Explanation: Monetary policy affects both price stability and economic activity. Excessive tightening can weaken output, while excessive easing can increase inflationary pressure. Policymakers must assess current data, expectations, risks and the time needed for policy to take effect.
+Foreign-exchange reserves
+81. Bangladesh Bank's foreign-exchange reserves are primarily intended to support—
+A. The profits of every private company
+B. Only the payment of domestic income tax
+C. External payment capacity, confidence and foreign-exchange management
+D. The financing of every household mortgage
+Correct Answer: C. External payment capacity, confidence and foreign-exchange management
+Explanation: Official foreign-exchange reserves provide external liquidity and can support eligible foreign-exchange operations and external payment needs. They can also contribute to confidence in a country's ability to meet foreign-currency obligations. They are not intended to finance every private company's operations.
+82. Which institution is responsible for managing Bangladesh's official foreign-exchange reserves?
+A. Bangladesh Securities and Exchange Commission
+B. Bangladesh Bank
+C. Dhaka Stock Exchange
+D. National Board of Revenue
+Correct Answer: B. Bangladesh Bank
+Explanation: Bangladesh Bank manages the country's official foreign-exchange reserves under its legal mandate and reserve-management framework. The BSEC regulates the securities market, the DSE operates a stock exchange, and the NBR administers taxation and customs.
+83. Which is generally an appropriate reserve asset for a central bank, subject to its investment policy and risk limits?
+A. A highly liquid, eligible foreign-currency government security
+B. An unlisted domestic restaurant
+C. A household's personal furniture
+D. An unsecured loan to any individual
+Correct Answer: A. A highly liquid, eligible foreign-currency government security
+Explanation: Reserve assets should generally be sufficiently liquid and subject to appropriate safety and risk-management standards. Eligible foreign-currency government securities can be suitable reserve assets. An unlisted domestic business or household furniture would not normally serve the same reserve-management purpose.
+84. What does BPM6 refer to in the context of international-reserve statistics?
+A. A domestic commercial-bank lending code
+B. A government budget classification
+C. A stock-market trading platform
+D. The sixth edition of the IMF's Balance of Payments and International Investment Position Manual
+Correct Answer: D. The sixth edition of the IMF's Balance of Payments and International Investment Position Manual
+Explanation: BPM6 is the IMF's sixth edition of the Balance of Payments and International Investment Position Manual. It provides international statistical standards for recording external transactions and positions, including the treatment of reserve assets.
+85. Why can Bangladesh Bank's gross reserve figure differ from its BPM6-compliant reserve figure?
+A. The two figures must always be identical by definition
+B. BPM6 excludes every foreign-currency asset
+C. The measures may apply different statistical definitions and eligibility treatments
+D. Gross reserves count only domestic banknotes
+Correct Answer: C. The measures may apply different statistical definitions and eligibility treatments
+Explanation: Gross reserve figures and BPM6-compliant reserve figures may differ because the measures use different definitions and treatments of reserve-related assets and liabilities. They should not be treated as interchangeable. Use Bangladesh Bank's published methodology when interpreting a particular figure.
+86. Which development is most likely to increase foreign-exchange inflows into Bangladesh, other things equal?
+A. A fall in inward remittances
+B. Higher remittance receipts through formal channels
+C. A rise in import payments without offsetting inflows
+D. A decline in export receipts
+Correct Answer: B. Higher remittance receipts through formal channels
+Explanation: Higher formal remittance receipts generally increase foreign-exchange inflows through the recorded channels. The overall effect on reserves depends on other foreign-exchange transactions, including imports, debt payments, capital flows and central-bank intervention.
+87. If Bangladesh Bank sells foreign currency to meet market demand, the immediate balance-sheet effect generally includes—
+A. An increase in its foreign assets
+B. A guaranteed increase in gross reserves
+C. An automatic increase in exports
+D. A reduction in its foreign-currency holdings, other things equal
+Correct Answer: D. A reduction in its foreign-currency holdings, other things equal
+Explanation: When Bangladesh Bank sells foreign currency, its foreign-currency holdings generally decline by the amount sold, ignoring other transactions and valuation changes. The operation can meet market demand, but it does not automatically increase exports or reserves.
+88. Foreign-exchange intervention may affect domestic liquidity because—
+A. Buying or selling foreign currency can change the domestic-currency monetary base unless sterilised
+B. Foreign currency has no balance-sheet counterpart
+C. Intervention automatically changes the VAT rate
+D. Every intervention permanently eliminates inflation
+Correct Answer: A. Buying or selling foreign currency can change the domestic-currency monetary base unless sterilised
+Explanation: A foreign-currency purchase paid for in domestic currency can inject liquidity, while a foreign-currency sale against domestic currency can absorb it. Sterilisation can offset these effects. The precise outcome depends on settlement and other monetary operations.
+89. Which is the most accurate statement about reserve adequacy?
+A. A single reserve figure is sufficient to assess all external risks
+B. Reserves need not be liquid
+C. Adequacy is assessed using indicators such as import cover, short-term external debt and potential external financing needs
+D. The size of reserves has no relevance to external stability
+Correct Answer: C. Adequacy is assessed using indicators such as import cover, short-term external debt and potential external financing needs
+Explanation: Reserve adequacy is assessed using multiple indicators, including import cover, short-term external debt and potential external financing requirements. Liquidity, usability and the nature of external shocks also matter. A single gross-reserve figure cannot capture every external risk.
+90. If official foreign-exchange reserves rise because of a foreign-currency borrowing, what is the best conclusion?
+A. National net foreign assets must rise by exactly the same amount
+B. Gross reserves may rise, but associated liabilities mean the improvement in the net external position can be smaller
+C. The country has necessarily achieved a current-account surplus
+D. External debt must have fallen
+Correct Answer: B. Gross reserves may rise, but associated liabilities mean the improvement in the net external position can be smaller
+Explanation: Foreign-currency borrowing can increase gross reserve holdings while simultaneously increasing external liabilities. Consequently, the improvement in the net external position may be smaller than the increase in gross reserves. Borrowing does not by itself establish a current-account surplus.
+Applied calculations and numerical questions
+91. A bank has a reservable deposit base of Tk 5,000 crore and a CRR of 4%. Required reserves equal—
+A. Tk 20 crore
+B. Tk 100 crore
+C. Tk 200 crore
+D. Tk 500 crore
+Correct Answer: C. Tk 200 crore
+Explanation: Required reserves = Reservable deposit base × CRR.
+= Tk 5,000 crore × 4%
+= Tk 5,000 crore × 0.04
+= Tk 200 crore.
+The result assumes the entire stated base is subject to the specified CRR.
+92. A bank has a relevant liability base of Tk 800 crore and an applicable SLR of 13%. Its calculated SLR requirement is—
+A. Tk 10.4 crore
+B. Tk 52 crore
+C. Tk 80 crore
+D. Tk 104 crore
+Correct Answer: D. Tk 104 crore
+Explanation: Calculated SLR requirement = Relevant liability base × SLR.
+= Tk 800 crore × 13%
+= Tk 800 crore × 0.13
+= Tk 104 crore.
+This is a mathematical calculation based on the assumed applicable rate and liability base.
+93. If the policy rate increases from 9.5% to 10.0%, the increase is—
+A. 0.5 percentage point
+B. 5 percentage points
+C. 0.05 percentage point
+D. 50 percentage points
+Correct Answer: A. 0.5 percentage point
+Explanation: The change is \(10.0\%-9.5\%=\boxed{0.5}\) percentage point. The percentage-point change measures the arithmetic difference between two rates; it is not the same as the percentage increase relative to the original rate.
+94. If nominal interest is 12% and expected inflation is 9%, the approximate expected real interest rate is—
+A. 21%
+B. 3%
+C. −3%
+D. 9%
+Correct Answer: B. 3%
+Explanation: Approximate expected real interest rate = Nominal interest rate − Expected inflation.
+= 12% − 9%
+= 3%.
+The exact Fisher calculation gives approximately 2.75%, but the approximate method is normally used when the question explicitly asks for the approximate real rate.
+95. If broad money increases from Tk 20 trillion to Tk 22 trillion, its percentage growth is—
+A. 2%
+B. 5%
+C. 10%
+D. 20%
+Correct Answer: C. 10%
+Explanation: Percentage growth = .
+= 
+= 
+= 10%.
+96. If the required reserve ratio in a simplified model falls from 20% to 10%, the simple theoretical deposit multiplier changes from—
+A. 5 to 10
+B. 10 to 5
+C. 20 to 10
+D. 2 to 1
+Correct Answer: A. 5 to 10
+Explanation: The simple multiplier is .
+* At 20%: .
+* At 10%: .
+Therefore, the theoretical multiplier doubles. Actual broad-money growth does not necessarily double because real-world lending depends on several other factors.
+97. A central bank injects Tk 500 crore through a liquidity operation and absorbs Tk 200 crore through another operation. The net injection is—
+A. Tk 700 crore
+B. Tk 200 crore
+C. Tk 500 crore
+D. Tk 300 crore
+Correct Answer: D. Tk 300 crore
+Explanation: Net injection = Liquidity injected − Liquidity absorbed.
+= Tk 500 crore − Tk 200 crore
+= Tk 300 crore.
+The calculation ignores other transactions and balance-sheet changes.
+98. If the exchange rate moves from Tk 110 per US dollar to Tk 121 per US dollar, the taka has—
+A. Appreciated against the dollar
+B. Depreciated against the dollar
+C. Remained unchanged
+D. Become convertible at par
+Correct Answer: B. Depreciated against the dollar
+Explanation: The exchange rate rises from Tk 110 to Tk 121 per dollar. More taka are now required to purchase one US dollar, indicating depreciation of the taka against the dollar. The percentage increase in the quotation is \((121-110)/110\times100=10\%\).
+99. If gross reserves are US5 billion, the simple gross-reserve import cover is—
+A. 3 months
+B. 5 months
+C. 6 months
+D. 10 months
+Correct Answer: C. 6 months
+Explanation: Import cover = Foreign-exchange reserves ÷ Average monthly imports.
+= US5 billion
+= 6 months.
+This is a simplified calculation and assumes the reserve and import measures are consistent.
+100. If nominal GDP is Tk 50 trillion and broad money is Tk 25 trillion, the implied velocity of broad money is—
+A. 2
+B. 0.5
+C. 25
+D. 75
+Correct Answer: A. 2
+Explanation: Velocity = Nominal GDP ÷ Broad money.
+= Tk 50 trillion ÷ Tk 25 trillion
+= 2.
+The implied velocity is dimensionless when the numerator and denominator are expressed in compatible monetary units.
+Batch 3: Questions 101–150
+Bangladesh Bank: institutional and operational understanding
+101. Which department of Bangladesh Bank is primarily associated with formulating and analysing monetary policy?
+A. Banking Regulation and Policy Department only
+B. Monetary Policy Department
+C. Department of Agricultural Marketing
+D. Office of the Registrar of Joint Stock Companies
+Correct Answer: B. Monetary Policy Department
+Explanation: Bangladesh Bank's Monetary Policy Department is associated with monetary-policy analysis, formulation and related research. The other options do not identify the department primarily associated with monetary-policy work.
+102. The Monetary Policy Committee (MPC) primarily helps Bangladesh Bank—
+A. Set the national income-tax rate
+B. Determine the daily prices of all consumer goods
+C. Approve every private-sector loan
+D. Review macroeconomic conditions and make monetary-policy decisions
+Correct Answer: D. Review macroeconomic conditions and make monetary-policy decisions
+Explanation: A Monetary Policy Committee reviews economic conditions, inflation, monetary developments and relevant risks as part of the monetary-policy decision-making framework. It does not set income-tax rates or approve individual commercial-bank loans. The committee's precise composition and legal status should be checked against the applicable current framework.
+103. A monetary-policy statement is most useful to market participants because it communicates—
+A. The central bank's policy stance, assessment and relevant decisions
+B. The guaranteed future profit of every commercial bank
+C. Every borrower's credit score
+D. The final market price of every listed share
+Correct Answer: A. The central bank's policy stance, assessment and relevant decisions
+Explanation: A monetary-policy statement communicates the central bank's assessment of economic conditions, its policy decisions and its outlook. Market participants use this information to assess likely financing conditions. It does not guarantee bank profits or determine every market price.
+104. Which is a principal transmission channel of monetary tightening?
+A. An automatic reduction in all import duties
+B. An immediate increase in physical production capacity
+C. Higher financing costs that can moderate consumption and investment
+D. The abolition of the foreign-exchange market
+Correct Answer: C. Higher financing costs that can moderate consumption and investment
+Explanation: Monetary tightening can raise borrowing costs and make some consumption and investment decisions less attractive. This moderates aggregate demand and may reduce inflationary pressure over time. It does not directly change import duties or immediately expand productive capacity.
+105. Which statement best describes central-bank independence in monetary-policy implementation?
+A. The central bank is exempt from all laws
+B. It may have operational discretion within its statutory mandate and accountability framework
+C. It must ignore inflation data
+D. It has authority to set every private-sector price
+Correct Answer: B. It may have operational discretion within its statutory mandate and accountability framework
+Explanation: Central-bank independence generally concerns the ability to make or implement monetary-policy decisions within its legally defined mandate. It does not mean exemption from law or freedom from accountability. The degree and form of independence depend on the relevant country's legal framework.
+106. Why is reliable and timely economic data important to monetary policy?
+A. It eliminates all uncertainty
+B. It makes policy decisions unnecessary
+C. It guarantees that every forecast is correct
+D. It helps policymakers assess inflation, demand, liquidity and risks
+Correct Answer: D. It helps policymakers assess inflation, demand, liquidity and risks
+Explanation: Monetary-policy decisions depend on information about inflation, output, credit, money supply, exchange rates and financial conditions. Reliable data improves assessment, although uncertainty and forecasting errors cannot be eliminated completely.
+107. Which indicator measures the average change in consumer prices over a specified period?
+A. CPI inflation
+B. Capital adequacy ratio
+C. Export concentration ratio
+D. Non-performing loan ratio
+Correct Answer: A. CPI inflation
+Explanation: CPI inflation measures the percentage change in the Consumer Price Index over a specified period. Capital adequacy and non-performing loan ratios are banking indicators, while export concentration measures the distribution of exports across products or markets.
+108. Which is the clearest distinction between fiscal and monetary policy?
+A. Fiscal policy is conducted only by commercial banks
+B. Monetary policy consists exclusively of income taxation
+C. Fiscal policy concerns government spending and taxation; monetary policy concerns monetary and financial conditions
+D. Both terms mean foreign-exchange intervention only
+Correct Answer: C. Fiscal policy concerns government spending and taxation; monetary policy concerns monetary and financial conditions
+Explanation: Fiscal policy primarily concerns government expenditure, taxation and borrowing decisions. Monetary policy concerns monetary conditions, interest rates and liquidity. The two policies interact, but they are not interchangeable.
+109. If the government borrows heavily from the banking system, a potential concern is—
+A. The automatic disappearance of public debt
+B. Reduced private-sector credit availability or inflationary pressure, depending on financing and economic conditions
+C. Guaranteed growth in exports
+D. The elimination of all interest-rate risk
+Correct Answer: B. Reduced private-sector credit availability or inflationary pressure, depending on financing and economic conditions
+Explanation: Heavy government borrowing from banks may compete with private-sector borrowers for available funding. Depending on how borrowing is financed and the economy's condition, it can also contribute to inflationary pressure. These outcomes are possible risks, not inevitable consequences of every increase in public borrowing.
+110. What is the most accurate description of a central bank's lender-of-last-resort role?
+A. It routinely finances every unprofitable company
+B. It guarantees every investment made by households
+C. It permanently replaces commercial-bank deposits
+D. It may provide emergency liquidity to eligible institutions under applicable conditions and safeguards
+Correct Answer: D. It may provide emergency liquidity to eligible institutions under applicable conditions and safeguards
+Explanation: A lender of last resort can provide emergency liquidity to eligible financial institutions facing funding difficulties. The support is subject to legal authority, operational conditions and safeguards. It is not a blanket guarantee against every form of financial loss or insolvency.
+Money-market mechanics and banking liquidity
+111. The call money market is primarily associated with—
+A. Short-term unsecured borrowing and lending among eligible financial institutions
+B. Long-term mortgages for households
+C. Equity issuance by listed companies
+D. International development grants
+Correct Answer: A. Short-term unsecured borrowing and lending among eligible financial institutions
+Explanation: The call money market is used for short-term borrowing and lending, commonly overnight, among eligible financial institutions. It helps institutions manage temporary liquidity needs. It differs from mortgage lending, equity issuance and development assistance.
+112. The weighted-average call money rate is—
+A. A measure of annual CPI inflation
+B. The statutory SLR for every bank
+C. An average interbank call-money interest rate weighted according to the applicable transaction methodology
+D. The official rate for all retail deposits
+Correct Answer: C. An average interbank call-money interest rate weighted according to the applicable transaction methodology
+Explanation: The weighted-average call money rate summarises interest rates in the interbank call money market using the relevant transaction-weighting method. It is a money-market indicator, not a measure of CPI inflation or a universal retail deposit rate.
+113. If the call money rate rises sharply above the policy rate, this may signal—
+A. That the inflation rate must have become negative
+B. That all banks have excess liquidity
+C. That the central bank has abolished monetary operations
+D. Tight overnight liquidity or frictions in the money market
+Correct Answer: D. Tight overnight liquidity or frictions in the money market
+Explanation: A sharp increase in the call money rate may indicate that institutions are competing for scarce overnight funds or that liquidity is unevenly distributed. It does not prove that inflation is negative or that all banks have excess liquidity.
+114. What is the usual purpose of collateral in a central-bank repo operation?
+A. To guarantee that the borrower makes a profit
+B. To reduce the lender's exposure by securing the transaction
+C. To eliminate all market risk
+D. To convert the transaction into equity capital
+Correct Answer: B. To reduce the lender's exposure by securing the transaction
+Explanation: Collateral provides security for a repo transaction and helps reduce counterparty exposure. It does not eliminate every form of market, operational or legal risk, and it does not convert the transaction into equity capital.
+115. In a repo, the repurchase price is typically related to—
+A. The original transaction amount and the agreed repo interest or pricing terms
+B. The borrower's annual income-tax return only
+C. The stock-market index alone
+D. The central bank's foreign-exchange reserves only
+Correct Answer: A. The original transaction amount and the agreed repo interest or pricing terms
+Explanation: The repurchase price generally reflects the initial transaction amount and the agreed repo pricing or interest. The difference between the initial sale price and the repurchase price represents the financing cost under the agreed terms.
+116. Which situation is most consistent with a liquidity deficit at an individual bank?
+A. Its liquid funds exceed all immediate payment needs by a large margin
+B. It has no liabilities
+C. Its available settlement funds are insufficient for its immediate payment obligations
+D. It has no deposits or loans
+Correct Answer: C. Its available settlement funds are insufficient for its immediate payment obligations
+Explanation: A liquidity deficit occurs when a bank lacks sufficient immediately available funds to meet payments as they fall due. The bank may still own assets worth more than its liabilities, so a liquidity deficit does not automatically mean that it is insolvent.
+117. Which statement about liquidity and solvency is correct?
+A. They are identical concepts
+B. A solvent bank can never face a liquidity shortage
+C. An illiquid bank is always insolvent
+D. Liquidity concerns the ability to meet payments when due; solvency concerns the value of assets relative to liabilities
+Correct Answer: D. Liquidity concerns the ability to meet payments when due; solvency concerns the value of assets relative to liabilities
+Explanation: Liquidity is the ability to meet payment obligations on time. Solvency concerns whether the value of assets is sufficient to cover liabilities under the relevant valuation framework. A solvent institution may face temporary liquidity stress, and an insolvent institution may temporarily possess cash.
+118. A bank's excess reserves are reserves held—
+A. Only in foreign currency outside the banking system
+B. Above the required amount, according to the relevant reserve definition
+C. Only as fixed assets
+D. Exclusively in long-term corporate shares
+Correct Answer: B. Above the required amount, according to the relevant reserve definition
+Explanation: Excess reserves are eligible reserves held above the applicable required amount. They can provide a liquidity buffer, but their availability and treatment depend on the relevant reserve rules and the bank's payment needs.
+119. Why can a central bank use fine-tuning operations?
+A. To address short-term liquidity fluctuations that could disturb money-market conditions
+B. To determine annual agricultural output directly
+C. To set every household's savings rate
+D. To eliminate all credit risk from banks
+Correct Answer: A. To address short-term liquidity fluctuations that could disturb money-market conditions
+Explanation: Fine-tuning operations help address temporary liquidity fluctuations that could push short-term market rates away from the intended policy stance. They do not directly determine agricultural output or eliminate bank credit risk.
+120. Which is a potential result of persistent excess liquidity when other conditions support credit and spending growth?
+A. The guaranteed disappearance of consumer demand
+B. An automatic reduction in all asset prices
+C. Upward pressure on spending, credit or prices, depending on transmission and demand for money
+D. The permanent elimination of bank lending
+Correct Answer: C. Upward pressure on spending, credit or prices, depending on transmission and demand for money
+Explanation: Persistent excess liquidity can support credit expansion and spending when banks and borrowers respond. This may increase inflationary pressure or contribute to financial imbalances. The result depends on credit demand, money demand, economic capacity and the central bank's response.
+Reserves, exchange rates and external stability
+121. A country's balance of payments records—
+A. Only central-government expenditure
+B. Only the profits of domestic commercial banks
+C. Only cash held by households
+D. Transactions between residents and non-residents under the applicable accounting framework
+Correct Answer: D. Transactions between residents and non-residents under the applicable accounting framework
+Explanation: The balance of payments records economic transactions between residents of a country and non-residents during a specified period. It includes current-account, capital-account and financial-account transactions, together with the relevant statistical adjustments.
+122. Workers' remittances from abroad are generally recorded as—
+A. A domestic capital expenditure item
+B. A transfer inflow in the relevant external accounts
+C. A central-bank reserve liability in every case
+D. An import duty payment
+Correct Answer: B. A transfer inflow in the relevant external accounts
+Explanation: Personal transfers from workers abroad are generally recorded in the relevant transfer-income component of the current account, subject to the applicable statistical classification. A remittance inflow is not automatically a reserve asset; its effect on official reserves depends on subsequent foreign-exchange transactions.
+123. Which factor can help strengthen Bangladesh's foreign-exchange position, other things equal?
+A. Higher formal remittance and export receipts relative to foreign-currency payments
+B. Higher imports without additional financing
+C. Lower export receipts and lower remittances simultaneously
+D. An increase in foreign-currency debt repayments without offsetting inflows
+Correct Answer: A. Higher formal remittance and export receipts relative to foreign-currency payments
+Explanation: Higher export earnings and formal remittance receipts can increase foreign-exchange inflows. Their overall effect depends on import payments, debt servicing, capital flows and other external transactions.
+124. Why does a central bank maintain foreign-exchange reserves in liquid assets?
+A. To guarantee profits on all investments
+B. To eliminate the need for exports
+C. To meet external payment needs and support eligible foreign-exchange operations
+D. To finance every domestic consumer purchase
+Correct Answer: C. To meet external payment needs and support eligible foreign-exchange operations
+Explanation: Foreign-exchange reserves provide external liquidity and support eligible intervention and payment needs. Their management prioritises appropriate liquidity, safety and risk management rather than guaranteed profits or the financing of all domestic spending.
+125. A fall in foreign-exchange reserves may reflect—
+A. Only a rise in domestic productivity
+B. Only an increase in bank branches
+C. Only a decline in domestic prices
+D. Intervention, external payments, valuation changes or other balance-of-payments developments
+Correct Answer: D. Intervention, external payments, valuation changes or other balance-of-payments developments
+Explanation: Reserve movements may reflect foreign-exchange intervention, external debt payments, government transactions, valuation changes and other balance-of-payments developments. A decline cannot be attributed to one cause without examining the relevant data.
+126. If the US dollar strengthens globally while the taka exchange rate is unchanged, what can be concluded about Bangladesh's reserves?
+A. They must increase by exactly 10%
+B. No definite change can be inferred without information about reserve composition, transactions and valuation
+C. They must become zero
+D. They must all be converted into taka
+Correct Answer: B. No definite change can be inferred without information about reserve composition, transactions and valuation
+Explanation: A global strengthening of the dollar does not, by itself, determine the value or quantity of Bangladesh's reserves. The effect depends on reserve composition, the currencies in which assets are denominated, market valuation changes and actual transactions.
+127. Which is a major difference between gross and net foreign assets?
+A. Net foreign assets account for relevant foreign liabilities as well as foreign assets
+B. Gross foreign assets always subtract all domestic loans
+C. Net foreign assets include only gold coins
+D. Gross and net foreign assets always have identical values
+Correct Answer: A. Net foreign assets account for relevant foreign liabilities as well as foreign assets
+Explanation: Net foreign assets are calculated by subtracting relevant foreign liabilities from foreign assets. Gross foreign assets do not make the same subtraction. The precise scope depends on the statistical framework and the institution being measured.
+128. A country with large short-term external debt relative to usable reserves may face—
+A. No rollover risk
+B. Guaranteed currency appreciation
+C. Greater vulnerability to external refinancing pressures
+D. Automatic access to unlimited foreign credit
+Correct Answer: C. Greater vulnerability to external refinancing pressures
+Explanation: If substantial short-term external debt falls due and usable reserves are limited, the country may face difficulty meeting external payments or refinancing maturing obligations. This can increase vulnerability to external shocks, although the actual risk also depends on other financing sources and debt structure.
+129. Import cover is commonly calculated as—
+A. Annual exports divided by population
+B. Foreign reserves divided by the exchange rate
+C. Domestic credit divided by imports
+D. Foreign-exchange reserves divided by average monthly imports, using a clearly specified reserve and import measure
+Correct Answer: D. Foreign-exchange reserves divided by average monthly imports, using a clearly specified reserve and import measure
+Explanation: Import cover estimates how many months of imports could be financed by a specified reserve measure at the assumed import rate. The calculation must use compatible units and clearly identify whether gross, net or another reserve measure is being used.
+130. Which statement about foreign-exchange reserves is correct?
+A. Every reserve asset is available without restrictions in every circumstance
+B. Reserve adequacy depends on liquidity, usability, external obligations and potential shocks
+C. Reserves are identical to annual export earnings
+D. Reserves are identical to commercial-bank deposits
+Correct Answer: B. Reserve adequacy depends on liquidity, usability, external obligations and potential shocks
+Explanation: Reserve adequacy is not determined by the gross amount alone. Liquidity, availability, external debt obligations, import needs and possible financing shocks must also be considered. Reserve assets, export earnings and commercial-bank deposits are distinct concepts.
+Advanced monetary-policy concepts
+131. What is the zero-lower-bound problem in conventional monetary policy?
+A. Policy rates cannot be negative under any conceivable system
+B. All reserve requirements must equal zero
+C. Conventional rate cuts may become constrained when nominal rates are already very low
+D. Inflation must be exactly zero
+Correct Answer: C. Conventional rate cuts may become constrained when nominal rates are already very low
+Explanation: The zero-lower-bound problem arises when nominal interest rates are so low that conventional further reductions become difficult or less effective. Some central banks have used negative policy rates, so zero is not an absolute legal or technical boundary in every monetary system.
+132. Quantitative easing generally involves—
+A. Large-scale purchases of financial assets to ease financial conditions
+B. An increase in income taxes
+C. A compulsory reduction in bank deposits
+D. An outright ban on government securities
+Correct Answer: A. Large-scale purchases of financial assets to ease financial conditions
+Explanation: Quantitative easing generally involves large-scale central-bank purchases of financial assets, often government bonds, to influence longer-term yields and financial conditions. It is a monetary-policy tool, not a fiscal tax increase or a ban on securities.
+133. Quantitative tightening generally refers to—
+A. A permanent reduction in the statutory tax rate
+B. A mandatory increase in exports
+C. A policy of guaranteeing all corporate borrowing
+D. Reducing the central bank's asset holdings or allowing them to run off to tighten financial conditions
+Correct Answer: D. Reducing the central bank's asset holdings or allowing them to run off to tighten financial conditions
+Explanation: Quantitative tightening generally reduces a central bank's balance-sheet holdings by allowing securities to mature without full reinvestment or by selling assets. It can reduce the monetary accommodation provided through earlier asset-purchase programmes.
+134. Which is the most appropriate description of a nominal anchor?
+A. A physical reserve of gold only
+B. A framework or target that helps anchor expectations about the nominal value of money, such as an inflation target
+C. A commercial bank's branch network
+D. A fixed amount of bank capital
+Correct Answer: B. A framework or target that helps anchor expectations about the nominal value of money, such as an inflation target
+Explanation: A nominal anchor helps guide expectations about the nominal value of money and the price level. An inflation target is one possible example. A credible anchor can support monetary-policy effectiveness, but it does not guarantee that inflation will always equal the target.
+135. If inflation expectations rise while the nominal interest rate stays unchanged, the approximate expected real interest rate will—
+A. Rise by the same amount
+B. Always become zero
+C. Fall
+D. Remain unchanged in all circumstances
+Correct Answer: C. Fall
+Explanation: Approximate expected real interest rate = Nominal interest rate − Expected inflation. When expected inflation rises while the nominal rate remains unchanged, the expected real interest rate falls. This can make borrowing more attractive in real terms, all else equal.
+136. Which best explains why monetary policy may affect inflation with a lag?
+A. Borrowers, firms and households take time to adjust decisions and prices
+B. Prices are never influenced by demand
+C. Interest rates do not affect financial contracts
+D. Monetary aggregates cannot be measured
+Correct Answer: A. Borrowers, firms and households take time to adjust decisions and prices
+Explanation: Monetary-policy changes influence decisions gradually as loans are repriced, households adjust consumption, firms reconsider investment and businesses revise prices. These adjustment processes explain why the full effect on output and inflation may take time.
+137. A central bank's forward guidance refers to—
+A. A rule requiring every bank to lend only forward contracts
+B. The physical movement of banknotes
+C. A guarantee that all future policy decisions will be unchanged
+D. Communication about the likely future path or conditions of monetary policy
+Correct Answer: D. Communication about the likely future path or conditions of monetary policy
+Explanation: Forward guidance is communication about the expected future direction of monetary policy or the conditions that may influence future decisions. It can shape expectations, but it is not necessarily a binding promise that policy rates will remain unchanged.
+138. Which is the main risk of keeping monetary policy too loose for too long when demand is already strong?
+A. Guaranteed reduction in inflation expectations
+B. Additional inflationary pressure and possible financial imbalances
+C. Guaranteed improvement in the current account
+D. Elimination of all speculative borrowing
+Correct Answer: B. Additional inflationary pressure and possible financial imbalances
+Explanation: If demand is already strong, excessively accommodative policy can stimulate additional borrowing and spending. This may increase inflationary pressure and encourage financial imbalances, depending on the economic environment.
+139. Which is a key risk of excessive monetary tightening?
+A. It can reduce credit, investment and output more than intended
+B. It necessarily creates hyperinflation immediately
+C. It guarantees higher asset prices
+D. It eliminates the business cycle
+Correct Answer: A. It can reduce credit, investment and output more than intended
+Explanation: Excessive tightening can raise financing costs and reduce credit availability, consumption and investment. If the tightening is stronger than needed, output may weaken more than intended. The effect is not an automatic increase in inflation or asset prices.
+140. Why is the distinction between real and nominal interest rates important to borrowers?
+A. Nominal rates are never paid in money
+B. Real rates are always higher than nominal rates
+C. Inflation changes the purchasing-power cost of borrowing and return on saving
+D. Real rates are identical to reserve ratios
+Correct Answer: C. Inflation changes the purchasing-power cost of borrowing and return on saving
+Explanation: Nominal interest rates are expressed in money terms, while real rates account for inflation. Inflation affects the purchasing power of repayments and the real return on savings. The approximate real rate is the nominal rate minus inflation.
+Applied calculations and scenario analysis
+141. A bank's reservable deposit base is Tk 3,500 crore. At a CRR of 4%, required reserves are—
+A. Tk 14 crore
+B. Tk 35 crore
+C. Tk 140 crore
+D. Tk 350 crore
+Correct Answer: C. Tk 140 crore
+Explanation: Required reserves = Reservable deposit base × CRR.
+= Tk 3,500 crore × 0.04
+= Tk 140 crore.
+The calculation assumes the stated deposit base is fully subject to the specified reserve ratio.
+142. If the relevant liability base is Tk 1,500 crore and SLR is 13%, the calculated SLR requirement is—
+A. Tk 19.5 crore
+B. Tk 195 crore
+C. Tk 150 crore
+D. Tk 1,950 crore
+Correct Answer: B. Tk 195 crore
+Explanation: Calculated SLR requirement = Relevant liability base × SLR.
+= Tk 1,500 crore × 0.13
+= Tk 195 crore.
+The result follows from the assumptions in the question; actual regulatory compliance depends on the applicable liability base and eligible assets.
+143. A bank has a reserve requirement of Tk 120 crore and eligible reserves of Tk 135 crore. Its excess reserves are—
+A. Tk 15 crore
+B. Tk 120 crore
+C. Tk 135 crore
+D. Tk 255 crore
+Correct Answer: A. Tk 15 crore
+Explanation: Excess reserves = Eligible reserves − Required reserves.
+= Tk 135 crore − Tk 120 crore
+= Tk 15 crore.
+144. Broad money rises from Tk 24 trillion to Tk 26.4 trillion. The percentage increase is—
+A. 2%
+B. 8%
+C. 9%
+D. 10%
+Correct Answer: D. 10%
+Explanation: Percentage increase = .
+= 
+= 10%.
+145. A central bank buys Tk 800 crore of securities outright and sells Tk 300 crore of securities outright. Ignoring other effects, the net liquidity injection is—
+A. Tk 1,100 crore
+B. Tk 800 crore
+C. Tk 500 crore
+D. Tk 300 crore
+Correct Answer: C. Tk 500 crore
+Explanation: Net liquidity injection = Liquidity injected by purchases − Liquidity absorbed by sales.
+= Tk 800 crore − Tk 300 crore
+= Tk 500 crore.
+This assumes no other transactions offset the two operations.
+146. If the nominal interest rate is 8% and expected inflation is 11%, the approximate expected real rate is—
+A. 19%
+B. −3%
+C. 3%
+D. 11%
+Correct Answer: B. −3%
+Explanation: Approximate expected real interest rate = Nominal rate − Expected inflation.
+= 8% − 11%
+= −3%.
+The negative result means expected inflation exceeds the nominal interest rate.
+147. A bank's eligible reserves are Tk 72 crore against a reserve requirement of Tk 80 crore. The shortfall is—
+A. Tk 8 crore
+B. Tk 72 crore
+C. Tk 80 crore
+D. Tk 152 crore
+Correct Answer: A. Tk 8 crore
+Explanation: Reserve shortfall = Required reserves − Eligible reserves.
+= Tk 80 crore − Tk 72 crore
+= Tk 8 crore.
+148. If gross reserves are US6 billion, gross-reserve import cover is—
+A. 4 months
+B. 5 months
+C. 7 months
+D. 6 months
+Correct Answer: D. 6 months
+Explanation: Import cover = Gross reserves ÷ Average monthly imports.
+= US6 billion
+= 6 months.
+149. If the exchange rate changes from Tk 120 per US dollar to Tk 126 per US dollar, the taka's depreciation measured as the percentage increase in the taka-per-dollar rate is—
+A. 4%
+B. 6%
+C. 5%
+D. 10%
+Correct Answer: C. 5%
+Explanation: Percentage increase in the exchange-rate quotation = .
+= 
+= 5%.
+The taka has depreciated against the dollar because more taka are required to buy one dollar.
+150. If the policy repo rate is 9.5% and the SDF rate is 7.5%, the spread is—
+A. 0.5 percentage point
+B. 2 percentage points
+C. 2.5 percentage points
+D. 17 percentage points
+Correct Answer: B. 2 percentage points
+Explanation: Spread = Policy repo rate − SDF rate.
+= 9.5% − 7.5%
+= 2 percentage points.
+Remember to express the difference between two interest rates in percentage points.
+Batch 4: Questions 151–200
+Bangladesh Bank's policy framework and current indicators
+151. According to Bangladesh Bank's Quarterly Monetary Policy Statement dated 30 September 2026, the policy repo rate was—
+A. 10.00%
+B. 8.00%
+C. 9.50%
+D. 7.50%
+Correct Answer: C. 9.50%
+Explanation: The previous question set used 9.50% as the policy repo rate reported in the referenced quarterly monetary-policy statement. Because policy rates are subject to change, candidates should verify the latest official Bangladesh Bank statement and effective date before the examination.
+152. The same statement reported Bangladesh's headline inflation at 8.26% for—
+A. August 2026
+B. June 2025
+C. January 2026
+D. October 2026
+Correct Answer: A. August 2026
+Explanation: The previous set identified August 2026 as the reference month for the 8.26% headline-inflation figure. Inflation statistics must be associated with their specific reference periods. Verify the relevant Bangladesh Bureau of Statistics publication and the Bangladesh Bank statement before treating this as a current fact.
+153. Which policy challenge did Bangladesh Bank identify in its October–December 2026 statement?
+A. Eliminating all commercial-bank deposits
+B. Fixing all prices permanently
+C. Abolishing foreign-exchange reserves
+D. Supporting economic activity without compromising disinflation
+Correct Answer: D. Supporting economic activity without compromising disinflation
+Explanation: Monetary policymakers may need to balance support for economic activity against the objective of reducing inflation. Excessive easing can undermine disinflation, while excessive tightening can weaken output and credit. The appropriate balance depends on the economic outlook and incoming data.
+154. According to Bangladesh Bank's published monetary survey, broad money at the end of August 2026 was approximately—
+A. Tk 24.52 trillion
+B. Tk 2.45 trillion
+C. Tk 37.54 trillion
+D. Tk 18.65 trillion
+Correct Answer: A. Tk 24.52 trillion
+Explanation: The previous set used approximately Tk 24.52 trillion as the broad-money figure for August 2026. This is a date-specific monetary statistic, not a permanent value. Verify the relevant Bangladesh Bank monetary survey for the reported figure and period.
+155. According to Bangladesh Bank's monthly foreign-exchange reserve data, gross reserves at the end of August 2026 were approximately—
+A. US$24.78 billion
+B. US$32.44 billion
+C. US$37.35 billion
+D. US$26.17 billion
+Correct Answer: C. US$37.35 billion
+Explanation: The previous set used approximately US$37.35 billion as the gross foreign-exchange reserve figure for end-August 2026. Reserve figures can change because of transactions and valuation movements. Check the official Bangladesh Bank release before using this amount in a current-affairs answer.
+156. Bangladesh Bank's August 2026 BPM6-compliant reserve figure was approximately—
+A. US$37.35 billion
+B. US$32.44 billion
+C. US$24.52 billion
+D. US$18.65 billion
+Correct Answer: B. US$32.44 billion
+Explanation: The previous set used approximately US$32.44 billion as the BPM6-compliant reserve figure for August 2026. BPM6 follows the IMF's Balance of Payments and International Investment Position Manual. The figure should be verified against the relevant official release and should not be confused with gross reserves.
+157. Which statement about the reserve figures in Questions 155 and 156 is correct?
+A. They are different measures; the gross figure should not be treated as interchangeable with the BPM6-compliant figure
+B. The BPM6 figure is Bangladesh's annual import bill
+C. The gross figure measures only commercial-bank deposits
+D. The two figures must be equal
+Correct Answer: A. They are different measures; the gross figure should not be treated as interchangeable with the BPM6-compliant figure
+Explanation: Gross reserves and BPM6-compliant reserves may differ because of the applicable statistical definitions and treatment of assets and liabilities. Candidates should identify which reserve measure a question asks for instead of assuming that all published reserve figures are interchangeable.
+158. The main purpose of Bangladesh Bank's interest-rate corridor is to—
+A. Set a mandatory identical retail rate for every loan
+B. Determine the government's annual budget
+C. Fix every exchange rate worldwide
+D. Help steer short-term money-market rates around the intended monetary-policy stance
+Correct Answer: D. Help steer short-term money-market rates around the intended monetary-policy stance
+Explanation: An interest-rate corridor uses central-bank lending and deposit facilities to help guide short-term money-market rates. The lending facility can limit upward pressure on rates, while the deposit facility can help limit downward pressure, subject to the operational framework.
+159. A policy rate is raised while the SDF rate remains unchanged. Which conclusion is most defensible?
+A. All bank lending rates must rise by exactly the same amount immediately
+B. Inflation must fall on the same day
+C. The policy-rate/SDF spread increases, and broader transmission depends on market conditions
+D. Reserve requirements automatically become zero
+Correct Answer: C. The policy-rate/SDF spread increases, and broader transmission depends on market conditions
+Explanation: If the policy rate rises while the SDF rate stays constant, the difference between the two rates increases. However, commercial-bank rates and inflation do not necessarily adjust immediately or by the same amount. Transmission depends on market conditions and policy implementation.
+160. What is the best way to verify a current Bangladesh Bank policy rate before an examination?
+A. Use an undated social-media graphic
+B. Check the latest official Bangladesh Bank policy statement or rate publication and its effective date
+C. Assume that last year's rate still applies
+D. Use a commercial bank's historical advertisement
+Correct Answer: B. Check the latest official Bangladesh Bank policy statement or rate publication and its effective date
+Explanation: Policy rates can change through subsequent monetary-policy decisions or official instructions. The safest approach is to check the latest official publication, confirm its effective date and distinguish the policy repo rate from the SDF and SLF rates.
+Reserve requirements and balance-sheet reasoning
+161. A bank's reservable deposit base rises while the applicable CRR remains unchanged. Its required reserves will generally—
+A. Rise proportionately with the reservable base
+B. Fall to zero
+C. Remain unchanged regardless of the base
+D. Become equal to SLR
+Correct Answer: A. Rise proportionately with the reservable base
+Explanation: Required reserves are calculated by multiplying the reservable base by the applicable CRR. If the base increases and the rate remains unchanged, required reserves rise proportionately, assuming the same regulatory definition continues to apply.
+162. If a bank's required reserves are Tk 100 crore and its eligible reserves are Tk 96 crore, the shortfall is—
+A. Tk 196 crore
+B. Tk 100 crore
+C. Tk 4 crore
+D. Tk 96 crore
+Correct Answer: C. Tk 4 crore
+Explanation: Reserve shortfall = Required reserves − Eligible reserves.
+= Tk 100 crore − Tk 96 crore
+= Tk 4 crore.
+163. Which asset is normally most directly associated with meeting a cash reserve requirement?
+A. A bank-owned office building
+B. An unlisted corporate share
+C. A long-term unsecured loan
+D. Eligible balances maintained with the central bank under the applicable rules
+Correct Answer: D. Eligible balances maintained with the central bank under the applicable rules
+Explanation: A cash reserve requirement is met using eligible reserve balances as defined by the applicable central-bank rules. Buildings, unsecured loans and unlisted shares do not ordinarily qualify as cash reserves maintained at the central bank.
+164. Why should an SLR calculation specify the applicable liability base and eligible assets?
+A. SLR is always calculated on a bank's total market capitalisation
+B. Regulatory definitions and eligibility conditions determine the correct calculation
+C. Every bank has the same balance sheet
+D. SLR is simply another name for net profit
+Correct Answer: B. Regulatory definitions and eligibility conditions determine the correct calculation
+Explanation: SLR compliance depends on the applicable liability base, qualifying liquid assets and regulatory definitions. A numerical calculation is only correct when the base and rate match the assumptions in the question and the applicable regulatory framework.
+165. If the CRR rises from 4% to 5% on an unchanged reservable base of Tk 2,000 crore, the additional required reserves are—
+A. Tk 20 crore
+B. Tk 100 crore
+C. Tk 200 crore
+D. Tk 10 crore
+Correct Answer: A. Tk 20 crore
+Explanation: Additional required reserves = Reservable base × Increase in CRR.
+= Tk 2,000 crore × (5% − 4%)
+= Tk 2,000 crore × 1%
+= Tk 20 crore.
+166. Which statement best explains why lowering CRR does not guarantee an equivalent increase in actual lending?
+A. Lending also depends on creditworthy demand, capital, risk appetite, liquidity and other constraints
+B. CRR has no relationship to bank liquidity
+C. Every deposit must be lent immediately
+D. Banks cannot create deposits through lending
+Correct Answer: A. Lending also depends on creditworthy demand, capital, risk appetite, liquidity and other constraints
+Explanation: Lowering CRR can release some funds or reduce required reserves, but actual lending depends on banks' capital, liquidity, risk appetite, regulatory constraints and the demand for creditworthy borrowers. A change in CRR does not guarantee an equal increase in lending.
+167. If the central bank increases SDF remuneration while other conditions remain unchanged, eligible institutions may have a greater incentive to—
+A. Convert every deposit into equity
+B. Increase imports automatically
+C. Place eligible surplus funds with the central bank
+D. Eliminate their reserve balances
+Correct Answer: C. Place eligible surplus funds with the central bank
+Explanation: A higher SDF rate can make depositing eligible surplus funds at the central bank more attractive relative to alternative short-term placements. The actual response depends on eligibility, liquidity needs and the returns available in other markets.
+168. A bank borrows overnight from an eligible central-bank lending facility. The transaction primarily addresses—
+A. The bank's long-term profitability target
+B. A short-term liquidity need, subject to the facility's rules
+C. The government's annual tax target
+D. The country's permanent trade deficit
+Correct Answer: B. A short-term liquidity need, subject to the facility's rules
+Explanation: An overnight lending facility provides short-term liquidity to eligible institutions. It can help meet immediate funding or settlement requirements, but it does not automatically solve long-term profitability, solvency or national external-balance problems.
+169. Which statement about required reserves is most accurate?
+A. They are identical to a bank's total equity
+B. They are always freely available for every purpose without regulatory constraints
+C. They consist exclusively of foreign sovereign bonds
+D. They are determined under applicable rules and help constrain or manage bank liquidity
+Correct Answer: D. They are determined under applicable rules and help constrain or manage bank liquidity
+Explanation: Required reserves are calculated under the relevant central-bank rules. They influence banks' liquidity management and the amount of eligible reserves that must be maintained. They are not the same as shareholders' equity or a portfolio of foreign sovereign bonds.
+170. Which action most directly absorbs reserve liquidity through a conventional outright OMO?
+A. The central bank purchases government securities
+B. The central bank extends a repo loan
+C. The central bank sells eligible securities
+D. The central bank reduces CRR
+Correct Answer: C. The central bank sells eligible securities
+Explanation: An outright securities sale generally absorbs liquidity because settlement funds flow from buyers to the central bank. An outright purchase generally injects liquidity, while a repo loan ordinarily provides temporary liquidity.
+Policy effectiveness, risks and interpretation
+171. If inflation is driven largely by a temporary supply disruption, a central bank must consider that—
+A. Interest-rate policy cannot directly restore the missing supply, although it may influence second-round effects and expectations
+B. The policy rate determines world harvests
+C. Inflation automatically becomes zero
+D. The exchange rate can never be affected
+Correct Answer: A. Interest-rate policy cannot directly restore the missing supply, although it may influence second-round effects and expectations
+Explanation: A supply disruption can raise prices by reducing the availability of goods or increasing production costs. Monetary policy cannot directly repair the supply disruption, but it can influence demand, inflation expectations and second-round price increases.
+172. Which is an example of the interest-rate channel of monetary transmission?
+A. A central bank prints a new logo
+B. Higher financing costs reduce some interest-sensitive investment projects
+C. A new income-tax form is introduced
+D. A company changes its accounting software
+Correct Answer: B. Higher financing costs reduce some interest-sensitive investment projects
+Explanation: Higher interest rates raise the cost of borrowing and can make investment projects less profitable. Firms may postpone or cancel some investments, reducing aggregate demand. This is an example of the interest-rate transmission channel.
+173. If market participants expect persistent inflation despite a policy-rate increase, which issue may arise?
+A. All real interest rates become identical
+B. Bank capital becomes irrelevant
+C. Inflation expectations may remain elevated, weakening the desired disinflationary effect
+D. Money demand must become zero
+Correct Answer: C. Inflation expectations may remain elevated, weakening the desired disinflationary effect
+Explanation: If inflation expectations remain high, wage demands, price-setting and spending decisions may continue to reflect anticipated inflation. This can weaken the intended effect of monetary tightening. Credible policy and clear communication can help anchor expectations.
+174. What does a positive nominal interest rate with a negative expected real interest rate imply?
+A. The nominal rate is necessarily negative
+B. The economy must be experiencing deflation
+C. The central bank has no policy rate
+D. Expected inflation exceeds the nominal interest rate
+Correct Answer: D. Expected inflation exceeds the nominal interest rate
+Explanation: Approximate expected real interest rate = Nominal interest rate − Expected inflation. If expected inflation is higher than the nominal rate, the expected real rate is negative even though the nominal rate remains positive.
+175. Which statement about the monetary base and broad money is correct?
+A. They are always equal
+B. Broad money generally includes monetary deposits beyond the monetary base
+C. The monetary base consists exclusively of corporate loans
+D. Broad money excludes all deposits
+Correct Answer: B. Broad money generally includes monetary deposits beyond the monetary base
+Explanation: The monetary base consists mainly of currency in circulation and commercial-bank reserve balances at the central bank. Broad money includes qualifying deposits and other monetary instruments, so the two aggregates are conceptually different and generally not equal.
+176. Why might central-bank asset purchases fail to produce a proportionate increase in broad money?
+A. Bank lending and deposit creation depend on financial institutions' behaviour and wider economic conditions
+B. Central-bank purchases never affect reserve balances
+C. Banks cannot hold liquid assets
+D. All money is held as physical cash
+Correct Answer: A. Bank lending and deposit creation depend on financial institutions' behaviour and wider economic conditions
+Explanation: Central-bank asset purchases may increase reserve balances, but broad-money growth depends on credit demand, bank capital, lending standards, risk appetite and other balance-sheet changes. Therefore, reserve creation does not mechanically produce a fixed increase in broad money.
+177. A sustained rise in policy rates can reduce aggregate demand partly by—
+A. Increasing every firm's expected sales
+B. Making borrowing costless
+C. Reducing interest-sensitive consumption and investment
+D. Eliminating all uncertainty about future prices
+Correct Answer: C. Reducing interest-sensitive consumption and investment
+Explanation: Higher policy rates can raise borrowing costs and encourage saving relative to some forms of spending. Households may postpone interest-sensitive purchases, and businesses may reduce investment. This can moderate aggregate demand and inflationary pressure.
+178. What is the risk of interpreting a single month's CPI movement as proof that a monetary policy has succeeded?
+A. CPI has no connection to prices
+B. A single month always reveals the long-run trend
+C. Monetary policy works instantaneously in all circumstances
+D. Monthly movements can reflect temporary factors, base effects and statistical noise
+Correct Answer: D. Monthly movements can reflect temporary factors, base effects and statistical noise
+Explanation: One month's CPI movement may be influenced by seasonal effects, volatile commodity prices, base effects or measurement noise. Monetary policy works with lags, so assessing success requires a broader view of inflation trends, expectations and economic conditions.
+179. Which statement about inflation targeting is correct?
+A. It guarantees that every relative price remains fixed
+B. It provides a nominal reference point for policy and expectations, subject to the framework's design
+C. It eliminates all supply shocks
+D. It makes fiscal policy unnecessary
+Correct Answer: B. It provides a nominal reference point for policy and expectations, subject to the framework's design
+Explanation: Inflation targeting provides a reference for monetary-policy decisions and helps guide expectations about the price level. It does not eliminate supply shocks, prevent relative prices from changing or remove the need for appropriate fiscal policy.
+180. Why does a central bank monitor credit growth alongside inflation?
+A. Credit conditions can influence demand, financial stability and the transmission of policy
+B. Credit growth determines rainfall
+C. Credit growth is always negative
+D. Credit growth and inflation are identical statistics
+Correct Answer: A. Credit conditions can influence demand, financial stability and the transmission of policy
+Explanation: Credit growth influences spending and investment and can affect inflationary pressure. Excessive credit expansion may also contribute to financial imbalances. Monitoring credit helps policymakers assess monetary transmission and financial stability risks.
+Advanced calculations and integrated applications
+181. The CRR rises from 4% to 4.5% on a constant reservable deposit base of Tk 4,000 crore. The additional required reserves are—
+A. Tk 200 crore
+B. Tk 20 crore
+C. Tk 2 crore
+D. Tk 40 crore
+Correct Answer: B. Tk 20 crore
+Explanation: Increase in CRR = 4.5% − 4.0% = 0.5 percentage point = 0.005.
+Additional reserves = Tk 4,000 crore × 0.005
+= Tk 20 crore.
+182. The policy repo rate is 9.5%, the SLF rate is 11%, and the SDF rate is 7.5%. The midpoint of the SLF–SDF corridor is—
+A. 9.5%
+B. 10.25%
+C. 9.25%
+D. 8.5%
+Correct Answer: C. 9.25%
+Explanation: Corridor midpoint = (SLF rate + SDF rate) ÷ 2.
+= (11.0% + 7.5%) ÷ 2
+= 18.5% ÷ 2
+= 9.25%.
+The midpoint does not necessarily equal the policy repo rate.
+183. A central bank injects Tk 1,200 crore in liquidity and absorbs Tk 1,450 crore through other operations. The net operation is—
+A. A net injection of Tk 250 crore
+B. A net injection of Tk 2,650 crore
+C. A net absorption of Tk 250 crore
+D. No net change
+Correct Answer: C. A net absorption of Tk 250 crore
+Explanation: Net liquidity effect = Liquidity injected − Liquidity absorbed.
+= Tk 1,200 crore − Tk 1,450 crore
+= −Tk 250 crore.
+The negative result indicates a net absorption of Tk 250 crore.
+184. If broad money grows from Tk 22 trillion to Tk 24.2 trillion, its growth rate is—
+A. 5%
+B. 10%
+C. 11%
+D. 20%
+Correct Answer: B. 10%
+Explanation: Growth rate = .
+= 
+= 10%.
+185. Nominal GDP is Tk 60 trillion and broad money is Tk 30 trillion. The implied velocity of broad money is—
+A. 2
+B. 0.5
+C. 30
+D. 90
+Correct Answer: A. 2
+Explanation: Velocity = Nominal GDP ÷ Broad money.
+= Tk 60 trillion ÷ Tk 30 trillion
+= 2.
+186. If the taka-per-dollar exchange rate rises from Tk 125 to Tk 130, the percentage increase in the exchange-rate quotation is approximately—
+A. 3%
+B. 5%
+C. 4%
+D. 6%
+Correct Answer: C. 4%
+Explanation: Percentage increase = .
+= 
+= 4%.
+The quotation has risen, meaning the taka has depreciated against the US dollar.
+187. Gross reserves are US7 billion. Gross-reserve import cover is—
+A. 5 months
+B. 6 months
+C. 7 months
+D. 8 months
+Correct Answer: B. 6 months
+Explanation: Import cover = Gross reserves ÷ Average monthly imports.
+= US7 billion
+= 6 months.
+188. A bank has a relevant SLR liability base of Tk 2,400 crore and an applicable SLR of 5.5%. The calculated requirement is—
+A. Tk 13.2 crore
+B. Tk 55 crore
+C. Tk 120 crore
+D. Tk 132 crore
+Correct Answer: D. Tk 132 crore
+Explanation: Calculated SLR requirement = Liability base × SLR.
+= Tk 2,400 crore × 0.055
+= Tk 132 crore.
+The calculation assumes the stated liability base and SLR are applicable to the bank.
+189. Expected inflation is 6% and the nominal interest rate is 9%. Using the exact Fisher formula, the expected real interest rate is approximately—
+A. 3.0%
+B. 15.0%
+C. 2.83%
+D. −3.0%
+Correct Answer: C. 2.83%
+Explanation: The exact Fisher formula is:
+
+
+
+Therefore,
+
+
+
+\[ r\approx0.0283=\boxed{2.83\%} \]
+The approximate calculation gives 9% − 6% = 3%, while the exact calculation gives approximately 2.83%.
+190. A bank's eligible reserves are Tk 250 crore against a required amount of Tk 230 crore. Its excess reserves are—
+A. Tk 480 crore
+B. Tk 250 crore
+C. Tk 230 crore
+D. Tk 20 crore
+Correct Answer: D. Tk 20 crore
+Explanation: Excess reserves = Eligible reserves − Required reserves.
+= Tk 250 crore − Tk 230 crore
+= Tk 20 crore.
+Final revision: central-bank judgement
+191. Which policy action is most likely to be contractionary, other things equal?
+A. An outright purchase of securities
+B. An increase in the policy repo rate
+C. A reduction in CRR
+D. A liquidity injection through repo
+Correct Answer: B. An increase in the policy repo rate
+Explanation: Raising the policy repo rate generally increases borrowing costs and tightens financial conditions. By contrast, outright securities purchases, CRR reductions and liquidity-injecting repos generally ease liquidity conditions, other things equal.
+192. Which action is most likely to inject liquidity, other things equal?
+A. An outright sale of securities
+B. An increase in CRR
+C. An outright purchase of securities by the central bank
+D. A liquidity-absorbing operation
+Correct Answer: C. An outright purchase of securities by the central bank
+Explanation: When the central bank purchases securities, it generally pays the seller through the settlement system, increasing reserve liquidity. Securities sales and liquidity-absorbing operations generally have the opposite effect.
+193. A central bank sells foreign currency and buys domestic currency in the foreign-exchange market. Without sterilisation, the domestic-liquidity effect is generally—
+A. Contractionary, because domestic currency is absorbed
+B. Expansionary in every case
+C. Unrelated to settlement flows
+D. Guaranteed to increase broad money by a fixed multiplier
+Correct Answer: A. Contractionary, because domestic currency is absorbed
+Explanation: When the central bank sells foreign currency in exchange for domestic currency, domestic currency is generally absorbed from the banking system. This tends to reduce domestic liquidity unless the effect is offset by other operations. The impact on broad money is not fixed.
+194. If the central bank buys foreign currency and pays for it in domestic currency, without sterilisation, the immediate domestic-liquidity effect is generally—
+A. A decline in domestic-currency reserve balances
+B. No balance-sheet effect
+C. A compulsory increase in CRR
+D. An increase in domestic-currency liquidity
+Correct Answer: D. An increase in domestic-currency liquidity
+Explanation: The central bank pays domestic currency when it purchases foreign currency. This generally increases domestic-currency liquidity in the banking system. Sterilisation through other operations can offset some or all of the injection.
+195. Which combination best describes a credible disinflation strategy?
+A. Ignoring inflation expectations and changing rates randomly
+B. A coherent policy stance, credible communication, appropriate liquidity management and monitoring of incoming data
+C. Guaranteeing that prices never change
+D. Using foreign reserves as the only policy instrument under every circumstance
+Correct Answer: B. A coherent policy stance, credible communication, appropriate liquidity management and monitoring of incoming data
+Explanation: Disinflation is more likely to be sustained when monetary-policy decisions, communication and liquidity management are consistent with the inflation objective. Policymakers must monitor incoming data and adjust their stance as conditions change. No single instrument guarantees that prices will stop rising.
+196. Why might a central bank refrain from cutting rates even when growth is weak?
+A. Growth has no relevance to monetary policy
+B. All rate cuts are prohibited by definition
+C. Inflation risks or unanchored expectations may make premature easing costly
+D. A rate cut always causes immediate deflation
+Correct Answer: C. Inflation risks or unanchored expectations may make premature easing costly
+Explanation: Weak growth may support the case for easing, but high inflation or poorly anchored expectations can make a rate cut premature. Policymakers must weigh output conditions against inflation risks and the consequences of weakening policy credibility.
+197. Which is the strongest reason to distinguish gross reserves from usable or net reserve measures?
+A. Different measures answer different questions about assets, liabilities and availability for intervention or payments
+B. Gross reserves never change
+C. Usable reserves are always greater than gross reserves
+D. Net reserves are identical to tax revenue
+Correct Answer: A. Different measures answer different questions about assets, liabilities and availability for intervention or payments
+Explanation: Gross reserves measure a specified stock of reserve assets, while net or usable measures may account for relevant liabilities, restrictions or other adjustments. The exact definitions depend on the methodology. This distinction is important when assessing external-payment capacity and reserve adequacy.
+198. A bank's loans increase, but deposits do not rise by the same amount during the observation period. Which explanation is plausible?
+A. All bank lending must be fictional
+B. The accounting identity has ceased to operate
+C. Every loan must be financed only with new currency notes
+D. Loan proceeds may be transferred to other banks, converted to cash or offset by other balance-sheet movements
+Correct Answer: D. Loan proceeds may be transferred to other banks, converted to cash or offset by other balance-sheet movements
+Explanation: A bank loan may initially create a deposit when credited to the borrower's account. Subsequently, the borrower may transfer funds to another bank, withdraw cash or make payments that change the bank's balance sheet. Other transactions can also offset deposit growth during the observation period.
+199. Which statement about the central bank's control over money supply is most accurate?
+A. It determines broad money with perfect precision every day
+B. It influences monetary conditions, but broad-money outcomes also depend on banks, borrowers, government transactions and external flows
+C. It has no influence on money-market liquidity
+D. It directly determines every consumer's spending
+Correct Answer: B. It influences monetary conditions, but broad-money outcomes also depend on banks, borrowers, government transactions and external flows
+Explanation: The central bank influences monetary conditions through policy rates, reserve requirements, liquidity operations and other instruments. However, broad-money outcomes also depend on bank lending, borrower behaviour, government transactions and external flows. Its influence does not amount to perfect daily control over every monetary aggregate.
+200. For the Bangladesh Bank Senior Officer (General) examination, which is the safest approach when memorising a current repo, SDF, SLF, CRR or SLR figure?
+A. Memorise an undated figure from a coaching poster
+B. Assume all banking categories have identical reserve ratios
+C. Verify the latest official publication, applicable institution/category and effective date
+D. Treat a historical figure as permanently valid
+Correct Answer: C. Verify the latest official publication, applicable institution/category and effective date
+Explanation: Monetary-policy rates and regulatory reserve requirements can change. Candidates should consult the latest Bangladesh Bank policy statements, circulars and official tables, checking both the effective date and the applicable banking category. Historical figures should not automatically be treated as current rules.

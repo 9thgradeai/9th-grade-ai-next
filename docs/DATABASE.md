@@ -981,7 +981,7 @@ The BANGLADESH_BANK ecosystem has 6 syllabus subjects from the Bank architecture
 | 3 | 03_Mathematics | Mathematics |
 | 4 | 04_Analytical_Skills | Analytical Skills |
 | 5 | 05_ICT | ICT |
-| 6 | 06_Financial_Knowledge | Financial Knowledge |
+| 6 | 06_Financial_Knowledge *(display: `06_Financial & Banking Knowledge`)* | Financial & Banking Knowledge |
 | — | সাধারণ জ্ঞান | General Knowledge *(archive-only: Subject row, no topic tree — import target for out-of-syllabus PYQs)* |
 
 **Bank taxonomy revision 2026-10-22.** The Bank architecture tree was replaced by the revised tree in `database/data/Bank/Taxonomy/Updated/Taxonomy.txt` (mirrored into the canonical file above and regenerated into `database/data/bb-taxonomy.json`):
@@ -1003,6 +1003,8 @@ The BANGLADESH_BANK ecosystem has 6 syllabus subjects from the Bank architecture
 `tests/unit/backend/bangla-taxonomy-parity.test.ts` guards the rule: the two trees must expose the same grammar leaves and the same literary-history leaves.
 
 **Superseded Bank subjects (consolidated 2026-09).** The pre-2026-09 Bank subject rows (`বাংলা ব্যাকরণ ও সাহিত্য`, `English Grammar & Literature`, `সাধারণ গণিত`, `আর্থিক ও ব্যাংকিং জ্ঞান`, `তথ্য ও যোগাযোগ প্রযুক্তি`, plus the earlier display-named `বাংলা ভাষা ও সাহিত্য` / `English Language and Literature` / `গণিত` / `আর্থিক জ্ঞান` duplicates) were consolidated by `scripts/migrate-bank-subjects.ts`: questions moved to the exact-name subjects (ICT rows also remapped to the new topic tree by path), byte-identical cross-subject duplicates dropped only when carrying zero user data (rows with bookmarks/attempts are moved, never deleted), and the emptied legacy subjects deleted. `সাধারণ জ্ঞান` stays as the archive subject.
+
+**Financial-subject cleanup (2026-10-31).** Two legacy Financial rows (`আর্থিক ও ব্যাংকিং জ্ঞান`, `আর্থিক জ্ঞান`) were re-created by the older `import-financial-banking-*.ts` scripts after that consolidation. They each held the same 840 questions with no Topic tree — so the Practice picker counted them as 0 — and carried no bookmarks/attempts/progress. `scripts/cleanup-bank-financial-subjects.ts` removes them (guarded: any row with user data is skipped, never deleted) and renames the canonical subject's display label to `06_Financial & Banking Knowledge` while its topic paths stay rooted at `06_Financial_Knowledge`. The seed honours the label through `BB_SUBJECT_META.displayNameBn`, so re-seeding updates the same row instead of creating a duplicate.
 
 The recursive Topic tree, leaf `topicId`/`path` tagging on questions, and per-topic aggregated `questionCount` are (re)built by `scripts/seed-questions.ts`, invoked by `npm run db:seed-questions` and as part of `npm run db:seed`.
 

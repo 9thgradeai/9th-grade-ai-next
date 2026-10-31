@@ -1,0 +1,1056 @@
+﻿Section 1: Deposits and Deposit Accounts (1–25)
+1. Which type of bank deposit generally permits frequent withdrawals and is primarily designed for day-to-day transactions?
+A. Fixed deposit
+B. Current deposit
+C. Recurring deposit
+D. Long-term term deposit
+Correct Answer: B. Current deposit
+Explanation: Current accounts facilitate frequent business transactions, including receipts and payments.
+2. A customer places money with a bank for a specified period at an agreed interest rate. Which deposit is this?
+A. Savings deposit
+B. Current deposit
+C. Fixed deposit
+D. Demand deposit
+Correct Answer: C. Fixed deposit
+Explanation: A fixed deposit is placed for an agreed term and earns a return according to the bank's product conditions.
+3. Which deposit account is generally intended to encourage personal savings while allowing withdrawals subject to the account's terms?
+A. Savings deposit
+B. Current deposit
+C. Cash credit account
+D. Margin deposit
+Correct Answer: A. Savings deposit
+Explanation: Savings accounts encourage customers to save while permitting withdrawals under the applicable account conditions.
+4. What is the principal distinction between a demand deposit and a time deposit?
+A. Demand deposits are available only to companies.
+B. Time deposits cannot earn interest.
+C. Demand deposits must always be maintained in foreign currency.
+D. Demand deposits are payable on demand, while time deposits are subject to an agreed maturity or withdrawal conditions.
+Correct Answer: D. Demand deposits are payable on demand, while time deposits are subject to maturity or withdrawal conditions.
+Explanation: Demand deposits provide access on demand, subject to applicable conditions, whereas time deposits have agreed maturity and early-withdrawal terms.
+5. A bank accepts a customer's money and records an obligation to repay it. From the bank's accounting perspective, the deposit is generally a:
+A. Fixed asset
+B. Liability
+C. Contingent asset
+D. Shareholder's equity
+Correct Answer: B. Liability
+Explanation: A deposit is normally a liability because the bank owes the depositor the amount held in the account.
+6. Which of the following is a typical characteristic of a current account?
+A. It is designed exclusively for long-term savings.
+B. It must always have a fixed maturity date.
+C. It facilitates frequent business transactions.
+D. It cannot receive electronic transfers.
+Correct Answer: C. It facilitates frequent business transactions.
+Explanation: Current accounts are generally suitable for businesses requiring frequent deposits, withdrawals and transfers.
+7. A depositor withdraws a fixed deposit before maturity. Which consequence is most likely, depending on the bank's terms?
+A. Premature encashment terms may reduce the interest payable.
+B. The bank must always pay the full contracted interest.
+C. The deposit automatically becomes share capital.
+D. The depositor automatically loses the principal.
+Correct Answer: A. Premature encashment terms may reduce the interest payable.
+Explanation: Early withdrawal may result in a lower interest rate or other contractual consequences; it does not automatically forfeit the principal.
+8. What does the term deposit mobilization mean?
+A. Recovering overdue loans from borrowers
+B. Selling government securities to customers
+C. Transferring deposits between branches
+D. Attracting and collecting deposits from customers
+Correct Answer: D. Attracting and collecting deposits from customers
+Explanation: Deposit mobilization involves collecting funds from depositors to support a bank's funding needs and operations.
+9. Which of the following is a liability-side source of funds for a commercial bank?
+A. Loans granted to customers
+B. Customer deposits
+C. Buildings owned by the bank
+D. Investments in securities
+Correct Answer: B. Customer deposits
+Explanation: Customer deposits are liabilities because the bank is obligated to repay them; loans and investments are generally assets.
+10. A bank pays interest on eligible deposits and earns interest on loans. The difference between these interest amounts, relative to relevant earning assets, is associated with its:
+A. Cash reserve ratio
+B. Capital adequacy ratio
+C. Net interest margin
+D. Loan-to-value ratio
+Correct Answer: C. Net interest margin
+Explanation: Net interest margin relates net interest income to average interest-earning assets and measures an important aspect of a bank's earnings performance.
+11. Which account is most suitable for a business that needs to make frequent payments to suppliers and receive customer payments?
+A. Current account
+B. Long-term fixed deposit
+C. Recurring deposit
+D. Security deposit account only
+Correct Answer: A. Current account
+Explanation: Current accounts are designed to facilitate frequent business receipts and payments.
+12. What is the primary purpose of Know Your Customer (KYC) procedures when opening a deposit account?
+A. Guaranteeing the customer's investment return
+B. Eliminating all banking risks
+C. Ensuring that every customer receives a loan
+D. Verifying customer identity and understanding relevant customer risk
+Correct Answer: D. Verifying customer identity and understanding relevant customer risk
+Explanation: KYC helps banks identify customers, assess risk and meet applicable anti-money-laundering and customer-due-diligence requirements.
+13. Which of the following best describes a dormant or inactive account?
+A. An account that has a negative balance in every case
+B. An account classified according to the bank's inactivity criteria and applicable rules
+C. An account that is legally owned by the bank
+D. An account that cannot receive any deposit under any circumstances
+Correct Answer: B. An account classified according to the bank's inactivity criteria and applicable rules
+Explanation: Dormancy depends on the applicable inactivity criteria and rules; it does not mean the bank owns the account balance.
+14. Why may a bank require a minimum balance in a deposit account?
+A. To convert deposits into equity
+B. To remove the need for customer identification
+C. To comply with the account's product terms and applicable policies
+D. To guarantee a loan to the depositor
+Correct Answer: C. To comply with the account's product terms and applicable policies
+Explanation: A minimum balance may be a condition of an account product, subject to applicable regulations and disclosed terms.
+15. Which statement about a bank's customer deposit is correct?
+A. It is generally a liability of the bank and a claim of the depositor.
+B. It is always a fixed asset of the bank.
+C. It is always an investment in the bank's shares.
+D. It is never repayable.
+Correct Answer: A. It is generally a liability of the bank and a claim of the depositor.
+Explanation: The bank owes the depositor the account balance under the deposit agreement and applicable law.
+16. A depositor instructs a bank to transfer money automatically into a designated savings account at regular intervals. This arrangement is best described as:
+A. A bank guarantee
+B. A bill of exchange
+C. A letter of credit
+D. A standing instruction or scheduled transfer
+Correct Answer: D. A standing instruction or scheduled transfer
+Explanation: A standing instruction authorizes recurring transactions according to specified conditions.
+17. Which deposit feature is most closely associated with liquidity for the customer?
+A. The highest possible maturity period
+B. Ease and speed of accessing funds
+C. The largest possible penalty for early withdrawal
+D. The absence of withdrawal facilities
+Correct Answer: B. Ease and speed of accessing funds
+Explanation: Liquidity refers to how readily funds can be accessed or used for payments without substantial loss.
+18. A bank offers a deposit with an agreed maturity date. Which risk may arise for the customer if market interest rates rise after the deposit is placed?
+A. The deposit automatically becomes a non-performing loan.
+B. The customer becomes the bank's creditor only after maturity.
+C. The customer may miss out on higher rates available on new deposits.
+D. The bank's deposit liability becomes shareholder equity.
+Correct Answer: C. The customer may miss out on higher rates available on new deposits.
+Explanation: A depositor locked into a lower rate may lose the opportunity to earn a higher rate on a new deposit.
+19. Which statement best distinguishes a deposit from a loan granted by a bank?
+A. A deposit is normally a liability of the bank, whereas a loan is normally an asset.
+B. Both are always liabilities of the bank.
+C. Both are always assets of the bank.
+D. A deposit is always off-balance-sheet, whereas a loan is always off-balance-sheet.
+Correct Answer: A. A deposit is normally a liability of the bank, whereas a loan is normally an asset.
+Explanation: The bank owes deposits to customers, while borrowers owe outstanding loan amounts to the bank.
+20. A bank pays interest on a savings account. The applicable rate and calculation method are normally determined by:
+A. The depositor alone after opening the account
+B. The stock exchange
+C. The borrower of the bank's loans
+D. The bank's disclosed product terms and applicable regulatory requirements
+Correct Answer: D. The bank's disclosed product terms and applicable regulatory requirements
+Explanation: Deposit interest depends on the bank's product terms and any applicable regulatory requirements.
+21. Which practice is most appropriate when a person opens a deposit account on behalf of a company?
+A. Accepting any signature without checking authority
+B. Verifying the entity, authorized signatories and required documentation
+C. Treating the company as an individual without any documentation
+D. Waiving all AML-related checks
+Correct Answer: B. Verifying the entity, authorized signatories and required documentation
+Explanation: Corporate account opening requires appropriate entity verification, documentation and confirmation of authorized account operators.
+22. What is a premature withdrawal of a term deposit?
+A. Adding interest at the maturity date
+B. Transferring a deposit to another bank at maturity
+C. Encashing the deposit before its agreed maturity date
+D. Converting a loan into a deposit
+Correct Answer: C. Encashing the deposit before its agreed maturity date
+Explanation: Premature withdrawal occurs when a depositor encashes a term deposit before its contractual maturity.
+23. Which of the following is a principal purpose of deposit insurance or deposit protection arrangements?
+A. Protecting eligible depositors up to the applicable legal limit and conditions
+B. Guaranteeing that every bank investment will earn a profit
+C. Insuring every borrower against default
+D. Preventing all bank failures
+Correct Answer: A. Protecting eligible depositors up to the applicable legal limit and conditions
+Explanation: Deposit protection safeguards eligible deposits within the limits and conditions established by the applicable scheme.
+24. If a bank's deposit funding grows rapidly while its lending standards weaken, which concern becomes especially relevant?
+A. The bank has eliminated credit risk.
+B. All deposits automatically become capital.
+C. Its loans no longer require monitoring.
+D. The bank may take excessive credit or liquidity risks.
+Correct Answer: D. The bank may take excessive credit or liquidity risks.
+Explanation: Weak underwriting can increase defaults, while unsuitable funding and lending structures can expose the bank to liquidity pressure.
+25. A bank's customer deposits rise by Tk 20 million, with all other entries ignored. What is the immediate basic accounting effect of accepting the funds in cash?
+A. Assets decrease and liabilities increase.
+B. Assets and liabilities both increase by Tk 20 million.
+C. Assets increase and liabilities decrease.
+D. Equity increases by Tk 20 million without any liability.
+Correct Answer: B. Assets and liabilities both increase by Tk 20 million.
+Explanation: Cash, an asset, increases by Tk 20 million, and the bank's deposit liability increases by the same amount.
+Section 2: Cheques and Negotiable Instruments (26–50)
+26. A cheque is primarily an instrument containing:
+A. An unconditional order to a banker to pay a specified sum
+B. A promise by the banker to lend money
+C. A contract to insure goods in transit
+D. An instruction to issue company shares
+Correct Answer: A. An unconditional order to a banker to pay a specified sum
+Explanation: A cheque directs a specified banker to pay money according to the instrument and applicable law.
+27. Under the Negotiable Instruments Act, 1881, a cheque is a type of:
+A. Promissory note
+B. Letter of credit
+C. Bill of exchange drawn on a specified banker and payable on demand
+D. Bank guarantee
+Correct Answer: C. Bill of exchange drawn on a specified banker and payable on demand
+Explanation: The Negotiable Instruments Act, 1881 defines a cheque as a bill of exchange drawn on a specified banker and not expressed to be payable otherwise than on demand. Apply the relevant Bangladesh law and amendments.
+28. Which instrument contains an unconditional undertaking in writing, signed by the maker, to pay a certain sum of money?
+A. Cheque
+B. Promissory note
+C. Letter of credit
+D. Payment voucher
+Correct Answer: B. Promissory note
+Explanation: A promissory note contains the maker's written, signed and unconditional undertaking to pay a certain sum, subject to statutory requirements.
+29. In a bill of exchange, the person who makes the order to pay is the:
+A. Drawee
+B. Payee
+C. Endorsee
+D. Drawer
+Correct Answer: D. Drawer
+Explanation: The drawer makes the order to pay, while the drawee is the person or institution directed to pay.
+30. In a cheque transaction, the bank on which the cheque is drawn is called the:
+A. Drawee bank
+B. Endorser
+C. Payee
+D. Beneficiary under a guarantee
+Correct Answer: A. Drawee bank
+Explanation: The drawee bank is the bank directed to make payment from the drawer's account.
+31. What is the primary effect of crossing a cheque with two parallel transverse lines?
+A. It automatically makes the cheque payable in cash over the counter.
+B. It cancels the cheque.
+C. It directs payment through a banker, subject to the crossing and applicable law.
+D. It converts the cheque into a promissory note.
+Correct Answer: C. It directs payment through a banker, subject to the crossing and applicable law.
+Explanation: General crossing restricts the manner of payment under the applicable rules; it does not invalidate the cheque.
+32. What does a cheque crossed “A/C Payee” generally indicate in banking practice?
+A. It must be paid to any bearer.
+B. It should be collected and credited to the account of the named payee, subject to applicable rules.
+C. It can only be used to withdraw foreign currency.
+D. It is automatically invalid.
+Correct Answer: B. It should be collected and credited to the account of the named payee, subject to applicable rules.
+Explanation: Account-payee crossing directs collection toward the named payee's account and reduces the risk of misdirected proceeds.
+33. What is endorsement of a negotiable instrument?
+A. Writing a signature on the instrument, usually to negotiate or transfer it as permitted by law
+B. Destroying the original instrument
+C. Depositing cash in an account
+D. Cancelling the underlying debt in every case
+Correct Answer: A. Writing a signature on the instrument, usually to negotiate or transfer it as permitted by law
+Explanation: Endorsement generally involves signing an instrument for its legally permitted negotiation or transfer.
+34. A cheque payable to bearer is generally negotiated by:
+A. Registration with the stock exchange
+B. Issuing a bank guarantee
+C. Obtaining approval from the central bank in every case
+D. Delivery, subject to applicable law and the instrument's circumstances
+Correct Answer: D. Delivery, subject to applicable law and the instrument's circumstances
+Explanation: Bearer instruments are generally negotiated by delivery, subject to applicable law.
+35. Which is the most appropriate first response when a customer reports a cheque book as lost?
+A. Ignore the report until the cheque book expires.
+B. Immediately grant a loan against the lost cheque book.
+C. Record the report, verify the customer and take appropriate stop-payment or risk-control action.
+D. Treat every cheque previously issued by the customer as paid.
+Correct Answer: C. Record the report, verify the customer and take appropriate stop-payment or risk-control action.
+Explanation: The bank should authenticate the report, document it and apply suitable controls to reduce unauthorized payment risk.
+36. What does “dishonour of a cheque” generally mean?
+A. The cheque has been crossed.
+B. The bank refuses payment of the cheque.
+C. The cheque has been deposited successfully.
+D. The cheque has been endorsed.
+Correct Answer: B. The bank refuses payment of the cheque.
+Explanation: Dishonour occurs when payment is refused, subject to the applicable circumstances and legal rules.
+37. A cheque is presented for Tk 50,000, but the drawer's available balance is insufficient and no overdraft arrangement covers the shortfall. Which outcome is most likely?
+A. The cheque must be paid regardless of balance.
+B. The cheque becomes a bank draft automatically.
+C. The cheque is converted into a term deposit.
+D. The cheque may be returned unpaid for insufficient funds.
+Correct Answer: D. The cheque may be returned unpaid for insufficient funds.
+Explanation: If sufficient funds or authorized overdraft capacity are unavailable, the bank may return the cheque unpaid.
+38. What is the primary function of a collecting banker?
+A. To collect payment of instruments deposited by customers and credit the proceeds when realized
+B. To guarantee every cheque drawn by any customer
+C. To set the central bank's policy rate
+D. To issue all government securities
+Correct Answer: A. To collect payment of instruments deposited by customers and credit the proceeds when realized
+Explanation: A collecting banker processes instruments for collection and credits the proceeds when payment is realized.
+39. What is a stop-payment instruction?
+A. An instruction to increase the customer's deposit interest rate
+B. An instruction to terminate every banking service permanently
+C. A request to the bank not to pay a specified payment instrument, subject to verification and applicable rules
+D. A request to convert a cheque into cash automatically
+Correct Answer: C. A request to the bank not to pay a specified payment instrument, subject to verification and applicable rules
+Explanation: A stop-payment request requires verification and timely action according to the instrument's status and applicable procedures.
+40. Which statement about a post-dated cheque is correct?
+A. It is always payable immediately regardless of its date.
+B. It bears a future date and is generally not payable before that date.
+C. It is a cheque drawn only on a foreign bank.
+D. It cannot be signed by the drawer.
+Correct Answer: B. It bears a future date and is generally not payable before that date.
+Explanation: A post-dated cheque bears a date later than the date on which it is issued.
+41. What is a stale cheque?
+A. A cheque with a future date
+B. A cheque that has been crossed
+C. A cheque that has been endorsed once
+D. A cheque presented after its applicable validity period
+Correct Answer: D. A cheque presented after its applicable validity period
+Explanation: A stale cheque is presented after the period during which it remains valid for payment under the applicable rules.
+42. Which instrument is a written order by one person directing another to pay a certain sum to a specified person or bearer, as applicable?
+A. Bill of exchange
+B. Fixed deposit receipt
+C. Share certificate
+D. Bank statement
+Correct Answer: A. Bill of exchange
+Explanation: A bill of exchange is a written order to pay a certain sum, subject to the legal requirements governing the instrument.
+43. What is the key difference between a promissory note and a bill of exchange?
+A. A promissory note is always issued by a bank.
+B. A bill of exchange can never involve three parties.
+C. A promissory note contains a promise to pay, while a bill of exchange contains an order to pay.
+D. A bill of exchange is never negotiable.
+Correct Answer: C. A promissory note contains a promise to pay, while a bill of exchange contains an order to pay.
+Explanation: The maker promises payment in a promissory note; the drawer orders payment in a bill of exchange.
+44. Who is the payee of a cheque?
+A. The bank maintaining the drawer's account
+B. The person named to receive the payment
+C. The person who clears the cheque at the central bank
+D. The bank's external auditor
+Correct Answer: B. The person named to receive the payment
+Explanation: The payee is the person designated to receive the cheque proceeds.
+45. Which of the following is the safest approach to verifying a suspicious cheque?
+A. Pay it immediately because it has a signature.
+B. Rely solely on the customer's verbal assurance.
+C. Ignore alterations if the amount is small.
+D. Check authenticity, alterations, signatures and applicable verification procedures before payment.
+Correct Answer: D. Check authenticity, alterations, signatures and applicable verification procedures before payment.
+Explanation: Banks must verify the instrument and comply with relevant payment controls rather than rely on a signature alone.
+46. What does “account payee” crossing primarily seek to reduce?
+A. The risk that the cheque proceeds will be collected for someone other than the intended payee
+B. The bank's need to maintain accounts
+C. The need to verify signatures
+D. The possibility of electronic banking
+Correct Answer: A. The risk that the cheque proceeds will be collected for someone other than the intended payee
+Explanation: Account-payee crossing helps direct the proceeds to the named payee's account.
+47. Under ordinary negotiable-instrument terminology, the person to whom an instrument is transferred by endorsement is the:
+A. Drawer
+B. Drawee
+C. Endorsee
+D. Maker of a separate promissory note
+Correct Answer: C. Endorsee
+Explanation: The endorsee receives the instrument through endorsement, subject to applicable law.
+48. Which factor is most important before paying a cheque drawn on a customer's account?
+A. Whether the customer has borrowed from another bank
+B. Validity of the instrument, mandate, available funds and relevant payment controls
+C. Whether the payee owns shares in the bank
+D. Whether the cheque was printed in another country
+Correct Answer: B. Validity of the instrument, mandate, available funds and relevant payment controls
+Explanation: The paying bank must verify the instrument, authority, available funds and applicable payment requirements.
+49. A cheque is altered materially after signing, without proper authentication. What should the paying bank generally do?
+A. Pay it because all alterations are harmless.
+B. Convert it into a demand draft.
+C. Ignore the alteration if the cheque is crossed.
+D. Apply the relevant verification and legal rules and refuse payment if the alteration is unauthorized or otherwise invalid.
+Correct Answer: D. Apply the relevant verification and legal rules and refuse payment if the alteration is unauthorized or otherwise invalid.
+Explanation: Unauthorized material alterations can affect an instrument's validity and must be handled under the applicable legal rules.
+50. Which statement best describes a banker's draft or pay order, subject to the instrument's terms and local practice?
+A. It is an instrument issued by a bank directing payment in the prescribed manner.
+B. It is a customer's unsecured promise to pay interest.
+C. It is a share in the bank's capital.
+D. It is an insurance contract for imported goods.
+Correct Answer: A. It is an instrument issued by a bank directing payment in the prescribed manner.
+Explanation: A banker's draft or pay order is a bank-issued payment instrument whose operation depends on its terms and applicable banking practice.
+Section 3: Lending Products and Credit Operations (51–75)
+51. Which lending facility is generally used to finance a business's short-term operating needs against eligible current assets or other agreed security?
+A. Long-term project equity
+B. Residential savings deposit
+C. Working-capital finance
+D. Deposit insurance
+Correct Answer: C. Working-capital finance
+Explanation: Working-capital finance supports short-term operating requirements, including inventory, wages and receivables.
+52. An overdraft facility generally permits a customer to:
+A. Withdraw beyond the available account balance up to an agreed limit
+B. Avoid all repayment obligations
+C. Receive interest on every unpaid cheque
+D. Withdraw unlimited funds without bank approval
+Correct Answer: A. Withdraw beyond the available account balance up to an agreed limit
+Explanation: An overdraft allows borrowing through an account within an approved limit and agreed conditions.
+53. A cash credit facility is commonly associated with:
+A. Purchasing shares in the lending bank only
+B. Receiving a fixed deposit from the bank
+C. Paying customs duties without any borrowing
+D. Drawing funds for business needs within an approved limit and agreed terms
+Correct Answer: D. Drawing funds for business needs within an approved limit and agreed terms
+Explanation: Cash credit provides business financing through drawings permitted within an approved credit limit.
+54. Which loan is most directly associated with purchasing a house or apartment?
+A. Export packing credit
+B. Housing or mortgage finance
+C. Bank guarantee
+D. Letter of credit
+Correct Answer: B. Housing or mortgage finance
+Explanation: Housing finance supports eligible residential property purchases, construction or related purposes.
+55. What is collateral in lending?
+A. A customer's monthly salary only
+B. The bank's annual profit
+C. An asset or other security offered to support a credit obligation
+D. A government tax receipt that always discharges the loan
+Correct Answer: C. An asset or other security offered to support a credit obligation
+Explanation: Collateral provides security for a loan but does not guarantee complete recovery if the borrower defaults.
+56. Which of the following is one of the traditional “5 Cs” of credit?
+A. Character
+B. Currency printing
+C. Clearing
+D. Custody of banknotes
+Correct Answer: A. Character
+Explanation: The five Cs are Character, Capacity, Capital, Collateral and Conditions.
+57. A bank evaluates whether a borrower can generate sufficient cash flow to repay a loan. Which credit factor is most directly being assessed?
+A. Colour of the collateral documents
+B. Number of branches owned by the borrower
+C. The borrower's preferred bank logo
+D. Capacity
+Correct Answer: D. Capacity
+Explanation: Capacity assesses the borrower's ability to repay debt from income or business cash flow.
+58. What is the principal purpose of credit appraisal?
+A. To guarantee that no borrower will ever default
+B. To assess repayment ability, risk, purpose, security and loan suitability before approval
+C. To replace all loan documentation
+D. To eliminate the need for monitoring
+Correct Answer: B. To assess repayment ability, risk, purpose, security and loan suitability before approval
+Explanation: Credit appraisal helps a bank evaluate whether a proposed loan is suitable and whether repayment is reasonably supported.
+59. Which facility allows a bank to finance a customer against invoices or receivables, subject to eligibility and agreement?
+A. Savings deposit
+B. Banknote issuance
+C. Receivables financing
+D. Deposit protection
+Correct Answer: C. Receivables financing
+Explanation: Receivables financing provides liquidity against eligible amounts owed to a business by its customers.
+60. In a typical amortizing loan, the scheduled instalments are designed to repay:
+A. Principal and interest over the agreed term
+B. Interest only, with no principal repayment ever
+C. The bank's share capital
+D. The borrower's deposits held at unrelated banks
+Correct Answer: A. Principal and interest over the agreed term
+Explanation: Amortizing instalments generally repay both principal and interest over the contractual repayment period.
+61. Which statement best describes a secured loan?
+A. It can never become overdue.
+B. It is always interest-free.
+C. It requires no assessment of the borrower.
+D. It is supported by collateral or security under the agreed legal arrangements.
+Correct Answer: D. It is supported by collateral or security under the agreed legal arrangements.
+Explanation: A secured loan has collateral or other agreed security, but the borrower can still default.
+62. What is the main difference between a term loan and a revolving credit facility?
+A. A term loan is always a deposit.
+B. A term loan normally has a defined repayment schedule, while revolving credit allows redraws within an approved limit under its terms.
+C. Revolving credit can never be repaid.
+D. A term loan is always issued in foreign currency.
+Correct Answer: B. A term loan normally has a defined repayment schedule, while revolving credit allows redraws within an approved limit under its terms.
+Explanation: Term loans generally follow a defined repayment schedule, whereas revolving facilities permit drawings and potential redrawings within their limits.
+63. A bank lends Tk 800,000 at a simple annual interest rate of 10% for one year. Ignoring fees and taxes, what is the interest?
+A. Tk 8,000
+B. Tk 40,000
+C. Tk 80,000
+D. Tk 800,000
+Correct Answer: C. Tk 80,000
+Explanation: Simple interest = Principal × Rate × Time = Tk 800,000 × 10% × 1 = Tk 80,000.
+64. A borrower uses a loan granted for a specified business purpose for an unauthorized unrelated purpose. This is primarily a concern about:
+A. Diversion or misuse of loan funds
+B. Deposit mobilization
+C. Cheque crossing
+D. Interest capitalization in every case
+Correct Answer: A. Diversion or misuse of loan funds
+Explanation: Using borrowed funds for an unauthorized purpose may breach the loan agreement and increase credit risk.
+65. Which is the most appropriate action when a loan account shows early signs of repayment stress?
+A. Stop monitoring the borrower.
+B. Automatically write off the entire loan.
+C. Increase the limit without assessment.
+D. Review the borrower's financial position, monitor risk and take action under policy and applicable rules.
+Correct Answer: D. Review the borrower's financial position, monitor risk and take action under policy and applicable rules.
+Explanation: Early-warning signals call for timely review, closer monitoring and appropriate risk-management measures.
+66. What does loan-to-value (LTV) ratio measure?
+A. Interest expense divided by bank deposits
+B. Loan amount relative to the value of the asset securing the loan
+C. Bank capital divided by operating expenses
+D. Deposits divided by staff salaries
+Correct Answer: B. Loan amount relative to the value of the asset securing the loan
+Explanation: LTV = Loan amount ÷ Collateral value × 100%. A Tk 6 million loan against property valued at Tk 10 million has an LTV of 60%.
+67. A borrower takes Tk 500,000 and repays Tk 200,000 of principal. Ignoring other transactions, what principal balance remains?
+A. Tk 500,000
+B. Tk 400,000
+C. Tk 300,000
+D. Tk 200,000
+Correct Answer: C. Tk 300,000
+Explanation: Outstanding principal = Tk 500,000 − Tk 200,000 = Tk 300,000.
+68. Which statement about loan security is correct?
+A. Security can reduce potential loss but does not eliminate the need to assess repayment capacity.
+B. Collateral guarantees that the borrower will never default.
+C. Collateral makes loan documentation unnecessary.
+D. Security always removes liquidity risk from a bank.
+Correct Answer: A. Security can reduce potential loss but does not eliminate the need to assess repayment capacity.
+Explanation: Collateral may help recovery after default, but prudent lending still requires assessment of the borrower's ability to repay.
+69. What is a non-performing loan (NPL), in general terms?
+A. Any loan repaid before its due date
+B. A loan that is always fully secured by cash
+C. A loan used to purchase inventory
+D. A loan classified as non-performing under the applicable regulatory classification criteria
+Correct Answer: D. A loan classified as non-performing under the applicable regulatory classification criteria
+Explanation: NPL classification depends on the relevant regulatory criteria, including applicable overdue and other classification conditions.
+70. Why is loan provisioning important?
+A. It converts all loans into cash.
+B. It recognizes expected or prescribed credit losses in accordance with applicable accounting and regulatory requirements.
+C. It guarantees loan recovery.
+D. It eliminates the need for capital.
+Correct Answer: B. It recognizes expected or prescribed credit losses in accordance with applicable accounting and regulatory requirements.
+Explanation: Provisioning recognizes credit losses as required by accounting and regulatory rules; it does not itself recover the loan.
+71. A bank issues a guarantee on behalf of a customer. Before the guarantee is invoked, the bank's obligation is generally:
+A. A customer deposit
+B. A fully disbursed term loan in every case
+C. A contingent obligation, subject to its terms and applicable accounting and regulatory treatment
+D. Share capital belonging to the beneficiary
+Correct Answer: C. A contingent obligation, subject to its terms and applicable accounting and regulatory treatment
+Explanation: A guarantee generally creates a contingent obligation before invocation, although its accounting and regulatory treatment depends on applicable requirements.
+72. What is the primary purpose of loan covenants?
+A. To impose agreed conditions, restrictions or obligations on the borrower
+B. To remove the borrower's repayment obligation
+C. To guarantee an increase in collateral value
+D. To replace the loan agreement
+Correct Answer: A. To impose agreed conditions, restrictions or obligations on the borrower
+Explanation: Covenants establish obligations or restrictions that help the bank monitor and manage credit risk.
+73. A bank lends Tk 1,000,000 at 12% simple annual interest for six months. What is the interest, ignoring fees and taxes?
+A. Tk 120,000
+B. Tk 12,000
+C. Tk 60,000
+D. Tk 600,000
+Correct Answer: C. Tk 60,000
+Explanation: Simple interest = Tk 1,000,000 × 12% × 0.5 year = Tk 60,000.
+74. Which lending practice best reflects prudent credit risk management?
+A. Approving every loan based only on collateral
+B. Independently assessing the borrower, purpose, repayment source and risks
+C. Ignoring adverse financial information
+D. Allowing the loan officer to bypass all approval limits
+Correct Answer: B. Independently assessing the borrower, purpose, repayment source and risks
+Explanation: Independent credit assessment considers repayment capacity, purpose, risks and security before approval.
+75. A borrower repays a loan in full before its contractual maturity. This is generally called:
+A. Loan classification
+B. Loan syndication
+C. Loan provisioning
+D. Early or prepayment, subject to the contract's terms
+Correct Answer: D. Early or prepayment, subject to the contract's terms
+Explanation: Prepayment is repayment before the agreed maturity date; any applicable charges or restrictions depend on the contract and relevant rules.
+Section 4: Remittance and Payment Operations (76–100)
+76. In banking, remittance generally refers to:
+A. The transfer of funds from one person or place to another
+B. A bank's purchase of its own shares
+C. A loan write-off
+D. The creation of new banknotes only
+Correct Answer: A. The transfer of funds from one person or place to another
+Explanation: Remittance is the transfer of money between persons, accounts or locations, domestically or internationally.
+77. Which type of remittance is most directly associated with a person working abroad sending money to family in Bangladesh?
+A. Interbank capital adequacy transfer
+B. Export credit insurance
+C. Inward foreign remittance
+D. Loan provisioning
+Correct Answer: C. Inward foreign remittance
+Explanation: Money sent from abroad to a recipient in Bangladesh is an inward foreign remittance.
+78. A transfer between two accounts held at the same bank is generally described as:
+A. A foreign exchange reserve
+B. An internal or intra-bank transfer
+C. A bank guarantee
+D. A negotiable promissory note
+Correct Answer: B. An internal or intra-bank transfer
+Explanation: An intra-bank transfer moves funds between accounts maintained within the same bank.
+79. Which information is particularly important for accurately routing an international bank transfer?
+A. The beneficiary's favourite currency symbol
+B. The number of employees at the sending bank
+C. The sender's preferred branch colour
+D. Correct beneficiary details and applicable bank-routing or correspondent-bank information
+Correct Answer: D. Correct beneficiary details and applicable bank-routing or correspondent-bank information
+Explanation: Correct beneficiary and routing details help prevent delays, misdirected payments and processing errors.
+80. What is the principal function of SWIFT in international banking?
+A. It provides a secure financial messaging network; it is not itself a deposit-taking bank.
+B. It guarantees every international transfer against loss.
+C. It sets Bangladesh's policy interest rate.
+D. It physically transports foreign currency notes.
+Correct Answer: A. It provides a secure financial messaging network; it is not itself a deposit-taking bank.
+Explanation: SWIFT enables financial institutions to exchange standardized financial messages; it does not itself guarantee every transfer or act as the settlement bank for all payments.
+81. Which statement best distinguishes a payment instruction from settlement?
+A. They are always identical in every payment system.
+B. A payment instruction is a message or order; settlement discharges the payment obligation through the relevant settlement mechanism.
+C. Settlement is the same as opening a deposit account.
+D. A payment instruction always proves that funds have settled finally.
+Correct Answer: B. A payment instruction is a message or order; settlement discharges the payment obligation through the relevant settlement mechanism.
+Explanation: Sending an instruction initiates or communicates a payment; settlement is the process that discharges the corresponding obligation.
+82. What is the primary purpose of beneficiary verification in remittance operations?
+A. To increase the amount transferred automatically
+B. To eliminate all exchange-rate movements
+C. To reduce misdirected payments and support fraud and compliance controls
+D. To remove the need for transaction records
+Correct Answer: C. To reduce misdirected payments and support fraud and compliance controls
+Explanation: Beneficiary verification reduces errors and helps identify suspicious or fraudulent transactions.
+83. A customer sends Tk 25,000 domestically and pays a Tk 50 transfer fee. Ignoring other charges, how much is debited if the fee is charged in addition to the transfer?
+A. Tk 25,050
+B. Tk 24,950
+C. Tk 25,500
+D. Tk 50
+Correct Answer: A. Tk 25,050
+Explanation: Total debit = Tk 25,000 + Tk 50 = Tk 25,050.
+84. Which term refers to funds sent into Bangladesh from another country?
+A. Outward remittance
+B. Domestic clearing
+C. Loan syndication
+D. Inward remittance
+Correct Answer: D. Inward remittance
+Explanation: An inward remittance brings funds into Bangladesh from an external source.
+85. Which is a key compliance concern in cross-border remittance?
+A. The customer's choice of bank branch interior design
+B. Compliance with applicable AML/CFT, sanctions and foreign-exchange requirements
+C. Whether the beneficiary has a fixed deposit at the sending bank
+D. Whether the transfer is made on a Monday
+Correct Answer: B. Compliance with applicable AML/CFT, sanctions and foreign-exchange requirements
+Explanation: Cross-border remittances must comply with applicable anti-money-laundering, counter-terrorist-financing, sanctions and foreign-exchange rules.
+86. A remittance is sent to an incorrect beneficiary account due to incorrect details. What is the best general response?
+A. Assume the payment will reverse automatically in every case.
+B. Delete the transaction record.
+C. Promptly investigate and follow the payment system's recall, correction and dispute procedures.
+D. Credit the intended beneficiary without checking the status of the original transfer.
+Correct Answer: C. Promptly investigate and follow the payment system's recall, correction and dispute procedures.
+Explanation: The bank should trace the transaction and follow the applicable correction or recall process; recovery is not guaranteed.
+87. What is a correspondent banking relationship?
+A. An arrangement in which one bank provides services, such as payment or account services, to another bank
+B. A contract between a bank and its office furniture supplier
+C. A personal loan between two depositors
+D. An arrangement that removes all AML obligations
+Correct Answer: A. An arrangement in which one bank provides services, such as payment or account services, to another bank
+Explanation: Correspondent banking allows one bank to access services provided by another bank, often for international payments and related transactions.
+88. Which of the following is a potential risk in remittance operations?
+A. Correctly matched beneficiary information
+B. Properly maintained transaction logs
+C. Valid customer identification
+D. Fraudulent instructions or compromised customer credentials
+Correct Answer: D. Fraudulent instructions or compromised customer credentials
+Explanation: Fraudulent instructions and stolen credentials can lead to unauthorized transfers and financial losses.
+89. What is the main purpose of reconciliation in payment operations?
+A. To create extra customer fees
+B. To compare records and identify discrepancies between transactions, accounts or systems
+C. To cancel every international payment
+D. To remove audit trails
+Correct Answer: B. To compare records and identify discrepancies between transactions, accounts or systems
+Explanation: Reconciliation compares corresponding records to identify missing entries, duplicates and other discrepancies.
+90. Which statement about a failed electronic transfer is most accurate?
+A. Every failed transfer is permanently lost.
+B. Every failed transfer is automatically refunded instantly.
+C. The bank should check the transaction status and apply the relevant reversal, refund or investigation process.
+D. The customer must always open a new bank account.
+Correct Answer: C. The bank should check the transaction status and apply the relevant reversal, refund or investigation process.
+Explanation: The bank must establish the actual transaction status and follow the appropriate refund or correction procedure.
+91. Which payment system is associated with electronic funds transfers between participating banks in Bangladesh?
+A. BEFTN
+B. A fixed deposit receipt
+C. A share register
+D. A bill of lading
+Correct Answer: A. BEFTN
+Explanation: The Bangladesh Electronic Funds Transfer Network facilitates electronic credit and debit transfers between participating institutions.
+92. Which payment system is designed for high-value, time-critical payments with real-time gross settlement?
+A. A savings passbook
+B. A manual deposit slip
+C. A fixed deposit scheme
+D. BD-RTGS
+Correct Answer: D. BD-RTGS
+Explanation: Bangladesh's Real-Time Gross Settlement system settles eligible payments individually in real time, subject to its operating rules.
+93. What is a major benefit of electronic payment systems compared with exclusively manual paper-based processes?
+A. They eliminate every form of fraud.
+B. They can improve processing speed, traceability and operational efficiency.
+C. They make authentication unnecessary.
+D. They guarantee that every recipient's account details are correct.
+Correct Answer: B. They can improve processing speed, traceability and operational efficiency.
+Explanation: Electronic payment systems can improve efficiency and traceability, but they still require authentication, security and reconciliation.
+94. In a foreign-currency remittance, what does the exchange rate determine?
+A. The customer's bank account number
+B. The number of authorized bank signatories
+C. The conversion relationship between the relevant currencies
+D. The maturity of a domestic term loan
+Correct Answer: C. The conversion relationship between the relevant currencies
+Explanation: The exchange rate determines how much one currency is worth relative to another and therefore affects the amount converted.
+95. A customer instructs a bank to send money abroad for an eligible purpose. Which factor is essential before processing?
+A. Compliance with applicable foreign-exchange rules, documentation and transaction controls
+B. A guarantee that the exchange rate will never change
+C. A promise that the beneficiary will open a loan account
+D. Automatic waiver of customer due diligence
+Correct Answer: A. Compliance with applicable foreign-exchange rules, documentation and transaction controls
+Explanation: Outward remittances must satisfy the applicable purpose, documentation and foreign-exchange requirements.
+96. What is a remittance advice?
+A. A loan approval letter
+B. A bank's capital adequacy report
+C. A document that automatically guarantees payment
+D. Information communicating details of a payment or remittance
+Correct Answer: D. Information communicating details of a payment or remittance
+Explanation: A remittance advice communicates information such as the payment amount, reference and transaction purpose.
+97. What is the primary role of a payment-system operator or infrastructure?
+A. To decide every borrower's creditworthiness
+B. To facilitate payment processing, clearing or settlement according to the system's design
+C. To guarantee all deposits regardless of law
+D. To issue every bank's loans
+Correct Answer: B. To facilitate payment processing, clearing or settlement according to the system's design
+Explanation: Payment infrastructure supports the movement of payments through the processing, clearing or settlement functions it is designed to provide.
+98. A bank receives a suspicious remittance that may involve money laundering. What should it do?
+A. Ignore the alert if the amount is small.
+B. Inform the suspected criminal before any review.
+C. Apply risk-based controls, investigate and report through legally prescribed channels where required.
+D. Delete the transaction history.
+Correct Answer: C. Apply risk-based controls, investigate and report through legally prescribed channels where required.
+Explanation: Suspicious activity should be investigated and reported where legally required, while preserving records and avoiding prohibited disclosure.
+99. Which statement about transaction reference numbers is correct?
+A. They help trace and reconcile a payment but do not alone prove every aspect of final settlement.
+B. They replace beneficiary verification.
+C. They guarantee a refund.
+D. They eliminate the need for transaction records.
+Correct Answer: A. They help trace and reconcile a payment but do not alone prove every aspect of final settlement.
+Explanation: A reference number assists tracing, but the actual transaction status must be checked independently.
+100. Why are maker-checker controls useful in payment processing?
+A. They allow one employee to approve every transaction without review.
+B. They eliminate the need for system access controls.
+C. They prevent every possible operational error.
+D. They separate transaction initiation from authorization to reduce error and fraud risk.
+Correct Answer: D. They separate transaction initiation from authorization to reduce error and fraud risk.
+Explanation: Maker-checker controls introduce independent authorization, reducing opportunities for mistakes and unauthorized payments.
+Section 5: Letters of Credit and Trade Finance (101–125)
+101. What is a letter of credit (LC) in international trade?
+A. A deposit account opened by an importer for personal savings
+B. A bank's unconditional guarantee of the quality of goods
+C. A bank's undertaking to honour a complying presentation under the LC's terms
+D. A document transferring ownership of a bank branch
+Correct Answer: C. A bank's undertaking to honour a complying presentation under the LC's terms
+Explanation: A documentary LC provides a bank undertaking to honour a presentation that complies with the credit and applicable rules.
+102. In a documentary credit, who is typically the applicant?
+A. The importer or buyer who requests the credit
+B. The exporter in every transaction
+C. The shipping company
+D. The customs authority
+Correct Answer: A. The importer or buyer who requests the credit
+Explanation: The applicant requests the issuing bank to establish the credit, usually to support payment to the seller.
+103. Who is generally the beneficiary of an import letter of credit?
+A. The issuing bank
+B. The importer
+C. The importer's auditor
+D. The exporter or seller in whose favour the credit is issued
+Correct Answer: D. The exporter or seller in whose favour the credit is issued
+Explanation: The beneficiary is the party entitled to present documents and seek payment under the LC's terms.
+104. Which bank issues a documentary credit at the request of its customer?
+A. Advising bank
+B. Issuing bank
+C. Reimbursing bank in every case
+D. Collecting bank only
+Correct Answer: B. Issuing bank
+Explanation: The issuing bank establishes the credit at the applicant's request and undertakes to honour a complying presentation.
+105. What is the principal role of an advising bank?
+A. To replace the issuing bank's undertaking automatically
+B. To guarantee the goods' physical quality
+C. To authenticate and advise the credit to the beneficiary according to its role and applicable rules
+D. To determine the importer's retail selling price
+Correct Answer: C. To authenticate and advise the credit to the beneficiary according to its role and applicable rules
+Explanation: An advising bank authenticates and communicates the credit; advising alone does not automatically make it responsible for payment.
+106. Under a documentary LC, what does the issuing bank primarily examine when deciding whether to honour a presentation?
+A. Whether the documents comply with the credit's terms and applicable documentary-credit rules
+B. Whether the buyer likes the goods after arrival
+C. Whether the seller has made a profit
+D. Whether the goods' resale price has increased
+Correct Answer: A. Whether the documents comply with the credit's terms and applicable documentary-credit rules
+Explanation: Banks examine documents against the LC's requirements and applicable rules rather than independently determining the goods' commercial quality.
+107. Which international rules are widely used for documentary credits when incorporated into the credit?
+A. Basel III
+B. IAS 16
+C. The Hague Convention on road traffic
+D. UCP 600
+Correct Answer: D. UCP 600
+Explanation: UCP 600 is the International Chamber of Commerce's Uniform Customs and Practice for Documentary Credits, Publication No. 600.
+108. What is a confirmed letter of credit?
+A. A credit cancelled automatically before shipment
+B. A credit to which another bank adds its own undertaking, subject to the terms and applicable rules
+C. A credit that never requires documents
+D. A credit payable only in cash at the buyer's premises
+Correct Answer: B. A credit to which another bank adds its own undertaking, subject to the terms and applicable rules
+Explanation: A confirming bank adds its own undertaking to honour a complying presentation under the credit.
+109. What does “sight payment” generally mean under an LC?
+A. Payment is made only after a five-year loan term.
+B. Payment is made before any presentation regardless of compliance.
+C. Payment is made when the stipulated compliant presentation is examined and payment is due under the credit's terms.
+D. Payment is made only if the buyer resells the goods.
+Correct Answer: C. Payment is made when the stipulated compliant presentation is examined and payment is due under the credit's terms.
+Explanation: Sight payment is due when the required compliant presentation is examined and payment becomes due under the credit.
+110. What is a usance or deferred-payment LC?
+A. A credit under which payment is due at a specified future date or after an agreed tenor, subject to its terms
+B. A credit that never permits payment
+C. A credit that is always payable immediately in cash
+D. A credit that has no beneficiary
+Correct Answer: A. A credit under which payment is due at a specified future date or after an agreed tenor, subject to its terms
+Explanation: A usance or deferred-payment LC allows payment at an agreed future date or after a specified tenor.
+111. What is the purpose of a bill of lading in sea transport?
+A. It is a bank's capital adequacy certificate.
+B. It is a customer's deposit statement.
+C. It is always a guarantee of the buyer's solvency.
+D. It can serve as a receipt for goods shipped, evidence of the contract of carriage and, where applicable, a document of title.
+Correct Answer: D. It can serve as a receipt for goods shipped, evidence of the contract of carriage and, where applicable, a document of title.
+Explanation: A bill of lading performs important shipping-document functions, although not every transport document has all these characteristics.
+112. Which document commonly provides evidence of the goods' origin?
+A. Bank statement
+B. Certificate of origin
+C. Loan repayment schedule
+D. Deposit slip
+Correct Answer: B. Certificate of origin
+Explanation: A certificate of origin identifies or certifies the country of origin of goods under the relevant requirements.
+113. What is the principal distinction between a documentary LC and a bank guarantee?
+A. Neither can create a bank obligation.
+B. Both always require immediate cash payment.
+C. An LC primarily supports payment against stipulated complying documents; a guarantee generally supports a specified obligation if its demand conditions are met.
+D. A bank guarantee is always a type of savings account.
+Correct Answer: C. An LC primarily supports payment against stipulated complying documents; a guarantee generally supports a specified obligation if its demand conditions are met.
+Explanation: A documentary LC supports trade payment against documents, while a guarantee provides an undertaking triggered by its specified claim conditions.
+114. An exporter presents documents under an LC, but the documents contain a discrepancy. What is the most appropriate general approach?
+A. Examine the discrepancy under the credit's terms and applicable rules, and seek a waiver or take the prescribed action where appropriate.
+B. Ignore every discrepancy automatically.
+C. Pay regardless of the credit's terms in every case.
+D. Cancel the exporter's bank account.
+Correct Answer: A. Examine the discrepancy under the credit's terms and applicable rules, and seek a waiver or take the prescribed action where appropriate.
+Explanation: The bank must follow the applicable documentary-credit procedures; a waiver may be sought, but payment is not automatic.
+115. What is a back-to-back LC commonly used for?
+A. Personal cash withdrawals
+B. Paying household utility bills
+C. Replacing all export documentation
+D. Supporting procurement of inputs or goods using an underlying export LC, subject to applicable rules and bank approval
+Correct Answer: D. Supporting procurement of inputs or goods using an underlying export LC, subject to applicable rules and bank approval
+Explanation: A back-to-back LC can help an exporter finance inputs or goods needed to fulfil an underlying export transaction.
+116. In Bangladesh, which type of bank commonly handles trade finance and foreign-exchange transactions for importers and exporters?
+A. A bank with no authority to conduct any banking activity
+B. An authorized dealer bank, subject to applicable foreign-exchange rules and authorization
+C. A stock exchange
+D. A microfinance borrower acting independently
+Correct Answer: B. An authorized dealer bank, subject to applicable foreign-exchange rules and authorization
+Explanation: Authorized dealer banks conduct permitted foreign-exchange transactions under Bangladesh Bank's applicable rules and their authorization.
+117. What is a packing credit facility?
+A. A loan secured only by a house for personal use
+B. A deposit that matures after shipment
+C. Pre-shipment finance that supports eligible export-related preparation or production
+D. A bank guarantee for employee attendance
+Correct Answer: C. Pre-shipment finance that supports eligible export-related preparation or production
+Explanation: Packing credit provides eligible pre-shipment finance for preparing or producing goods for export.
+118. What is the main purpose of post-shipment export finance?
+A. To provide eligible finance after goods have been shipped while export proceeds are awaited
+B. To finance the importer's personal holiday
+C. To replace the shipping documents
+D. To eliminate all foreign-exchange risk
+Correct Answer: A. To provide eligible finance after goods have been shipped while export proceeds are awaited
+Explanation: Post-shipment finance provides liquidity to exporters after shipment while they await payment.
+119. Which risk arises if an importer must pay in foreign currency but its domestic-currency funds are insufficient after an adverse exchange-rate movement?
+A. Cheque-crossing risk
+B. Deposit dormancy risk
+C. Share-registration risk
+D. Foreign-exchange risk
+Correct Answer: D. Foreign-exchange risk
+Explanation: An adverse exchange-rate movement can increase the domestic-currency cost of a foreign-currency obligation.
+120. What does the term “discrepant documents” mean in documentary-credit operations?
+A. Documents that are always counterfeit
+B. Documents that fail to comply with one or more applicable LC requirements
+C. Documents that have been accepted as fully compliant in every respect
+D. Documents unrelated to the transaction in every case
+Correct Answer: B. Documents that fail to comply with one or more applicable LC requirements
+Explanation: A discrepancy occurs when presented documents do not meet one or more requirements of the credit or applicable rules.
+121. Which party is responsible for requesting an import LC from its bank?
+A. The shipping carrier
+B. The customs inspector
+C. The importer/applicant
+D. The beneficiary's auditor
+Correct Answer: C. The importer/applicant
+Explanation: The importer applies to the issuing bank to establish the import LC in favour of the exporter.
+122. Why is checking shipment dates and presentation periods important under an LC?
+A. Failure to comply with relevant time requirements may create documentary discrepancies.
+B. It determines the bank's annual staff bonus.
+C. It removes the need for a beneficiary.
+D. It guarantees the goods' quality.
+Correct Answer: A. Failure to comply with relevant time requirements may create documentary discrepancies.
+Explanation: Expiry dates, shipment deadlines and presentation periods are important LC conditions; non-compliance may lead to discrepancies.
+123. Which statement about a documentary LC is most accurate?
+A. The bank must physically inspect the goods before every payment.
+B. The bank guarantees that the buyer will make a profit.
+C. The bank must pay even if the presentation is non-complying and no waiver or other basis applies.
+D. The credit is documentary in nature; banks generally deal with documents rather than the physical goods themselves.
+Correct Answer: D. The credit is documentary in nature; banks generally deal with documents rather than the physical goods themselves.
+Explanation: Documentary-credit operations focus on the documents presented, not a bank's independent physical inspection of the goods.
+124. What is an export proceeds realization requirement concerned with?
+A. Paying interest on domestic savings accounts
+B. Receiving and accounting for export earnings in accordance with applicable foreign-exchange rules
+C. Issuing a cheque book to every importer
+D. Calculating the bank's employee leave balance
+Correct Answer: B. Receiving and accounting for export earnings in accordance with applicable foreign-exchange rules
+Explanation: Export proceeds realization concerns receipt and accounting of export earnings in accordance with applicable Bangladesh foreign-exchange requirements.
+125. Why should a bank verify an importer's trade documents and transaction purpose?
+A. To guarantee the future retail price of the imported goods
+B. To eliminate the importer's commercial risk completely
+C. To support compliance, authenticity checks, risk management and applicable foreign-exchange requirements
+D. To avoid keeping records of the transaction
+Correct Answer: C. To support compliance, authenticity checks, risk management and applicable foreign-exchange requirements
+Explanation: Trade-document checks help support lawful trade, transaction authenticity and compliance with applicable regulatory requirements.
+Section 6: Bank Guarantees and Integrated Banking Operations (126–150)
+126. What is a bank guarantee?
+A. A deposit that cannot be withdrawn
+B. A bank's undertaking to pay a beneficiary if the specified conditions for a valid claim are met
+C. A guarantee that a borrower will make a profit
+D. A document that always transfers ownership of goods
+Correct Answer: B. A bank's undertaking to pay a beneficiary if the specified conditions for a valid claim are met
+Explanation: A bank guarantee is an undertaking to pay when the conditions stated in the guarantee are satisfied.
+127. Who is the applicant for a bank guarantee?
+A. The beneficiary receiving the guarantee
+B. The bank's external auditor
+C. The regulator
+D. The customer who requests the bank to issue the guarantee
+Correct Answer: D. The customer who requests the bank to issue the guarantee
+Explanation: The applicant requests the bank to issue a guarantee, commonly to support a contractual or financial obligation.
+128. Who is the beneficiary under a bank guarantee?
+A. The party in whose favour the guarantee is issued
+B. The bank's loan officer
+C. The applicant's accountant in every case
+D. The central bank in every transaction
+Correct Answer: A. The party in whose favour the guarantee is issued
+Explanation: The beneficiary is the party protected by the bank's undertaking, subject to the guarantee's terms.
+129. A performance guarantee primarily supports:
+A. Repayment of a personal savings deposit
+B. Payment of routine interest on every loan
+C. The applicant's performance of specified contractual obligations
+D. The bank's purchase of foreign currency for its reserves
+Correct Answer: C. The applicant's performance of specified contractual obligations
+Explanation: A performance guarantee supports the applicant's specified contractual performance obligations.
+130. A bid bond or bid guarantee is commonly used to:
+A. Guarantee a savings account's interest rate
+B. Support a bidder's obligations associated with a tender
+C. Guarantee the quality of every imported product
+D. Replace a company's registration documents
+Correct Answer: B. Support a bidder's obligations associated with a tender
+Explanation: A bid guarantee supports obligations arising from a tender, according to the tender conditions and guarantee wording.
+131. What is a financial guarantee generally intended to support?
+A. A bank's obligation to pay staff salaries
+B. A promise that an investment cannot lose value
+C. A guarantee of physical shipment of goods in every case
+D. A specified financial obligation, such as payment of money, according to the guarantee's terms
+Correct Answer: D. A specified financial obligation, such as payment of money, according to the guarantee's terms
+Explanation: A financial guarantee supports a defined monetary obligation subject to its wording and claim conditions.
+132. Before issuing a bank guarantee, a bank should generally:
+A. Assess the applicant's creditworthiness, purpose, exposure and required security
+B. Ignore the applicant's repayment capacity
+C. Assume that a guarantee can never be invoked
+D. Treat the guarantee as a customer deposit
+Correct Answer: A. Assess the applicant's creditworthiness, purpose, exposure and required security
+Explanation: A guarantee creates potential exposure for the bank, so it should assess the applicant and the proposed transaction before issuance.
+133. A bank guarantee is invoked by the beneficiary. What determines whether the bank must honour the demand?
+A. The beneficiary's popularity
+B. The applicant's unrelated deposit balance only
+C. The guarantee's wording, validity, demand conditions and applicable law
+D. The bank's branch decoration
+Correct Answer: C. The guarantee's wording, validity, demand conditions and applicable law
+Explanation: The bank must assess the demand against the guarantee's terms, including validity and required claim conditions, and the applicable law.
+134. Which statement best describes a counter-guarantee?
+A. A customer's instruction to stop a cheque
+B. An undertaking supporting another guarantee arrangement, subject to the relevant terms
+C. A deposit receipt that earns no interest
+D. A certificate of origin
+Correct Answer: B. An undertaking supporting another guarantee arrangement, subject to the relevant terms
+Explanation: A counter-guarantee supports a related guarantee arrangement, often involving another bank or intermediary.
+135. A bank issues a guarantee for Tk 2 million with a valid claim made for Tk 500,000, assuming the terms permit the claim and no other restriction applies. What is the amount demanded in this scenario?
+A. Tk 2.5 million
+B. Tk 1.5 million
+C. Tk 2 million
+D. Tk 500,000
+Correct Answer: D. Tk 500,000
+Explanation: The scenario specifies a claim for Tk 500,000. That is the amount demanded, rather than the guarantee's full Tk 2 million face value.
+136. What is the principal purpose of a bank's internal control system in routine operations?
+A. To support reliable operations, protect assets, ensure compliance and reduce errors and fraud
+B. To remove all supervisory responsibilities
+C. To ensure every loan is approved automatically
+D. To prevent customers from accessing their own accounts
+Correct Answer: A. To support reliable operations, protect assets, ensure compliance and reduce errors and fraud
+Explanation: Internal controls support operational reliability, asset protection, compliance and accurate reporting.
+137. Why should duties such as transaction initiation, authorization and reconciliation be appropriately segregated?
+A. To make payment records unnecessary
+B. To ensure only one employee controls every stage
+C. To reduce the opportunity for error, unauthorized transactions and concealment of fraud
+D. To eliminate the need for audits
+Correct Answer: C. To reduce the opportunity for error, unauthorized transactions and concealment of fraud
+Explanation: Segregation of duties introduces independent checks and makes it harder to execute and conceal unauthorized transactions.
+138. A customer asks the bank to transfer funds to a third party and provides suspicious or inconsistent instructions. What should the bank do?
+A. Process the transfer immediately without checking.
+B. Verify the instruction, assess the risk and follow relevant fraud-prevention and compliance procedures.
+C. Delete the customer's transaction history.
+D. Share the customer's credentials with the beneficiary.
+Correct Answer: B. Verify the instruction, assess the risk and follow relevant fraud-prevention and compliance procedures.
+Explanation: Suspicious instructions require verification and appropriate risk controls before the bank processes the payment.
+139. Which is an example of operational risk in commercial banking?
+A. A borrower's creditworthiness declining
+B. A market interest rate changing
+C. A foreign currency appreciating
+D. A payment being processed incorrectly because of a system or human error
+Correct Answer: D. A payment being processed incorrectly because of a system or human error
+Explanation: Operational risk includes losses arising from inadequate processes, human mistakes, system failures or external events.
+140. Which statement best describes liquidity risk for a commercial bank?
+A. The risk that the bank cannot meet obligations when due without unacceptable losses
+B. The risk that every borrower will repay early
+C. The risk that all assets appreciate simultaneously
+D. The risk that a customer changes their address
+Correct Answer: A. The risk that the bank cannot meet obligations when due without unacceptable losses
+Explanation: Liquidity risk arises when a bank cannot meet payment obligations on time without unacceptable losses.
+141. Which activity most directly helps prevent money laundering through deposit and payment operations?
+A. Ignoring unusual transaction patterns
+B. Accepting anonymous transactions in all circumstances
+C. Applying customer due diligence, transaction monitoring and legally required reporting
+D. Removing records after a transfer is completed
+Correct Answer: C. Applying customer due diligence, transaction monitoring and legally required reporting
+Explanation: Customer due diligence, transaction monitoring and required reporting are central elements of AML/CFT controls.
+142. A bank's employee notices that one person initiates and approves the same high-risk transaction without independent review. What is the main concern?
+A. Excessive deposit mobilization
+B. Weak segregation of duties and increased fraud or error risk
+C. A decrease in foreign-exchange reserves
+D. Excessive cheque crossing
+Correct Answer: B. Weak segregation of duties and increased fraud or error risk
+Explanation: Combining initiation and approval without adequate independent review weakens internal controls.
+143. Which practice is most appropriate for protecting customers' banking information?
+A. Sharing passwords among staff
+B. Sending account credentials to unverified recipients
+C. Leaving account data publicly accessible
+D. Using access controls, authentication, confidentiality safeguards and approved data-handling procedures
+Correct Answer: D. Using access controls, authentication, confidentiality safeguards and approved data-handling procedures
+Explanation: Authentication, restricted access and secure data handling help protect customers against unauthorized access and disclosure.
+144. What is the purpose of a bank reconciliation?
+A. To identify and resolve differences between the bank's records and the corresponding external or customer records
+B. To guarantee that all transactions are free from fraud
+C. To increase the customer's loan limit automatically
+D. To convert liabilities into equity without accounting entries
+Correct Answer: A. To identify and resolve differences between the bank's records and the corresponding external or customer records
+Explanation: Reconciliation helps detect discrepancies, missing entries and posting errors by comparing corresponding records.
+145. Which statement about an irrevocable documentary credit is most accurate?
+A. It may be cancelled by any party at any time without regard to the rules.
+B. It creates no obligation for the issuing bank.
+C. It cannot generally be amended or cancelled without the consent required under the applicable rules and credit terms.
+D. It is identical to an ordinary savings account.
+Correct Answer: C. It cannot generally be amended or cancelled without the consent required under the applicable rules and credit terms.
+Explanation: Under UCP 600, an irrevocable credit cannot generally be amended or cancelled without the consent required by the applicable rules and credit terms.
+146. A bank receives a request to issue a guarantee for a customer whose existing guarantee exposure is already high. What is the best approach?
+A. Issue it automatically because guarantees do not involve risk.
+B. Assess total exposure, capacity, security and applicable limits before making a decision.
+C. Ignore the existing guarantees.
+D. Treat the new guarantee as cash received from the beneficiary.
+Correct Answer: B. Assess total exposure, capacity, security and applicable limits before making a decision.
+Explanation: Existing guarantees contribute to the customer's overall exposure, which must be assessed against repayment capacity, security and applicable limits.
+147. Which is the best example of credit risk?
+A. A bank's computer system temporarily slowing down
+B. A clerical error in a payment reference
+C. A change in market interest rates
+D. A borrower failing to meet contractual repayment obligations
+Correct Answer: D. A borrower failing to meet contractual repayment obligations
+Explanation: Credit risk is the possibility of loss when a borrower or counterparty fails to fulfil its contractual obligations.
+148. Which statement about a bank's lending decision is most appropriate?
+A. It should consider repayment capacity, risk, purpose, pricing, security and applicable lending requirements.
+B. It should rely only on the borrower's relationship with a staff member.
+C. It should ignore all adverse credit information.
+D. It should always approve a loan if the borrower offers collateral.
+Correct Answer: A. It should consider repayment capacity, risk, purpose, pricing, security and applicable lending requirements.
+Explanation: Prudent lending requires a comprehensive assessment of repayment capacity, credit risk, loan purpose and relevant security and regulatory requirements.
+149. A bank mistakenly credits Tk 10,000 to the wrong customer. What is the most appropriate operational response?
+A. Leave the error unrecorded.
+B. Ask the customer to withdraw the funds before anyone notices.
+C. Investigate, document and correct the error through authorized procedures, observing applicable legal requirements.
+D. Delete all ledger records for that day.
+Correct Answer: C. Investigate, document and correct the error through authorized procedures, observing applicable legal requirements.
+Explanation: The bank should investigate and correct the posting error using authorized procedures while preserving an appropriate audit trail.
+150. Which statement best captures the relationship between sound banking operations and customer trust?
+A. Customer trust depends solely on offering the highest interest rate.
+B. Accurate processing, confidentiality, fair treatment, effective controls and reliable service all contribute to customer trust.
+C. Customer trust makes compliance procedures unnecessary.
+D. Strong controls matter only when a bank is insolvent.
+Correct Answer: B. Accurate processing, confidentiality, fair treatment, effective controls and reliable service all contribute to customer trust.
+Explanation: Reliable service, confidentiality, fair treatment and effective internal controls help build and maintain customer trust.
