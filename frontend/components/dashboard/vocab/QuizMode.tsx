@@ -39,19 +39,27 @@ const SHUFFLE_ARRAY = <T,>(arr: T[]): T[] => {
   return copy;
 };
 
-function shuffleOptions(word: QuizWord): { id: number; bengaliMeaning: string }[] {
+function shuffleOptions(word: QuizWord, mode: QuizWord["mode"] = "recognize") {
+  const isRecognize = (mode ?? "recognize") === "recognize";
+  const distractors = word.distractors.map((d) => ({
+    id: d.id,
+    bengliMeaning: isRecognize ? d.bengaliMeaning : d.word,
+  }));
+  const targetLabel = isRecognize ? word.bengaliMeaning : word.word;
   return SHUFFLE_ARRAY([
-    { id: word.id, bengaliMeaning: word.bengaliMeaning },
-    ...word.distractors.map((d) => ({ id: d.id, bengaliMeaning: d.bengaliMeaning })),
+    { id: word.id, bengliMeaning: targetLabel },
+    ...distractors,
   ]);
 }
 
 export default function QuizMode({
   onExit,
   difficulty,
+  mode = "recognize",
 }: {
   onExit: () => void;
   difficulty?: string;
+  mode?: QuizWord["mode"];
 }) {
   const toast = useToastSafe();
   const { lang } = useLanguage();
@@ -69,7 +77,7 @@ export default function QuizMode({
   const fetchQuiz = useCallback(async () => {
     setState((s) => ({ ...s, phase: "loading" }));
     try {
-      const words = await api.vocabQuiz({ count: 10, difficulty });
+      const words = await api.vocabQuiz({ count: 10, difficulty, mode });
       if (words.length === 0) {
         setState((s) => ({ ...s, phase: "empty" }));
       } else {
@@ -86,7 +94,7 @@ export default function QuizMode({
       toast.error("Failed to load quiz words");
       setState((s) => ({ ...s, phase: "error" }));
     }
-  }, [difficulty, toast]);
+  }, [difficulty, mode, toast]);
 
   useEffect(() => {
     void fetchQuiz();
@@ -134,7 +142,7 @@ export default function QuizMode({
       }
       const idx = Number(e.key) - 1;
       const word = state.questions[state.currentIndex];
-      const opts = shuffleOptions(word);
+      const opts = shuffleOptions(word, word.mode ?? "recognize");
       // Bounds against the actual option count — a shorter set used to crash
       // on opts[idx].id when idx reached into 3 but only 2 options existed.
       if (Number.isInteger(idx) && idx >= 0 && idx < opts.length) {
@@ -275,7 +283,7 @@ export default function QuizMode({
   }
 
   const word = state.questions[state.currentIndex];
-  const opts = shuffleOptions(word);
+  const opts = shuffleOptions(word, word.mode ?? "recognize");
   const progress = ((state.currentIndex + (state.answered ? 1 : 0)) / state.questions.length) * 100;
 
   return (
@@ -333,9 +341,15 @@ export default function QuizMode({
         >
           {/* Word display */}
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">{word.word}</h2>
+            {word.mode === "context" && word.clozeSentence ? (
+              <p className="text-xl font-mono text-[var(--text-primary)] mb-3 leading-relaxed">&ldquo;{word.clozeSentence}&rdquo;</p>
+            ) : word.mode === "recall" ? (
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">{word.recallPrompt ?? word.bengaliMeaning}</h2>
+            ) : (
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">{word.word}</h2>
+            )}
             <span className="inline-block px-3 py-1 rounded-full bg-[var(--surface-raised)] border border-[var(--terminal-border)] font-mono text-xs text-[var(--text-muted)]">
-              {word.partOfSpeech}
+              {word.mode === "recognize" ? word.partOfSpeech : word.mode === "recall" ? word.word : word.partOfSpeech}
             </span>
           </div>
 
@@ -365,7 +379,7 @@ export default function QuizMode({
                   <span className="absolute top-2 left-3 font-mono text-[11px] text-[var(--text-muted)]">
                     {i + 1}
                   </span>
-                  <span className="ml-4">{opt.bengaliMeaning}</span>
+                  <span className="ml-4">{opt.bengliMeaning}</span>
                   {showResult && isCorrect && (
                     <CheckCircle className="absolute top-2 right-3 w-4 h-4 text-emerald-500" />
                   )}

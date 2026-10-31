@@ -40,6 +40,8 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=` and `?exam=` (BCS/Bank). Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
 | GET | `/api/vocab/words` | List vocabulary words, filterable by `?search=`, `?difficulty=`, `?exam=`, `?status=` (new/learning/due/mastered), `?due=true`, `?kind=` (`words` = regular words only, `idioms` = Idiom/Phrase entries only for the Idioms & Phrases tab; unset = all). Response: `{ words }` |
 | GET | `/api/vocab/word-of-the-day` | Rotating word (no auth required): a new word every 10 minutes on wall-clock-aligned slots (`WORD_SLOT_MS`), personalized by the caller's progress (unseen/struggling boosted, mastered skipped). Response: `{ word: { …, slotIndex, rotatesAt } }` — clients refetch at `rotatesAt`. `?weekly=true` returns the 7-day set (`{ words }`). |
+| GET | `/api/vocab/stream` | **Auth required** — Phase 1 server-driven circulation: a unified, cursor-paginated stream blending SRS-due words, the daily word and fresh words. Query: `?mode=` (`due`/`daily`/`mixed`/`all`, default `mixed`), `?cursor=`, `?limit=`. Response: `{ words, cursor, nextCursor, total, mode, slotIndex, rotatesAt, wordOfDay }` |
+| GET | `/api/vocab/quiz` | Quiz words (auth required); now accepts `?mode=` (`recognize`/`recall`/`context`/`collocation`) to drive the retrieval-ladder levels (default `recognize`). Existing `?count=`, `?difficulty=` params unchanged |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |

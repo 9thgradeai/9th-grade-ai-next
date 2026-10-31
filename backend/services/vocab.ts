@@ -388,7 +388,9 @@ function toDTO(w: {
  */
 export async function reviewVocabWord(userId: string, wordId: number, rating: number) {
   const clampedRating = Math.max(1, Math.min(4, Math.round(rating)));
-  const correct = clampedRating >= 3;
+  // Rating semantics: 1=Again, 2=Hard, 3=Good, 4=Easy. Hard is a *correct*
+  // but effortful answer (graded below), so it is NOT a failure.
+  const correct = clampedRating >= 2;
 
   const word = await prisma.vocabWord.findUnique({ where: { id: wordId } });
   if (!word) throw new Error("Word not found");
@@ -491,11 +493,33 @@ async function computeStreak(userId: string) {
   return streak;
 }
 
-export async function getVocabQuizWords(userId: string, opts?: { count?: number; difficulty?: string }) {
+export type VocabQuizMode = "recognize" | "recall" | "context" | "collocation";
+
+export type VocabQuizWordDTO = {
+  id: number;
+  word: string;
+  bengaliMeaning: string;
+  partOfSpeech: string;
+  exampleSentence: string;
+  distractors: { id: number; word: string; bengaliMeaning: string }[];
+  mode: VocabQuizMode;
+  /** For "recall": meaning -> answer is the target word. */
+  recallPrompt?: string;
+  /** For "context": sentence -> answer is the target word. */
+  clozeSentence?: string;
+  /** For "collocation": {word, partner, meaning} target pair. */
+  collocation?: { word: string; partner: string; meaning: string };
+};
+
+export async function getVocabQuizWords(
+  userId: string,
+  opts?: { count?: number; difficulty?: string; mode?: VocabQuizMode },
+): Promise<VocabQuizWordDTO[]> {
+  const mode: VocabQuizMode = opts?.mode ?? "recognize";
   const count = Math.min(opts?.count ?? 10, 50);
   const where: Record<string, unknown> = {};
-  if (opts?.difficulty && opts.difficulty.toUpperCase() !== "ALL") {
-    where.difficulty = opts.difficulty.toUpperCase();
+  if (opts?.difficulty && opts?.difficulty.toUpperCase() !== "ALL") {
+    where.difficulty = opts?.difficulty.toUpperCase();
   }
   const words = await prisma.vocabWord.findMany({
     orderBy: { frequency: "desc" },
@@ -503,7 +527,6 @@ export async function getVocabQuizWords(userId: string, opts?: { count?: number;
     where,
   });
   if (words.length < 4) return [];
-  // Pick random words for quiz, prioritize weak/never-seen words
   let pool = words;
   if (userId) {
     const progresses = await prisma.vocabProgress.findMany({ where: { userId } });
@@ -520,31 +543,54 @@ export async function getVocabQuizWords(userId: string, opts?: { count?: number;
       return score(a, pa) - score(b, pb);
     });
   }
-  // Shuffle and pick
   const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, count);
-  // For each word, pick 3 distractors from the pool
-  return shuffled.map((w) => {
-    const distractors = pool
-      .filter((x) => x.id !== w.id && x.partOfSpeech === w.partOfSpeech)
+
+  const buildDistractors = (w: (typeof pool)[number]) => {
+    const samePos = pool.filter((x) => x.id !== w.id && x.partOfSpeech === w.partOfSpeech);
+    const candidates = samePos.length >= 3 ? samePos : pool;
+    const distractors = candidates
+      .filter((x) => x.id !== w.id)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
       .map((x) => ({ id: x.id, word: x.word, bengaliMeaning: x.bengaliMeaning }));
-    // If not enough same-POS distractors, fill with any
     if (distractors.length < 3) {
-      const extra = pool
-        .filter((x) => x.id !== w.id && !distractors.some((d) => d.id === x.id))
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3 - distractors.length)
-        .map((x) => ({ id: x.id, word: x.word, bengaliMeaning: x.bengaliMeaning }));
-      distractors.push(...extra);
+      const extra = pool.filter((x) => x.id !== w.id && !distractors.some((d) => d.id === x.id)).sort(() => Math.random() - 0.5);
+      distractors.push(...extra.slice(0, 3 - distractors.length).map((x) => ({ id: x.id, word: x.word, bengaliMeaning: x.bengaliMeaning })));
     }
-    return {
+    return distractors;
+  };
+
+  const result: VocabQuizWordDTO[] = [];
+  for (const w of shuffled) {
+    const distractors = buildDistractors(w);
+    const base = {
       id: w.id,
       word: w.word,
       bengaliMeaning: w.bengaliMeaning,
       partOfSpeech: w.partOfSpeech,
       exampleSentence: w.exampleSentence,
       distractors,
+      mode,
     };
-  });
+    if (mode === "recognize") {
+      result.push({ ...base });
+    } else if (mode === "recall") {
+      result.push({
+        ...base,
+        recallPrompt: w.bengaliMeaning,
+      });
+    } else if (mode === "context") {
+      const cloze = (w.exampleSentence || w.word).replace(new RegExp(`\\b${w.word}\\b`, "i"), "______");
+      result.push({
+        ...base,
+        clozeSentence: cloze,
+      });
+    } else if (mode === "collocation") {
+      result.push({
+        ...base,
+        collocation: { word: w.word, partner: "", meaning: w.bengaliMeaning },
+      });
+    }
+  }
+  return result;
 }

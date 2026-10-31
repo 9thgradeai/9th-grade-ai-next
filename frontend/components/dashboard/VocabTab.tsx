@@ -113,7 +113,11 @@ export default function VocabTab() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [ws, st] = await Promise.all([api.vocabWords(buildParams()), api.vocabStats().catch(() => null)]);
+      const st = await api.vocabStats().catch(() => null);
+      const useStream = statusFilter === "all" && !searchQuery.trim();
+      const ws = useStream
+        ? (await api.vocabStream({ mode: "mixed" })).words
+        : (await api.vocabWords(buildParams())).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }));
       setWords(ws);
       setIdx(0);
       setRevealed(false);
@@ -123,7 +127,7 @@ export default function VocabTab() {
       toast.error(t(lang, "ভোকাব লোড করা যায়নি", "Failed to load vocabulary"));
     }
     setLoading(false);
-  }, [buildParams, lang, toast]);
+  }, [buildParams, lang, toast, statusFilter, searchQuery]);
 
   useEffect(() => { void load(); }, [load]);
 

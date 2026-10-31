@@ -293,7 +293,7 @@ describe("reviewVocabWord", () => {
     expect(updateCall.data.ease).toBeLessThan(2.5);
   });
 
-  it("'hard' (rating=2, below threshold) applies partial penalty", async () => {
+  it("'hard' (rating=2) is treated as correct but effortful (not a failure)", async () => {
     vi.mocked(prisma.vocabProgress.findUnique).mockResolvedValue(
       mockProgress({ status: "REVIEW", repetitions: 3, interval: 10, ease: 2.5 }) as never,
     );
@@ -301,9 +301,11 @@ describe("reviewVocabWord", () => {
 
     await reviewVocabWord(userId, wordId, 2);
     const updateCall = vi.mocked(prisma.vocabProgress.update).mock.calls[0][0];
-    expect(updateCall.data.repetitions).toBe(2); // max(0, 3-1)
-    expect(updateCall.data.interval).toBe(5); // max(1, round(10*0.5))
-    expect(updateCall.data.ease).toBeLessThan(2.5);
+    // Hard is now graded as correct (soft ease penalty only) — no failure reset.
+    expect(updateCall.data.correctCount).toBe(3); // 2 + 1 (Hard counts as correct)
+    expect(updateCall.data.repetitions).toBe(4); // 3 + 1 (successful recall)
+    expect(updateCall.data.interval).toBe(25); // round(10 * ease=2.5)
+    expect(updateCall.data.ease).toBeLessThan(2.5); // soft penalty from 2.5 -> 2.45
   });
 
   it("clamps ease factor to minimum 1.3", async () => {
@@ -360,7 +362,7 @@ describe("reviewVocabWord", () => {
     // Rating 10 should be clamped to 4 (correct = true)
     await reviewVocabWord(userId, wordId, 10);
     const updateCall = vi.mocked(prisma.vocabProgress.update).mock.calls[0][0];
-    expect(updateCall.data.correctCount).toBe(1); // 0 + 1 (correct = clampedRating 4 >= 3)
+    expect(updateCall.data.correctCount).toBe(1); // 0 + 1 (correct = clampedRating 4 >= 2)
 
     vi.mocked(prisma.vocabProgress.findUnique).mockResolvedValue(
       mockProgress({ status: "NEW", repetitions: 0, interval: 1, ease: 2.5, correctCount: 0 }) as never,
@@ -370,7 +372,7 @@ describe("reviewVocabWord", () => {
     // Rating -5 should be clamped to 1 (correct = false)
     await reviewVocabWord(userId, wordId, -5);
     const updateCall2 = vi.mocked(prisma.vocabProgress.update).mock.calls[1][0];
-    expect(updateCall2.data.correctCount).toBe(0); // 0 + 0 (correct = clampedRating 1 >= 3 → false)
+    expect(updateCall2.data.correctCount).toBe(0); // 0 + 0 (correct = clampedRating 1 >= 2 → false)
   });
 
   it("increments totalReviews on every review", async () => {
@@ -384,15 +386,15 @@ describe("reviewVocabWord", () => {
     expect(updateCall.data.totalReviews).toBe(6);
   });
 
-  it("increments correctCount only for ratings >= 3", async () => {
+  it("increments correctCount only for ratings >= 2", async () => {
     vi.mocked(prisma.vocabProgress.findUnique).mockResolvedValue(
       mockProgress({ totalReviews: 5, correctCount: 3 }) as never,
     );
     vi.mocked(prisma.vocabProgress.update).mockResolvedValue(mockProgress() as never);
 
-    await reviewVocabWord(userId, wordId, 2); // Hard → correct = false
+    await reviewVocabWord(userId, wordId, 2); // Hard → correct = true (effortful but correct)
     const updateCall = vi.mocked(prisma.vocabProgress.update).mock.calls[0][0];
-    expect(updateCall.data.correctCount).toBe(3); // unchanged
+    expect(updateCall.data.correctCount).toBe(4); // 3 + 1 (Hard now counts as correct)
   });
 });
 

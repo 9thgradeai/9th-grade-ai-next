@@ -1164,6 +1164,13 @@ export namespace Server {
     partOfSpeech: string;
     exampleSentence: string;
     distractors: { id: number; word: string; bengaliMeaning: string }[];
+    mode?: "recognize" | "recall" | "context" | "collocation";
+    /** For "recall": the answer is the target word; distractors are meanings. */
+    recallPrompt?: string;
+    /** For "context": the target word is blanked out; distractors are candidates. */
+    clozeSentence?: string;
+    /** For "collocation": the target word plus a partner; distractors are wrong pairs. */
+    collocation?: { word: string; partner: string; meaning: string };
   };
 
   export type WordOfDayDTO = {
@@ -1213,6 +1220,36 @@ export namespace Server {
     wordCount: number;
     masteredCount: number;
     isFavorited?: boolean;
+  };
+
+  export type VocabStreamWord = {
+    id: number;
+    word: string;
+    bengaliMeaning: string;
+    partOfSpeech: string;
+    verbForms: string[] | null;
+    synonyms: string[] | null;
+    antonyms: string[] | null;
+    exampleSentence: string;
+    exampleSentenceBn: string | null;
+    context: string;
+    mnemonic: string;
+    examRelevance: string[] | null;
+    frequency: number;
+    difficulty: string;
+    status: string;
+    source: "DUE" | "DAILY" | "FRESH";
+  };
+
+  export type VocabStreamResponse = {
+    words: VocabStreamWord[];
+    cursor: number;
+    nextCursor: number | null;
+    total: number;
+    mode: "due" | "daily" | "mixed" | "all";
+    slotIndex: number;
+    rotatesAt: string;
+    wordOfDay: WordOfDayDTO | null;
   };
 
   // ── Daily Current Affairs (autonomous agent) ──────────

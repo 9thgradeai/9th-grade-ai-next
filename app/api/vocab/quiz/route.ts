@@ -13,7 +13,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const count = searchParams.get("count") ? Math.min(50, Math.max(4, parseInt(searchParams.get("count")!, 10))) : undefined;
     const difficulty = searchParams.get("difficulty") ?? undefined;
-    const words = await getVocabQuizWords(userId, { count, difficulty });
+    const modeParam = searchParams.get("mode");
+    const mode = (["recognize", "recall", "context", "collocation"].includes(modeParam ?? "") ? modeParam : "recognize") as "recognize" | "recall" | "context" | "collocation";
+    const words = await getVocabQuizWords(userId, { count, difficulty, mode });
     const res = NextResponse.json({ words });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

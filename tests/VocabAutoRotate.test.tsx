@@ -31,6 +31,7 @@ function stubFetch() {
     "fetch",
     vi.fn(async (input: RequestInfo | URL) => {
       const url = typeof input === "string" ? input : input.toString();
+      if (url.startsWith("/api/vocab/stream")) return { ok: true, status: 200, json: async () => ({ words: WORDS, total: WORDS.length, mode: "mixed", cursor: 0, nextCursor: null, slotIndex: 0, rotatesAt: new Date(Date.now() + 60000).toISOString(), wordOfDay: null }) } as Response;
       if (url.startsWith("/api/vocab/words")) return { ok: true, status: 200, json: async () => ({ words: WORDS }) } as Response;
       if (url.startsWith("/api/vocab/stats")) {
         return { ok: true, status: 200, json: async () => ({ total: 2, mastered: 0, learning: 0, due: 0, reviewed: 0 }) } as Response;

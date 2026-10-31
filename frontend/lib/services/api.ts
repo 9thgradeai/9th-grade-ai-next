@@ -979,10 +979,11 @@ export const api = {
     request<VocabReviewResult>("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, rating }), headers: { "Content-Type": "application/json" } }),
   vocabDaily: (): Promise<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }> =>
     cachedGet<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }>("/api/vocab/daily").then((d) => d),
-  vocabQuiz: (params?: { count?: number; difficulty?: string }): Promise<Server.VocabQuizWordDTO[]> => {
+  vocabQuiz: (params?: { count?: number; difficulty?: string; mode?: "recognize" | "recall" | "context" | "collocation" }): Promise<Server.VocabQuizWordDTO[]> => {
     const qs = new URLSearchParams();
     if (params?.count) qs.set("count", String(params.count));
     if (params?.difficulty) qs.set("difficulty", params.difficulty);
+    if (params?.mode) qs.set("mode", params.mode);
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
     return cachedGet<{ words: Server.VocabQuizWordDTO[] }>(`/api/vocab/quiz${suffix}`).then((d) => d.words);
   },
@@ -998,6 +999,14 @@ export const api = {
     cachedGet<{ analytics: Server.VocabAnalyticsDTO }>("/api/vocab/analytics").then((d) => d.analytics),
   vocabDecks: (): Promise<Server.VocabDeckDTO[]> =>
     cachedGet<{ decks: Server.VocabDeckDTO[] }>("/api/vocab/decks").then((d) => d.decks),
+  vocabStream: (params?: { mode?: "due" | "daily" | "mixed" | "all"; cursor?: number; limit?: number }): Promise<Server.VocabStreamResponse> => {
+    const qs = new URLSearchParams();
+    if (params?.mode) qs.set("mode", params.mode);
+    if (params?.cursor) qs.set("cursor", String(params.cursor));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return cachedGet<Server.VocabStreamResponse>(`/api/vocab/stream${suffix}`);
+  },
 
   // ── Daily Current Affairs ───────────────────────────────
   currentAffairsLatest: (date?: string): Promise<Server.CurrentAffairsLatestDTO> =>
