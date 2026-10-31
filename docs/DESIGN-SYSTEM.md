@@ -51,6 +51,31 @@ Shared primitives live in `frontend/components/ui/`:
 - Icon + title + hint + action block; the only empty-state treatment.
 - File: `frontend/components/ui/EmptyState.tsx`.
 
+### UI states (`frontend/components/ui/*State.tsx`)
+
+One component per failure/recovery state, all presentation-only: no data
+fetching, no auto-toasts, no side effects. The caller owns retry/save
+semantics, so the same panel works as a full page, a tab panel, or inline.
+
+| Component | State | Key props |
+|-----------|-------|-----------|
+| `LoadingShell` | Loading / slow network / offline | `title`, `progressLabel`, `showProgress` |
+| `ErrorState` | Error | `code` (`ApiErrorCode`), `onRetry`, `retryable` |
+| `OfflineState` | No connection | `banner`, `force`, `onRetry`, children |
+| `NoResultsState` | Search returned nothing | `query`, `scope`, `suggestions`, `onReset` |
+| `PermissionDeniedState` | Signed in but not allowed | `reason`, `onBack`, `onLearnMore` |
+| `SessionExpiredState` | Session timeout | `unsavedWork`, `onSaveAndContinue`, `onSignIn` |
+| `FormValidationState` | Form validation | `FieldError`, `FormErrorSummary` |
+| `SuccessState` | Action confirmed | `title`, `message`, `nextAction`, `announce` |
+
+Copy for transport failures lives in one map (`API_ERRORS` in
+`frontend/lib/ui-states.ts`) so every surface names the same failure the same
+way; `classifyError()` maps an `ApiError`/status onto that vocabulary.
+
+`SessionExpiredState` never claims work is saved unless the caller's
+`onSaveAndContinue` promise resolves — a failed save surfaces a retry, not a
+success message.
+
 ### KpiTile
 - Unified stat tile (label/value/hint/accent/loading) used by dashboard home,
   progress, and result screens.
