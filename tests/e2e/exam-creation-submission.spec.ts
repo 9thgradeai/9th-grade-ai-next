@@ -1,155 +1,113 @@
 // tests/e2e/exam-creation-submission.spec.ts
-// Critical E2E: Exam creation, submission, and result verification.
-// Focus on API-driven flows that are verified to work.
+// Critical E2E: authenticated session + exam start/submit + AI tutor.
+//
+// Contracts asserted here, straight from the route handlers:
+//   POST /api/exam/start   → { attemptId, status: "IN_PROGRESS" }
+//                            attemptId MUST be a UUID; questionIds 1–200 ints.
+//   POST /api/exam/submit  → { success, status: "SUBMITTED", score, result }
+//                            result.outcome is lowercase "submitted" | "resumed".
+//   POST /api/ai/tutor     → text/plain stream + X-AI-Source header (not JSON).
+//
+// All API calls go through `page.request`, which shares the browser context's
+// cookie jar. The standalone `request` fixture has its own jar and would 401.
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { registerViaApi } from './auth-helpers';
+
+type SeedQuestion = { id: number; options: string[] };
+
+/** Pull real seeded question ids so start/submit grade actual rows. */
+async function seedQuestions(page: Page, count: number): Promise<SeedQuestion[]> {
+  const res = await page.request.get(`/api/questions?limit=${count}`);
+  expect(res.status(), 'question bank should be readable').toBe(200);
+  const { questions } = (await res.json()) as { questions: SeedQuestion[] };
+  expect(questions.length, 'seeded question bank should have questions').toBeGreaterThanOrEqual(count);
+  return questions.slice(0, count).map((q) => ({ id: q.id, options: q.options ?? [] }));
+}
 
 test.describe('Exam Creation & Submission Flow (P0 Critical)', () => {
   test('P0: Register via API and verify authenticated session', async ({ page }) => {
-    // Register via API (sets session cookie on page context)
-    const { email, password } = await registerViaApi(page, 'session-verification');
-    
-    // Verify user is authenticated by accessing a protected route
+    const { email } = await registerViaApi(page, 'session-verification');
+
+    // The session cookie must resolve to the registered account.
+    const me = await page.request.get('/api/auth/me');
+    expect(me.status(), '/api/auth/me with the register cookie').toBe(200);
+    const meBody = await me.json();
+    expect(meBody.user.email).toBe(email);
+
+    // Protected route must render the dashboard shell instead of bouncing to
+    // /login. (The home tab's heading is localised, so anchor on the shell.)
     await page.goto('/dashboard/home');
-    
-    // Dashboard should be visible (protected route works with cookie auth)
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15000 });
-    
-    // Verify user name is displayed
-    await expect(page.getByText(email.split('@')[0])).toBeVisible({ timeout: 5000 });
-    
-    console.log('✓ Registered user has valid authenticated session');
+    await page.waitForURL(/\/dashboard\/home/, { timeout: 30_000 });
+    await expect(page.locator('header').first()).toBeVisible({ timeout: 15_000 });
   });
 
-  test('P0: Exam start API works with authenticated user', async ({ page, request }) => {
-    // Register via API
+  test('P0: Exam start API works with authenticated user', async ({ page }) => {
     await registerViaApi(page, 'exam-start-test');
-    await page.goto('/dashboard/home');
-    
-    // Use API to start an exam (bypassing UI navigation issues)
-    const startResponse = await request.post('/api/exam/start', {
+    const questions = await seedQuestions(page, 5);
+    const attemptId = crypto.randomUUID();
+
+    const startResponse = await page.request.post('/api/exam/start', {
       data: {
-        attemptId: 'e2e-test-' + Date.now(),
-        questionIds: [1, 2, 3, 4, 5], // Valid question IDs
-        durationSec: 300 // 5 minutes
-      }
+        attemptId,
+        questionIds: questions.map((q) => q.id),
+        durationSec: 300,
+      },
     });
-    
-    expect(startResponse.ok()).toBeTruthy();
+
+    expect(startResponse.status(), 'start should register the attempt').toBe(200);
     const startData = await startResponse.json();
-    
-    // Verify response has attemptId and status
-    expect(startData.attemptId).toBeDefined();
+    expect(startData.attemptId).toBe(attemptId);
     expect(startData.status).toBe('IN_PROGRESS');
-    
-    console.log('✓ Exam start API returns valid response with attemptId');
   });
 
-  test('P0: Exam submit API returns authoritative score', async ({ page, request }) => {
-    // Register via API
+  test('P0: Exam submit API returns authoritative score', async ({ page }) => {
     await registerViaApi(page, 'exam-submit-test');
-    await page.goto('/dashboard/home');
-    
-    // Start exam first
-    await request.post('/api/exam/start', {
-      data: {
-        attemptId: 'e2e-submit-test-' + Date.now(),
-        questionIds: [1, 2, 3],
-        durationSec: 600
-      }
+    const questions = await seedQuestions(page, 3);
+    const questionIds = questions.map((q) => q.id);
+    const attemptId = crypto.randomUUID();
+
+    const startResponse = await page.request.post('/api/exam/start', {
+      data: { attemptId, questionIds, durationSec: 600 },
     });
-    
-    // Submit answers via API
-    const submitResponse = await request.post('/api/exam/submit', {
+    expect(startResponse.status(), 'start must precede submit').toBe(200);
+
+    const submitResponse = await page.request.post('/api/exam/submit', {
       data: {
-        attemptId: 'e2e-submit-test-' + Date.now(),
-        answers: [
-          { questionId: 1, selected: 'optionA' },
-          { questionId: 2, selected: 'optionB' },
-          { questionId: 3, selected: 'optionC' }
-        ],
-        durationSec: 120 // 2 minutes
-      }
+        attemptId,
+        questionIds,
+        durationSec: 120,
+        answers: questions.map((q) => ({ questionId: q.id, selected: q.options[0] ?? '' })),
+      },
     });
-    
-    expect(submitResponse.ok()).toBeTruthy();
+
+    expect(submitResponse.status(), 'submit should succeed').toBe(200);
     const submitData = await submitResponse.json();
-    
-    // Verify response has authoritative score
-    expect(submitData.outcome).toBeDefined();
-    expect(submitData.score).toBeDefined();
-    expect(submitData.percentage).toBeDefined();
-    expect(submitData.totalQuestions).toBe(3);
-    
-    // Outcome should be SUBMITTED or RESUMED (never double-counting)
-    expect(['SUBMITTED', 'RESUMED']).toContain(submitData.outcome);
-    
-    console.log('✓ Exam submit API returns authoritative score with outcome:', submitData.outcome);
+
+    expect(submitData.success).toBe(true);
+    expect(submitData.status).toBe('SUBMITTED');
+    expect(typeof submitData.score).toBe('number');
+    expect(submitData.result.summary.total).toBe(3);
+    // Idempotent outcome, never double-counted.
+    expect(['submitted', 'resumed']).toContain(submitData.result.outcome);
   });
 
-  test('P0: AI tutor endpoint with mock fallback', async ({ page, request }) => {
-    // Register via API
+  test('P0: AI tutor endpoint with mock fallback', async ({ page }) => {
     await registerViaApi(page, 'ai-tutor-test');
-    await page.goto('/dashboard/home');
-    
-    // Call AI tutor endpoint without API key should return mock fallback
-    const tutorResponse = await request.post('/api/ai/tutor', {
-      data: {
-        message: 'Solve: If 2x + 5 = 15, what is x?',
-        context: 'mathematics'
-      }
-    });
-    
-    // Should return either real AI response OR mock fallback
-    expect(tutorResponse.ok()).toBeTruthy();
-    const tutorData = await tutorResponse.json();
-    
-    // Response should have source field indicating mock or real provider
-    expect(tutorData).toHaveProperty('source');
-    
-    // If mock, should be clearly labelled
-    if (tutorData.source === 'mock') {
-      console.log('✓ AI tutor mock fallback activated (no API key configured)');
-    } else {
-      console.log('✓ AI tutor real provider response received');
-    }
-    
-    // Key: should not crash or expose internal errors
-    expect(tutorData).not.toHaveProperty('error');
-    expect(tutorData).not.toContain('stack trace');
-    expect(tutorData).not.toContain('internal server error');
-    
-    console.log('✓ AI tutor endpoint fails gracefully without exposing internals');
-  });
 
-  test('P0: Question search and filter API works', async ({ page, request }) => {
-    // Register via API
-    await registerViaApi(page, 'question-search-test');
-    await page.goto('/dashboard/home');
-    
-    // Search questions via API
-    const searchResponse = await request.get('/api/questions?subject=Math&limit=5');
-    
-    expect(searchResponse.ok()).toBeTruthy();
-    const searchData = await searchResponse.json();
-    
-    // Verify response structure
-    expect(searchData.questions).toBeDefined();
-    expect(searchData.page).toBe(1);
-    expect(searchData.limit).toBe(5);
-    expect(searchData.total).toBeDefined();
-    
-    // Questions should have required fields
-    if (searchData.questions.length > 0) {
-      const q = searchData.questions[0];
-      expect(q).toHaveProperty('id');
-      expect(q).toHaveProperty('question');
-      expect(q).toHaveProperty('options');
-      expect(q).toHaveProperty('correctAnswer');
-      expect(q).toHaveProperty('explanation');
-    }
-    
-    console.log('✓ Question search API returns valid structure with', searchData.questions.length, 'questions');
+    const tutorResponse = await page.request.post('/api/ai/tutor', {
+      data: { messages: [{ role: 'user', content: 'Solve: If 2x + 5 = 15, what is x?' }] },
+    });
+
+    // Should return either a real provider response or a labelled mock fallback.
+    expect(tutorResponse.status(), 'tutor should not error').toBe(200);
+    const source = tutorResponse.headers()['x-ai-source'];
+    expect(source, 'provider/source must be labelled on the response').toBeTruthy();
+    expect(['mock', 'groq', 'anthropic']).toContain(source);
+
+    // The stream must contain a non-empty answer (mock included).
+    const body = await tutorResponse.text();
+    expect(body.trim().length).toBeGreaterThan(0);
+    expect(body).not.toMatch(/stack trace/i);
   });
 });

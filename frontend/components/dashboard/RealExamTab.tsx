@@ -202,16 +202,30 @@ export default function RealExamTab() {
               return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need, ecosystem });
             }),
           );
-          const mergedLeaf = perLeafPools.flat().filter(Boolean);
-          if (mergedLeaf.length < requested) {
+          // Leaf pools can overlap (a path query and its parent, or the
+          // subject-level fallback below), so a question may arrive twice. Left
+          // in, the duplicate consumes one of the `requested` slots and can
+          // crowd out a different question entirely — the paper then repeats a
+          // question and silently drops another. Collapse on id before picking.
+          const byId = new Map<Server.QuestionDTO["id"], Server.QuestionDTO>();
+          for (const q of perLeafPools.flat().filter(Boolean)) if (!byId.has(q.id)) byId.set(q.id, q);
+          if (byId.size < requested) {
             const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested, ecosystem });
-            const seen = new Set(mergedLeaf.map((q) => q.id));
-            for (const q of fallback) if (!seen.has(q.id)) mergedLeaf.push(q);
+            for (const q of fallback) if (!byId.has(q.id)) byId.set(q.id, q);
           }
+          const mergedLeaf = [...byId.values()];
           return balancedShuffle(mergedLeaf).slice(0, Math.min(requested, mergedLeaf.length));
         }),
       );
-      const merged = pools.flat().filter(Boolean) as Server.QuestionDTO[];
+      // The same question can surface from more than one pool (a leaf query and
+      // the subject-level fallback, or two overlapping paths). A generated paper
+      // must never repeat a question, and the duplicate also skewed the random
+      // pick: two copies of one question could crowd out another.
+      const merged = Array.from(
+        new Map(
+          (pools.flat().filter(Boolean) as Server.QuestionDTO[]).map((q) => [q.id, q]),
+        ).values(),
+      );
       if (merged.length === 0) {
         setBuildError("নির্বাচিত টপিক থেকে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
