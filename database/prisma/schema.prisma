@@ -1321,7 +1321,7 @@ model UserVocabDeck {
 /// without duplicating rows.
 model VocabImportBatch {
   id            Int             @id @default(autoincrement())
-  userId        String?         @db.Json // optional: who triggered it
+  userId        Json?           // optional: who triggered it
   source        String          // filename or origin identifier
   fileHash      String?         // sha256 of the uploaded file, for dedupe
   status        String          // PENDING | IN_PROGRESS | COMPLETED | FAILED
