@@ -17,11 +17,11 @@ export async function GET(request: Request) {
     // Filter by letter if specified
     let filtered = words;
     if (letter && letter.length === 1 && /[a-zA-Z]/.test(letter)) {
-      filtered = words.filter((w: any) => w.word.charAt(0).toUpperCase() === letter.toUpperCase());
+      filtered = words.filter((w) => w.word.charAt(0).toUpperCase() === letter.toUpperCase());
     }
     
     // Sort alphabetically by word
-    filtered.sort((a: any, b: any) => a.word.localeCompare(b.word));
+    filtered.sort((a, b) => a.word.localeCompare(b.word));
     
     const res = NextResponse.json({ words: filtered, letter });
     res.headers.set("X-Request-Id", requestId);

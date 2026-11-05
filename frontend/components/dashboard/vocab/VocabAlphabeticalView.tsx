@@ -35,7 +35,7 @@ export default function VocabAlphabeticalView() {
       setError(null);
       const s = await api.vocabStream({ mode: "all" });
       // Filter words by starting letter
-      const letterWords = s.words.filter((w: any) => w.word.charAt(0).toUpperCase() === letter.toUpperCase());
+      const letterWords = s.words.filter((w: Server.VocabWordDTO) => w.word.charAt(0).toUpperCase() === letter.toUpperCase());
       setWords(letterWords);
       setTotalWords(letterWords.length);
       setCurrentIndexState(0);
