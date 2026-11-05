@@ -655,6 +655,7 @@ model MockTest {
   subject        String             @default("")
   totalQuestions Int                @default(0)
   duration       Int                @default(0)
+  difficulty     String?            @default("MEDIUM") // EASY | MEDIUM | HARD
   questions      MockTestQuestion[]
   results        MockTestResult[]
   createdAt      DateTime           @default(now())

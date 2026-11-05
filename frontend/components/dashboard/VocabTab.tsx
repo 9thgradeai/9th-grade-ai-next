@@ -129,7 +129,7 @@ export default function VocabTab() {
     setLoading(false);
   }, [buildParams, lang, toast, statusFilter, searchQuery]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();

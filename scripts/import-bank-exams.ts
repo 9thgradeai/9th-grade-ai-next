@@ -50,6 +50,14 @@ const PAPERS = [
     sourceExam: "Senior Officer (General) 2019",
   },
   {
+    file: "Senior Officer(General)/Senior Officer(General)_2021.txt",
+    slug: "senior-officer-general-2021",
+    titleBn: "সিনিয়র অফিসার (জেনারেল) ২০২১",
+    titleEn: "Senior Officer (General) 2021",
+    year: 2021,
+    sourceExam: "Senior Officer (General) 2021",
+  },
+  {
     file: "Senior Officer(General)/Senior Officer (General) 2022 [MCQ].txt",
     slug: "senior-officer-general-2022",
     titleBn: "সিনিয়র অফিসার (জেনারেল) ২০২২",
@@ -72,6 +80,14 @@ const PAPERS = [
     titleEn: "Senior Officer (General)-II 2023",
     year: 2023,
     sourceExam: "Senior Officer (General)-II 2023",
+  },
+  {
+    file: "Senior Officer(General)/SeniorOfficer(General)_2025.txt",
+    slug: "senior-officer-general-2025",
+    titleBn: "সিনিয়র অফিসার (জেনারেল) ২০২৫",
+    titleEn: "Senior Officer (General) 2025",
+    year: 2025,
+    sourceExam: "Senior Officer (General) 2025",
   },
 ];
 
@@ -172,21 +188,43 @@ export function parseBankRecord(lines: string[]): Omit<RawBankRecord, "paperSlug
   // identical quantities compare equal. NOT a guess.
   const caretSup = (s: string) => s.replace(/\^2\b/g, "²").replace(/\^3\b/g, "³");
   const joined = lines.join(" ").replace(/\s*\|\s*/g, " ").replace(/\s+/g, " ").trim();
-  const explIdx = joined.search(/ব্যাখ্যা\s*:/);
+  let explIdx = joined.search(/ব্যাখ্যা\s*:/);
+  if (explIdx < 0) explIdx = joined.search(/Explanation\s*:/i);
   let head = joined;
   let explanation = "";
   if (explIdx >= 0) {
-    explanation = joined.slice(explIdx).replace(/^ব্যাখ্যা\s*:\s*/, "").trim();
+    if (/ব্যাখ্যা\s*:/.test(joined.slice(explIdx, explIdx + 20))) {
+      explanation = joined.slice(explIdx).replace(/^ব্যাখ্যা\s*:\s*/, "").trim();
+    } else {
+      explanation = joined.slice(explIdx).replace(/^Explanation\s*:\s*/i, "").trim();
+    }
     head = joined.slice(0, explIdx).trim();
   }
-  const ansM = head.match(/(উত্তর\s*:|Ans\.\s*|Answer\s*:)/i);
+  const ansM = head.match(/(উত্তর\s*:|(?<![A-Za-z])Ans\.\s*|(?<![A-Za-z])Answer\s*:)/i);
   if (!ansM || ansM.index === undefined) return null;
-  const answerRaw = caretSup(head
+  let answerRaw = caretSup(head
     .slice(ansM.index + ansM[0].length)
     .trim()
     .replace(/^([কখগঘ])\s*\)/, "$1.")
     .replace(/^([a-dA-D])\s*\)/, (_, c: string) => c.toLowerCase() + ".")
     .replace(/\s+/g, " "));
+  // Strip parenthetical notes/comments from answer (e.g., "(Note mismatch...)")
+  answerRaw = answerRaw.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  // Strip trailing asterisks or "or ..." notes
+  answerRaw = answerRaw.replace(/\s*\*.*$/, "").trim();
+  answerRaw = answerRaw.replace(/\s*or\s+.*$/i, "").trim();
+  // If answer starts with "Note", try to extract option letter or text after it
+  if (answerRaw.startsWith("Note")) {
+    // Try to find an option letter/number in the note
+    const optMatch = answerRaw.match(/[কখগঘa-dA-D]\s*[.)]\s*([^,\s]+)/);
+    if (optMatch) answerRaw = optMatch[0].trim();
+    else {
+      const textMatch = answerRaw.match(/Note\s*[/:]\s*([^।\.]+)/);
+      if (textMatch) answerRaw = textMatch[1].trim();
+    }
+  }
+  // Handle cases where answer letter doesn't match option text (e.g., "d. 3" but option c is 3)
+  // We'll let the later resolution handle this via text match
   const qAndOpts = head.slice(0, ansM.index).trim();
 
   // Support both Bengali কখগঘ and Latin a-d option markers (2019 uses Latin)
@@ -297,6 +335,16 @@ export function parseBankRecord(lines: string[]): Omit<RawBankRecord, "paperSlug
   if (effectiveIdx >= 0 && options[effectiveIdx]) {
     const rest = answerRaw.slice(1).replace(/^[।.)\s:]+/, "").trim();
     if (rest === "" || rest === options[effectiveIdx]) correctAnswer = options[effectiveIdx];
+  }
+  // Fallback: if still not resolved, try text-based match (answer text equals an option)
+  if (correctAnswer === answerRaw) {
+    const directMatch = options.findIndex((o) => o === answerRaw);
+    if (directMatch >= 0) correctAnswer = options[directMatch];
+    else {
+      // Try case-insensitive, trimmed match
+      const ciMatch = options.findIndex((o) => o.trim().toLowerCase() === answerRaw.trim().toLowerCase());
+      if (ciMatch >= 0) correctAnswer = options[ciMatch];
+    }
   }
   return { qnum, question, options, correctAnswer, explanation };
 }

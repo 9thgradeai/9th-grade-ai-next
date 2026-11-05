@@ -82,6 +82,6 @@ describe("AI prompt builders", () => {
     });
     expect(focused).toContain("বাংলা → বানান");
     expect(focused).toContain("English → Adverb");
-    expect(focused).toContain("at least half");
+    expect(focused).toContain("MUST cover");
   });
 });

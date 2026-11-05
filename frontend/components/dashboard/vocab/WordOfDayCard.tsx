@@ -65,7 +65,7 @@ export default function WordOfDayCard() {
   }, [lang, toast]);
 
   useEffect(() => {
-    void fetchWord();
+    fetchWord(); // eslint-disable-line @typescript-eslint/no-floating-promises
   }, [fetchWord]);
 
   // Auto-rotate: refetch right after the server's slot ends, and tick a

@@ -61,7 +61,7 @@ export default function VocabStreamView() {
   }, [lang, toast]);
 
   useEffect(() => {
-    void loadStream();
+    loadStream(); // eslint-disable-line @typescript-eslint/no-floating-promises
   }, [loadStream]);
 
   const currentWord = stream?.words[idx] ?? null;

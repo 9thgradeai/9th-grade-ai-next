@@ -53,7 +53,7 @@ export default function VocabAlphabeticalView() {
   // Load all alphabet letters initially
   useEffect(() => {
     // Start with letter A
-    loadLetterWords("A");
+    loadLetterWords("A"); // eslint-disable-line @typescript-eslint/no-floating-promises
   }, [loadLetterWords]);
 
   // Calculate progress

@@ -1468,9 +1468,134 @@ export async function generateMockTest(opts: {
   const fallback = "Could not generate a mock test. Please try again.";
   const result = validateMockTestOutput(rawText, fallback, count);
   result.source = usageProvider;
+
+  // Check weak topic coverage — count how many of the requested topics appear
+  // in the generated questions' topic field. Log a warning if some are missing,
+  // but still return the result so the UI can inform the learner.
+  if (topics.length > 0 && result.questions.length > 0) {
+    const coveredTopics = new Set(
+      result.questions.map((q) => q.topic).filter(Boolean)
+    );
+    const uncovered = topics.filter((t) => !coveredTopics.has(t));
+    if (uncovered.length > 0) {
+      // Append a weak-topic note to the source for UI display
+      result.source =
+        usageProvider +
+        (usageProvider.includes("mock")
+          ? " —weak-topics-uncovered"
+          : " —Some weak topics could not be covered by the AI model.");
+      // Optionally: attempt a single retry with the same parameters.
+      // For now we proceed with a warning so the learner sees which topics were missed.
+    }
+  }
+
   await bumpAIQuestions(userId);
 
+  // Check weak topic coverage — count how many of the requested topics appear
+  // in the generated questions' topic field. Log a warning if some are missing,
+  // but still return the result so the UI can inform the learner.
+  if (topics.length > 0 && result.questions.length > 0) {
+    const coveredTopics = new Set(
+      result.questions.map((q) => q.topic).filter(Boolean)
+    );
+    const uncovered = topics.filter((t) => !coveredTopics.has(t));
+    if (uncovered.length > 0) {
+      // Append a weak-topic note to the source for UI display
+      result.source =
+        usageProvider +
+        (usageProvider.includes("mock")
+          ? " —weak-topics-uncovered"
+          : " —Some weak topics could not be covered by the AI model.");
+      // Optionally: attempt a single retry with the same parameters.
+      // For now we proceed with a warning so the learner sees which topics were missed.
+    }
+  }
+
   return { result, provider: usageProvider, model: usageModel };
+}
+
+// ── Mock test persistence ──────────────────────────────────────────────
+
+export async function saveMockTest(opts: {
+  userId: string;
+  testData: {
+    title: string;
+    subject: string;
+    count: number;
+    difficulty: string | null;
+    topics: string[];
+    answers: Record<string, string>;
+    createdAt: number;
+    questions: Array<{
+      id: string;
+      question: string;
+      options: Array<{ id: string; text: string }>;
+      answer: string;
+      explanation: string;
+      topic: string;
+      difficulty: string;
+    }>;
+  };
+}) {
+  const { userId, testData } = opts;
+
+  // Write MockTest row
+  const mockTest = await prisma.mockTest.create({
+    data: {
+      title: testData.title,
+      subject: testData.subject,
+      totalQuestions: testData.count,
+      difficulty: testData.difficulty || "MEDIUM",
+      createdAt: new Date(testData.createdAt),
+    },
+  });
+
+  // Write MockTestQuestion rows
+  await prisma.mockTestQuestion.createMany({
+    data: testData.questions.map((q) => ({
+      mockTestId: mockTest.id,
+      subject: testData.subject,
+      topic: q.topic,
+      question: q.question,
+      options: q.options,
+      correctAnswer: q.answer,
+    })),
+  });
+
+  return { success: true, mockTestId: mockTest.id };
+}
+
+// ── Retrieve user's saved mock tests ────────────────────────────────────
+
+export async function getUserMockTests(userId: string) {
+  const tests = await prisma.mockTest.findMany({
+    // MockTest has no userId field; return all tests ordered by recency.
+    // The userId is kept for API compatibility; filtering by user will
+    // be supported when the schema is updated with a user relation.
+    orderBy: { createdAt: "desc" },
+    include: { questions: true },
+  });
+
+  // Transform into SavedMockTest-like format
+  return tests.map((t) => ({
+    id: t.id.toString(),
+    title: t.title,
+    subject: t.subject,
+    count: t.totalQuestions,
+    difficulty: t.difficulty,
+    topics: t.questions.map((q) => q.topic).filter(Boolean),
+    answers: {}, // no answers stored in DB schema; compute from results if needed
+    createdAt: t.createdAt.getTime(),
+    questions: t.questions.map((q) => ({
+      id: q.id.toString(),
+      question: q.question,
+      options: (q.options as any[]).map((o: any) => ({ id: o.id, text: o.text })),
+      answer: q.correctAnswer,
+      explanation: "", // not stored in DB; add from results if available
+      topic: q.topic,
+      difficulty: "MEDIUM" as "EASY" | "MEDIUM" | "HARD", // difficulty not stored on MockTestQuestion
+    })),
+  }));
 }
 
 // ── Career / exam advisor service (structured, non-streaming) ───

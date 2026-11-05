@@ -9,6 +9,8 @@ export {
   assistantTurn,
   evaluateAnswer,
   generateMockTest,
+  saveMockTest,
+  getUserMockTests,
   getCareerAdvice,
   detectIntent,
 } from "./application/services";

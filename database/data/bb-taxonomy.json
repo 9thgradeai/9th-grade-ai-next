@@ -417,6 +417,20 @@
                   "leaf": true
                 },
                 {
+                  "name": "সাহিত্যিকদের_উপাধি",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/সাহিত্যিকদের_উপাধি",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "লেখকের_ছদ্মনাম",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/লেখকের_ছদ্মনাম",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
                   "name": "Tier_01_মাস্টার_হট_স্পট",
                   "children": [
                     {

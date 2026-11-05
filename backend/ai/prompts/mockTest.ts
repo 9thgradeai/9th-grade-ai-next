@@ -35,7 +35,7 @@ export function buildMockTestSystem(
   const difficulty = opts.difficulty ? ` The overall difficulty should be ${opts.difficulty}.` : "";
   const focus =
     opts.topics && opts.topics.length > 0
-      ? ` Focus at least half the questions on these learner weak topics (they struggle here — prioritize them, distribute the rest across the subject): ${opts.topics.join("; ")}.`
+      ? ` MUST cover each of these learner weak topics (they struggle here — at least one question per topic, distribute the rest across the subject): ${opts.topics.join("; ")}.`
       : "";
 
   return `You are 9th-Grade AI's mock-test generator for Bangladesh competitive job exams (${exam}).

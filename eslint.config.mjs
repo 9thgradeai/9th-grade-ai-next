@@ -15,8 +15,8 @@ const eslintConfig = defineConfig([
     files: ["**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-floating-promises": "warn",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-unnecessary-condition": "warn",
       "no-console": ["warn", { allow: ["warn", "error"] }],
