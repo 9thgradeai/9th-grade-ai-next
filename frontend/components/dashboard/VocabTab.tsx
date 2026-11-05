@@ -366,6 +366,17 @@ export default function VocabTab() {
             >
               <GameController className="w-3.5 h-3.5" /> {t(lang, "কুইজ", "Quiz")}
             </button>
+            <button
+              onClick={() => {
+                setStatusFilter("all");
+                setSearchQuery("");
+                setIdx(0);
+                setRevealed(false);
+              }}
+              className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-all flex items-center gap-1.5"
+            >
+              <BookOpen className="w-3.5 h-3.5" /> {t(lang, "শব্দ সব প্রদর্শন", "Show all words")}
+            </button>
           </div>
 
           {/* ─── Flashcard ─── */}
