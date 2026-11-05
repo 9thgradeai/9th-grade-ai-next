@@ -1272,13 +1272,16 @@ export default function PracticeTab() {
               style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
             >
               <div className="p-6 text-center border-b" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
-                <Trophy className={`w-12 h-12 mx-auto mb-3 ${
-                  result.score >= 80 ? "text-[var(--dashboard-warning)]" : result.score >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
-                }`} />
+                <Trophy className="w-12 h-12 mx-auto mb-3" />
                 <h3 className="text-xl font-bold mb-2" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস সম্পন্ন!</h3>
-                <ScoreRing percentage={result.score} label="Practice score" />
+                <div className="text-2xl font-bold font-mono text-[var(--text-primary)] mb-2">
+                  {result.finalScore}
+                </div>
                 <p className="text-sm font-mono mb-1" style={{ color: "var(--dashboard-text-secondary)" }}>
-                  {result.correct} / {result.total} সঠিক
+                  {result.correct} সঠিক ·
+                  {(result.wrong ?? 0) > 0 && `${result.wrong} ভুল`} ·
+                  {result.total - (result.correct ?? 0) - (result.wrong ?? 0)} না answered ·
+                    {result.total} total
                 </p>
                 {result.wrong !== undefined && (
                   <p className="text-xs font-mono mb-1" style={{ color: "var(--dashboard-text-secondary)" }}>

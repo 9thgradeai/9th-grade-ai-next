@@ -72,6 +72,7 @@ export async function getExamHistory(userId: string): Promise<ExamHistoryDTO> {
         total: attempt.result.total,
         durationSec: attempt.result.durationSec,
         percentage: attempt.result.score,
+        finalScore: Math.round(attempt.result.score * attempt.result.total / 100),
         createdAt: attempt.submittedAt?.toISOString() ?? attempt.startedAt.toISOString(),
         examId: undefined,
         paperId: undefined,
@@ -90,6 +91,7 @@ export async function getExamHistory(userId: string): Promise<ExamHistoryDTO> {
         total: result.total,
         durationSec: result.durationSec,
         percentage: result.score,
+        finalScore: Math.round(result.score * result.total / 100),
         createdAt: result.createdAt.toISOString(),
         subject: result.mockTest?.subject,
       });
@@ -107,6 +109,7 @@ export async function getExamHistory(userId: string): Promise<ExamHistoryDTO> {
         total: result.total,
         durationSec: 0,
         percentage: result.score,
+        finalScore: Math.round(result.score * result.total / 100),
         createdAt: result.completedAt?.toISOString() ?? result.createdAt.toISOString(),
       });
     }

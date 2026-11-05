@@ -712,6 +712,7 @@ export namespace Server {
     total: number;
     durationSec: number;
     percentage: number;
+    finalScore: number;
     createdAt: string;
     subject?: string;
     examId?: number;

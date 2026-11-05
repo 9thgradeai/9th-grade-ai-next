@@ -28,7 +28,6 @@ import SubjectTopicSelect from "./SubjectTopicSelect";
 import ModalPortal from "@/components/ui/ModalPortal";
 import MetaChip from "./practice/MetaChip";
 import SessionTimer from "./practice/SessionTimer";
-import ScoreRing from "./practice/ScoreRing";
 import SmartMixButton from "./practice/SmartMixButton";
 import TopicBars from "./practice/TopicBars";
 import AIExplanationButton from "./AIExplanationButton";
@@ -1289,7 +1288,11 @@ export default function CustomExamTab() {
   // ═══════════════ RESULT PHASE ═══════════════
   if (phase === "result" && result) {
     const { summary } = result;
-    const perf = performanceLabel(summary.percentage);
+
+    // Determine trophy color based on final score bands
+    let trophyTone = "text-[var(--dashboard-primary)]";
+    if (summary.finalScore >= 80) trophyTone = "text-[var(--dashboard-warning)]";
+    else if (summary.finalScore >= 50) trophyTone = "text-[var(--dashboard-primary)]";
 
     return (
       <div className="space-y-6">
@@ -1300,11 +1303,15 @@ export default function CustomExamTab() {
           className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
-            <Trophy className={`w-12 h-12 mx-auto mb-3 ${summary.percentage >= 80 ? "text-[var(--dashboard-warning)]" : summary.percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`} />
+            <Trophy className={`${trophyTone}`} />
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">পরীক্ষা সম্পন্ন!</h3>
-            <p className={`text-sm font-mono mb-4 ${perf.tone}`}>{perf.label}</p>
-
-            <ScoreRing percentage={summary.percentage} label="Exam score" />
+            <div className="text-2xl font-bold font-mono text-[var(--text-primary)] mb-2">
+              {summary.finalScore}
+            </div>
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
+              {summary.correct} সঠিক · {summary.wrong} ভুল · {summary.unanswered} না answered ·
+                {summary.attempted} attempted
+            </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
               <button
@@ -1351,16 +1358,19 @@ export default function CustomExamTab() {
               </div>
             </div>
 
-            <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden max-w-md mx-auto" role="progressbar" aria-label="Exam score" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(summary.percentage)}>
+            <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden max-w-md mx-auto" role="progressbar" aria-label="Exam score" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(summary.attempted)}>
               <div
                 className={`h-full w-full origin-left rounded-full transition-transform duration-200 ${
-                  summary.percentage >= 80 ? "bg-[var(--dashboard-warning)]" : summary.percentage >= 50 ? "bg-[var(--dashboard-success)]" : "bg-[var(--dashboard-danger)]"
+                  summary.finalScore >= 80 ? "bg-[var(--dashboard-warning)]" : summary.finalScore >= 50 ? "bg-[var(--dashboard-success)]" : "bg-[var(--dashboard-danger)]"
                 }`}
-                style={{ transform: `scaleX(${summary.percentage / 100})` }}
+                style={{ transform: `scaleX(${summary.attempted / summary.total})` }}
               />
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-2">
-              স্কোর: <span className="text-[var(--text-primary)]">{summary.percentage}%</span> • সূত্র: সঠিক×১ − ভুল×০.৫
+             finale Marks: <span className="text-[var(--text-primary)]">{summary.finalScore}</span> ·
+              Right: <span className="text-[var(--dashboard-success)]">{summary.correct}</span> ·
+              Wrong: <span className="text-[var(--dashboard-danger)]">{summary.wrong}</span> ·
+              Not answered: <span className="text-[var(--dashboard-teal)]">{summary.unanswered}</span>
             </p>
             {summary.pointsEarned > 0 && (
               <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-1">+{summary.pointsEarned} পয়েন্ট অর্জিত</p>

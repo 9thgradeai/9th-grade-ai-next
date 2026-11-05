@@ -1161,7 +1161,6 @@ export default function MockTestTab() {
   // ═══════════════ RESULTS ═══════════════
   if (result) {
     const { summary } = result;
-    const percentage = summary.percentage;
 
     return (
       <div className="space-y-6">
@@ -1172,12 +1171,15 @@ export default function MockTestTab() {
           className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
-            <Trophy className={`w-12 h-12 mx-auto mb-3 ${
-              percentage >= 80 ? "text-[var(--dashboard-warning)]" : percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
-            }`} />
+            <Trophy className="w-12 h-12 mx-auto mb-3" />
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">মক টেস্ট সম্পন্ন!</h3>
-            <ScoreRing percentage={summary.percentage} label="Mock test score" />
-            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">{summary.percentage}% স্কোর</p>
+            <div className="text-2xl font-bold font-mono text-[var(--text-primary)] mb-2">
+              {summary.finalScore}
+            </div>
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
+              {summary.correct} সঠিক · {summary.wrong} ভুল · {summary.unanswered} না answered ·
+                {summary.attempted} attempted
+            </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
               <button

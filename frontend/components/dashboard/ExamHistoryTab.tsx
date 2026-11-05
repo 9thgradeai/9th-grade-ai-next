@@ -49,16 +49,16 @@ function formatTime(seconds: number): string {
   return `${s}সেক`;
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 70) return SCORE_COLORS.high;
-  if (score >= 40) return SCORE_COLORS.medium;
+function getScoreColor(finalScore: number): string {
+  if (finalScore >= 70) return SCORE_COLORS.high;
+  if (finalScore >= 40) return SCORE_COLORS.medium;
   return SCORE_COLORS.low;
 }
 
-function getScoreLabel(score: number): string {
-  if (score >= 80) return "চমৎকার";
-  if (score >= 60) return "ভালো";
-  if (score >= 40) return "গড়";
+function getScoreLabel(finalScore: number): string {
+  if (finalScore >= 80) return "চমৎকার";
+  if (finalScore >= 60) return "ভালো";
+  if (finalScore >= 40) return "গড়";
   return "উন্নতি প্রয়োজন";
 }
 
@@ -104,10 +104,10 @@ export default function ExamHistoryTab() {
         items.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         break;
       case "score-high":
-        items.sort((a, b) => b.percentage - a.percentage);
+        items.sort((a, b) => b.finalScore - a.finalScore);
         break;
       case "score-low":
-        items.sort((a, b) => a.percentage - b.percentage);
+        items.sort((a, b) => a.finalScore - b.finalScore);
         break;
       default:
         items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -121,8 +121,8 @@ export default function ExamHistoryTab() {
     const past = history.past;
     if (past.length === 0) return { total: 0, avgScore: 0, bestScore: 0, totalQuestions: 0 };
     const total = past.length;
-    const avgScore = Math.round(past.reduce((sum, p) => sum + p.percentage, 0) / total);
-    const bestScore = Math.max(...past.map((p) => p.percentage));
+    const avgScore = Math.round(past.reduce((sum, p) => sum + p.finalScore, 0) / total);
+    const bestScore = Math.max(...past.map((p) => p.finalScore));
     const totalQuestions = past.reduce((sum, p) => sum + p.total, 0);
     return { total, avgScore, bestScore, totalQuestions };
   }, [history]);
@@ -349,10 +349,13 @@ export default function ExamHistoryTab() {
                       <span className="ml-1">{TYPE_LABELS[item.type]?.label ?? item.type}</span>
                     </span>
                     <div className="text-right min-w-[80px]">
-                      <p className={`text-xl font-bold font-mono ${getScoreColor(item.percentage)}`}>
-                        {item.percentage}%
+                      <p className={`text-xl font-bold font-mono ${getScoreColor(item.finalScore)}`}>
+                        {item.finalScore}
                       </p>
-                      <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{getScoreLabel(item.percentage)}</p>
+                      <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
+                {item.correct} সঠিক · {item.total - item.correct} ভুল ·
+                {item.total} complete
+                      </p>
                     </div>
                   </div>
 
