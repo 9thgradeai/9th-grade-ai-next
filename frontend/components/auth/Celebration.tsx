@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 
-const COLORS = ["#34d399", "#22d3ee", "#fbbf24", "#818cf8", "#f472b6"]
+const COLORS = ["#ff8a5c", "#f0c987", "#ff6a3d", "#e8b07a", "#d98a5c"]
 
 /** One-shot particle burst around the avatar when authentication succeeds.
  *  Opacity/transform only, ~16 elements, runs once, cheap. */

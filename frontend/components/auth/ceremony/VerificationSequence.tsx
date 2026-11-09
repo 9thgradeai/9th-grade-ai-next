@@ -64,7 +64,7 @@ export function VerificationSequence({
               <span
                 aria-hidden="true"
                 className={`flex h-4 w-4 items-center justify-center rounded-full ${
-                  done ? "bg-emerald-500 text-white" : "border border-white/20"
+                  done ? "bg-emerald-500 text-[#120d0a]" : "border border-white/20"
                 }`}
               >
                 {done && <Check className="h-3 w-3" />}

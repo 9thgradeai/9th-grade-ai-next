@@ -71,7 +71,7 @@ export function AdmitCard({
       animate={{ opacity: 1, rotateY: 0, y: 0 }}
       transition={reduced ? { duration: 0.25 } : { type: "spring", stiffness: 210, damping: 22 }}
       style={{ transformStyle: "preserve-3d" }}
-      className="relative w-full overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-[#0b1120]/95 via-[#0a1626]/95 to-[#07202b]/95 shadow-[0_20px_60px_rgba(2,6,12,0.55),0_0_40px_rgba(16,185,129,0.10)]"
+      className="relative w-full overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-[#17130f]/95 via-[#17130f]/95 to-[#2a1710]/95 shadow-[0_20px_60px_rgba(2,6,12,0.55),0_0_40px_rgba(255,106,61,0.10)]"
     >
       {/* Paper grain + top sheen */}
       <div
@@ -96,7 +96,7 @@ export function AdmitCard({
             : { type: "spring", stiffness: 420, damping: 16, delay: 0.85 }
         }
       >
-        <span className="block rounded-md border-2 border-emerald-400/80 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.25)]">
+        <span className="block rounded-md border-2 border-emerald-400/80 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-emerald-300 shadow-[0_0_18px_rgba(255,138,92,0.25)]">
           ✓ Authenticated
         </span>
       </motion.div>
@@ -141,8 +141,8 @@ export function AdmitCard({
 
       {/* Perforation */}
       <div aria-hidden="true" className="relative">
-        <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#04060c]" />
-        <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#04060c]" />
+        <div className="absolute -left-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#0b0a09]" />
+        <div className="absolute -right-2 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-[#0b0a09]" />
         <div className="mx-4 border-t border-dashed border-white/15" />
       </div>
 

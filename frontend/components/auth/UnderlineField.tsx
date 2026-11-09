@@ -82,7 +82,7 @@ export function UnderlineField({
             error
               ? "border-b-red-500/60 focus:border-b-red-400"
               : focused
-                ? "border-b-emerald-400/60 shadow-[0_1px_0_0_rgba(52,211,153,0.4)]"
+                ? "border-b-emerald-400/60 shadow-[0_1px_0_0_rgba(255,138,92,0.4)]"
                 : "border-b-[var(--border-muted)] hover:border-b-[var(--text-muted)]/40"
           }`}
           style={{ borderWidth: "0 0 1px 0" }}

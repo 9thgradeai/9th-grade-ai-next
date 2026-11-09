@@ -25,7 +25,7 @@ export default function LanguageToggle({ className }: { className?: string }) {
       onClick={toggleLang}
       className={
         className ??
-        "relative min-h-[44px] px-2.5 flex items-center gap-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:scale-[1.05] active:scale-95 transition-all rounded-lg hover:bg-emerald-500/5 font-mono text-xs uppercase tracking-wider"
+        "relative min-h-[44px] px-2.5 flex items-center gap-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:scale-[1.05] active:scale-95 transition-all rounded-lg hover:bg-[var(--dashboard-primary)]/5 font-mono text-xs uppercase tracking-wider"
       }
       title={lang === "bn" ? "Switch to English" : "বাংলায় টগল করুন"}
       aria-label={lang === "bn" ? "Switch interface language to English" : "ইন্টারফেস ভাষা বাংলায় পরিবর্তন করুন"}

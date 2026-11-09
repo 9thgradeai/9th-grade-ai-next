@@ -9,10 +9,10 @@ import type { BrowKind, EyeKind, Gaze, MouthKind } from "./auth-state"
  * the auth stage machine. GPU-cheap: transform/opacity animations only.
  */
 
-export const BEZEL_A = "#34d399" // emerald-400
-export const BEZEL_B = "#22d3ee" // cyan-500
-const VISOR_TOP = "#07131f"
-const VISOR_BOTTOM = "#03101a"
+export const BEZEL_A = "#ff8a5c" // emerald-400
+export const BEZEL_B = "#f0c987" // cyan-500
+const VISOR_TOP = "#17130f"
+const VISOR_BOTTOM = "#0f0d0b"
 
 export const UNIT9_GRADIENTS = (
   <defs>
@@ -22,14 +22,14 @@ export const UNIT9_GRADIENTS = (
       <stop offset="100%" stopColor={BEZEL_B} />
     </linearGradient>
     <linearGradient id="unit9-chassis" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stopColor="#182338" />
-      <stop offset="60%" stopColor="#0c1526" />
-      <stop offset="100%" stopColor="#070b16" />
+      <stop offset="0%" stopColor="#2a241e" />
+      <stop offset="60%" stopColor="#17130f" />
+      <stop offset="100%" stopColor="#0b0a09" />
     </linearGradient>
     <radialGradient id="unit9-halo" cx="50%" cy="42%" r="58%">
-      <stop offset="0%" stopColor="rgba(52,211,153,0.20)" />
+      <stop offset="0%" stopColor="rgba(255,138,92,0.20)" />
       <stop offset="60%" stopColor="rgba(34,211,238,0.07)" />
-      <stop offset="100%" stopColor="rgba(52,211,153,0)" />
+      <stop offset="100%" stopColor="rgba(255,138,92,0)" />
     </radialGradient>
     <radialGradient id="unit9-visor" cx="50%" cy="30%" r="90%">
       <stop offset="0%" stopColor={VISOR_TOP} />
@@ -45,15 +45,15 @@ export function paletteFor(mood: string): Palette {
     case "error":
       return { led: "#fb7185", alert: "#fb7185" }
     case "weak":
-      return { led: "#fbbf24", alert: "#fbbf24" }
+      return { led: "#f0c987", alert: "#f0c987" }
     case "moderate":
-      return { led: "#fde68a", alert: "#fbbf24" }
+      return { led: "#ffe3b3", alert: "#f0c987" }
     case "excellent":
     case "celebrating":
     case "success":
-      return { led: "#67e8f9", alert: "#34d399" }
+      return { led: "#f0c987", alert: "#ff8a5c" }
     default:
-      return { led: "#34d399", alert: "#34d399" }
+      return { led: "#ff8a5c", alert: "#ff8a5c" }
   }
 }
 
@@ -105,13 +105,13 @@ export function LedEye({
         width={24}
         height={22}
         rx={7}
-        fill="#0a1626"
+        fill="#17130f"
         stroke={color}
         strokeOpacity={0.45}
         strokeWidth={1.4}
       />
       <circle cx={cx + dx} cy={cy + dy} r={5.4} fill={color} />
-      <circle cx={cx + dx + 1.8} cy={cy + dy - 1.8} r={1.6} fill="#eafffb" opacity={0.95} />
+      <circle cx={cx + dx + 1.8} cy={cy + dy - 1.8} r={1.6} fill="#f5f1ea" opacity={0.95} />
       {/* Privacy shutter, slides partway over the socket */}
       {kind === "lid" && (
         <motion.rect
@@ -250,7 +250,7 @@ export function Sparkle({ x, y, delay }: { x: number; y: number; delay?: number 
   return (
     <path
       d={`M ${x} ${y - 8} Q ${x} ${y} ${x + 8} ${y} Q ${x} ${y} ${x} ${y + 8} Q ${x} ${y} ${x - 8} ${y} Q ${x} ${y} ${x} ${y - 8} Z`}
-      fill="#fbbf24"
+      fill="#f0c987"
       className="avatar-sparkle"
       style={{ animationDelay: delay ? `${delay}s` : undefined }}
     />

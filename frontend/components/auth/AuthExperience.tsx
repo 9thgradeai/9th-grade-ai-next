@@ -376,12 +376,12 @@ export default function AuthExperience({
                 <span className="h-3 w-px bg-emerald-400/25" />
                 <div className="flex items-center gap-2.5">
                   <motion.span
-                    className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.95)]"
+                    className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(255,138,92,0.95)]"
                     animate={reduced ? undefined : { opacity: [0.85, 0.2, 0.85] }}
                     transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <motion.span
-                    className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.95)]"
+                    className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(255,138,92,0.95)]"
                     animate={reduced ? undefined : { opacity: [0.2, 0.85, 0.2] }}
                     transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
                   />
@@ -536,7 +536,7 @@ export default function AuthExperience({
           <button
             type="button"
             onClick={continueNow}
-            className="btn-shine flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(16,185,129,0.3)] transition-all hover:shadow-[0_10px_32px_rgba(16,185,129,0.45)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+            className="btn-shine flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-sm font-semibold text-[#120d0a] shadow-[0_8px_24px_rgba(255,106,61,0.3)] transition-all hover:shadow-[0_10px_32px_rgba(255,106,61,0.45)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
           >
             Enter the hall
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -557,7 +557,7 @@ export default function AuthExperience({
             href="/"
             className="flex items-center gap-2.5 font-display text-[15px] font-semibold text-[var(--foreground)] transition-opacity hover:opacity-85"
           >
-            <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(16,185,129,0.35)]" />
+            <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(255,106,61,0.35)]" />
             9Th-Grade AI
           </Link>
           <LanguageToggle className="min-h-[44px] px-3 flex items-center gap-1.5 text-[var(--text-muted)] hover:text-emerald-400 border border-white/10 hover:border-emerald-400/30 rounded-full text-xs font-mono uppercase tracking-wider transition-colors" />

@@ -85,7 +85,7 @@ export function AuthField({
           inputMode={inputMode}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={`w-full rounded-xl border bg-[var(--surface-raised)] py-3 text-base text-[var(--foreground)] outline-none backdrop-blur-sm transition-all duration-200 placeholder:text-[var(--text-muted)] focus:border-emerald-400/70 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10),0_0_28px_rgba(16,185,129,0.16)] focus:ring-2 focus:ring-emerald-400/20 sm:py-3.5 ${
+          className={`w-full rounded-xl border bg-[var(--surface-raised)] py-3 text-base text-[var(--foreground)] outline-none backdrop-blur-sm transition-all duration-200 placeholder:text-[var(--text-muted)] focus:border-emerald-400/70 focus:shadow-[0_0_0_4px_rgba(255,106,61,0.10),0_0_28px_rgba(255,106,61,0.16)] focus:ring-2 focus:ring-emerald-400/20 sm:py-3.5 ${
             leftIcon ? "pl-11" : "pl-4"
           } ${rightSlot ? "pr-12" : "pr-4"} ${
             error ? "border-red-500/70" : "border-[var(--border-muted)]"

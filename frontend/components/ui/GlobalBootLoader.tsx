@@ -105,7 +105,7 @@ export default function GlobalBootLoader() {
         >
           {/* ambient aurora */}
           <div aria-hidden="true" className="absolute inset-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(45,212,191,0.18),transparent_60%),radial-gradient(ellipse_55%_45%_at_85%_85%,rgba(167,139,250,0.14),transparent_55%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(255,106,61,0.18),transparent_60%),radial-gradient(ellipse_55%_45%_at_85%_85%,rgba(240,201,135,0.14),transparent_55%)]" />
           </div>
 
           <div className="relative flex w-full max-w-[300px] flex-col items-center">
@@ -114,7 +114,7 @@ export default function GlobalBootLoader() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="font-mono text-[11px] tracking-[0.32em] text-emerald-400/80"
+              className="font-mono text-[11px] tracking-[0.32em] text-[#ff8a5c]/80"
             >
               9TH-GRADE AI
             </motion.p>
@@ -129,9 +129,9 @@ export default function GlobalBootLoader() {
               {/* outer counter-rotating ring */}
               <motion.div
                 aria-hidden="true"
-                className="absolute inset-0 rounded-full border border-emerald-400/20"
+                className="absolute inset-0 rounded-full border border-[#ff6a3d]/20"
                 style={{
-                  background: "conic-gradient(from 0deg, transparent 0deg, rgba(45,212,191,0.55) 42deg, rgba(167,139,250,0.45) 160deg, transparent 240deg, transparent 360deg)",
+                  background: "conic-gradient(from 0deg, transparent 0deg, rgba(255,106,61,0.55) 42deg, rgba(240,201,135,0.45) 160deg, transparent 240deg, transparent 360deg)",
                   mask: "radial-gradient(circle, transparent 62%, black 63%)",
                 }}
                 animate={{ rotate: 360 }}
@@ -142,7 +142,7 @@ export default function GlobalBootLoader() {
                 aria-hidden="true"
                 className="absolute inset-[14%] rounded-full"
                 style={{
-                  background: "conic-gradient(from 180deg, transparent 0deg, rgba(34,211,238,0.5) 60deg, transparent 200deg)",
+                  background: "conic-gradient(from 180deg, transparent 0deg, rgba(240,201,135,0.5) 60deg, transparent 200deg)",
                   mask: "radial-gradient(circle, transparent 72%, black 73%)",
                 }}
                 animate={{ rotate: -360 }}
@@ -151,11 +151,11 @@ export default function GlobalBootLoader() {
               {/* core glow */}
               <motion.div
                 aria-hidden="true"
-                className="absolute inset-[28%] rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-sky-400 blur-[1px]"
+                className="absolute inset-[28%] rounded-full bg-gradient-to-br from-[#ff6a3d] via-[#f0c987] to-[#ff8259] blur-[1px]"
                 animate={{ scale: [1, 1.06, 1], opacity: [0.95, 1, 0.95] }}
                 transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
               />
-              <div className="absolute inset-[28%] rounded-full bg-[#0a0a0f] shadow-[0_0_32px_rgba(45,212,191,0.6)]" />
+              <div className="absolute inset-[28%] rounded-full bg-[#12100e] shadow-[0_0_32px_rgba(255,106,61,0.6)]" />
               {/* satellites */}
               <motion.div aria-hidden="true" className="absolute inset-0" animate={{ rotate: 360 }} transition={{ duration: 5, repeat: Infinity, ease: "linear" }}>
                 {[0, 120, 240].map((deg, i) => (
@@ -166,7 +166,7 @@ export default function GlobalBootLoader() {
                   />
                 ))}
               </motion.div>
-              <span className="relative font-display text-[34px] font-bold tracking-tight text-white drop-shadow-[0_0_16px_rgba(45,212,191,0.55)]">
+              <span className="relative font-display text-[34px] font-bold tracking-tight text-white drop-shadow-[0_0_16px_rgba(255,106,61,0.55)]">
                 9G
               </span>
             </motion.div>
@@ -183,13 +183,13 @@ export default function GlobalBootLoader() {
               aria-valuemax={100}
               aria-valuenow={Math.round(progress)}
             >
-              <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.18em] text-zinc-500">
+              <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.18em] text-[#918a80]">
                 <span>LOADING</span>
-                <span className="tabular-nums text-emerald-400">{Math.round(progress)}%</span>
+                <span className="tabular-nums text-[#ff8a5c]">{Math.round(progress)}%</span>
               </div>
               <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400"
+                  className="h-full rounded-full bg-gradient-to-r from-[#ff6a3d] via-[#f0c987] to-[#ff8259]"
                   initial={{ width: "0%" }}
                   animate={{ width: `${progress}%` }}
                   transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.18 }}

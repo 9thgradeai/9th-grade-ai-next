@@ -1,7 +1,5 @@
 import { prisma } from "~backend/db";
-import PublicShell from "@/components/public/PublicShell";
-import HeroSection from "@/components/landing/HeroSection";
-import LazySection from "@/components/landing/LazySection";
+import OmLanding from "@/components/landing/om/OmLanding";
 
 export const revalidate = 3600;
 
@@ -32,23 +30,13 @@ export default async function Home() {
     console.error("[home] question.count failed, rendering with fallback 0:", error);
   }
   return (
-    <PublicShell>
+    <>
       <script
         id="jsonld-home"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HeroSection questionCount={questionCount} />
-      {/* Phase 4, 5 narrative arcs (was 11 scattered sections). All original
-          components preserved inside the arcs; each lazy chunk = one story beat. */}
-      <LazySection name="ArcProblem" />
-      <LazySection name="ArcIntelligence" />
-      {/* Kinetic-type interlude between the intelligence and tutor beats —
-          pure CSS scroll-driven animation, no JS chunk beyond its markup. */}
-      <LazySection name="ScrollTypeSection" minHeight={420} />
-      <LazySection name="ArcTutor" />
-      <LazySection name="ArcProof" />
-      <LazySection name="ArcCta" />
-    </PublicShell>
+      <OmLanding questionCount={questionCount} />
+    </>
   );
 }

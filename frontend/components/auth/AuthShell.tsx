@@ -33,7 +33,7 @@ export function AuthShell({
             href="/"
             className="flex items-center gap-2.5 font-display text-[15px] font-semibold text-[var(--foreground)] transition-opacity hover:opacity-85"
           >
-            <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(16,185,129,0.35)]" />
+            <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(255,106,61,0.35)]" />
             9Th-Grade AI
           </Link>
           <Link

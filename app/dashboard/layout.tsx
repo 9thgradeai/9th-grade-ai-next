@@ -257,13 +257,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <MotionConfig reducedMotion="user">
       <EcosystemProvider>
       <EmailVerificationGate>
-          <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
+          <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ backgroundColor: "var(--dashboard-background)" }}>
             {/* Ambient world map (desktop only, decorative, non-interactive) */}
             <WorldMapBackdrop />
             {/* Skip link, first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[var(--z-tooltip)] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm min-h-11 min-w-11"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[var(--z-tooltip)] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[var(--primary)] focus:text-[var(--text-inverse)] focus:font-mono focus:text-sm min-h-11 min-w-11"
             >
               {t("dashboard.skipToContent")}
             </a>

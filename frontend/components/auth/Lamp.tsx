@@ -56,7 +56,7 @@ export function Lamp({
         </linearGradient>
         <radialGradient id="lamp-bulb" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#ffedb3" />
-          <stop offset="70%" stopColor="#fbbf24" />
+          <stop offset="70%" stopColor="#f0c987" />
           <stop offset="100%" stopColor="#b45309" />
         </radialGradient>
         <radialGradient id="lamp-glow" cx="50%" cy="50%" r="50%">
@@ -147,7 +147,7 @@ export function Lamp({
         <path
           d="M 84 74 L 138 74 L 146 126 L 62 126 Z"
           fill="none"
-          stroke="rgba(52,211,153,0.35)"
+          stroke="rgba(255,138,92,0.35)"
           strokeWidth="1.5"
           strokeLinejoin="round"
         />

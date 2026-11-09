@@ -69,7 +69,7 @@ export function ConstellationForm({
                   transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
                 >
                   <svg viewBox="0 0 20 20" className="h-5 w-5">
-                    <circle cx="10" cy="10" r="2" fill="#2dd4bf" opacity="0.6" />
+                    <circle cx="10" cy="10" r="2" fill="#f0c987" opacity="0.6" />
                     <circle cx="10" cy="10" r="6" fill="none" stroke="rgba(45, 212, 191, 0.3)" strokeWidth="0.5" strokeDasharray="2 3" />
                   </svg>
                 </motion.div>
@@ -77,7 +77,7 @@ export function ConstellationForm({
 
               <div>
                 <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(255,138,92,0.9)]" />
                   Exam hall · entry pass
                 </span>
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
@@ -89,10 +89,10 @@ export function ConstellationForm({
             {/* Decorative constellation symbol */}
             <svg viewBox="0 0 24 24" className="h-6 w-6 opacity-40" aria-hidden="true">
               <circle cx="12" cy="12" r="3" fill="none" stroke="rgba(45, 212, 191, 0.6)" strokeWidth="1" />
-              <circle cx="12" cy="4" r="1.5" fill="#2dd4bf" />
-              <circle cx="4" cy="8" r="1.5" fill="#2dd4bf" />
-              <circle cx="20" cy="8" r="1.5" fill="#2dd4bf" />
-              <circle cx="12" cy="20" r="1.5" fill="#2dd4bf" />
+              <circle cx="12" cy="4" r="1.5" fill="#f0c987" />
+              <circle cx="4" cy="8" r="1.5" fill="#f0c987" />
+              <circle cx="20" cy="8" r="1.5" fill="#f0c987" />
+              <circle cx="12" cy="20" r="1.5" fill="#f0c987" />
               <line x1="12" y1="12" x2="12" y2="4" stroke="rgba(45, 212, 191, 0.4)" strokeWidth="0.5" />
               <line x1="12" y1="12" x2="4" y2="8" stroke="rgba(45, 212, 191, 0.4)" strokeWidth="0.5" />
               <line x1="12" y1="12" x2="20" y2="8" stroke="rgba(45, 212, 191, 0.4)" strokeWidth="0.5" />
@@ -105,8 +105,8 @@ export function ConstellationForm({
         <div className="constellation-content relative z-10 px-5 py-5 sm:px-7 sm:py-6">
           {/* Vertical constellation spine */}
           <div className="constellation-spine pointer-events-none absolute left-1/2 top-0 h-full -translate-x-1/2" aria-hidden="true">
-            <div className="constellation-spine-line absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[rgba(45,212,191,0.2)] to-transparent" />
-            <div className="constellation-spine-glow absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[rgba(45,212,191,0.1)] to-transparent blur-sm" />
+            <div className="constellation-spine-line absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[rgba(240,201,135,0.2)] to-transparent" />
+            <div className="constellation-spine-glow absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[rgba(240,201,135,0.1)] to-transparent blur-sm" />
           </div>
 
           {/* Fields container */}
@@ -119,7 +119,7 @@ export function ConstellationForm({
             <div className="constellation-hub mt-6 flex flex-col items-center">
               {/* Hub connection lines */}
               <div className="constellation-hub-lines relative h-8 w-full" aria-hidden="true">
-                <div className="constellation-hub-line absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-[rgba(45,212,191,0.3)] to-transparent" />
+                <div className="constellation-hub-line absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-[rgba(240,201,135,0.3)] to-transparent" />
                 <motion.div
                   className="constellation-hub-node absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
                   animate={
@@ -138,7 +138,7 @@ export function ConstellationForm({
                   }
                   transition={{ duration: 1.5, repeat: hubActive ? Infinity : 0 }}
                   style={{
-                    backgroundColor: "#2dd4bf",
+                    backgroundColor: "#f0c987",
                     boxShadow: hubActive ? "0 0 12px rgba(45, 212, 191, 0.6)" : "0 0 6px rgba(45, 212, 191, 0.3)",
                   }}
                 />
@@ -164,7 +164,7 @@ export function ConstellationHeader({ serial }: { serial: string }) {
     <div className="mb-4">
       <div className="flex items-center justify-between gap-3">
         <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-400/80">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(255,138,92,0.9)]" />
           Exam hall · entry pass
         </span>
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">

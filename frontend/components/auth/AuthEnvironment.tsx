@@ -92,11 +92,11 @@ export function AuthEnvironment({
   }, [])
 
   return (
-    <div className="relative min-h-dvh overflow-hidden">
+    <div className="auth-scope relative min-h-dvh overflow-hidden">
       {/* Dark scrim, lifts as the room wakes */}
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 bg-[#04060c]"
+        className="pointer-events-none absolute inset-0 z-0 bg-[#0b0a09]"
         initial={{ opacity: SCENE.dark.scrim }}
         animate={{ opacity: s.scrim }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -111,7 +111,7 @@ export function AuthEnvironment({
         transition={{ duration: 0.9, ease: "easeInOut" }}
         style={{
           background:
-            "linear-gradient(180deg, rgba(129,140,248,0.16), rgba(129,140,248,0.05) 55%, transparent 80%)",
+            "linear-gradient(180deg, rgba(255,106,61,0.18), rgba(255,106,61,0.05) 55%, transparent 80%)",
           maskImage: "linear-gradient(180deg, black 40%, transparent)",
           WebkitMaskImage: "linear-gradient(180deg, black 40%, transparent)",
           filter: "blur(6px)",
@@ -127,7 +127,7 @@ export function AuthEnvironment({
         transition={{ duration: 0.9, ease: "easeInOut" }}
         style={{
           background:
-            "radial-gradient(ellipse 72% 60% at 50% 44%, transparent 42%, rgba(2,4,10,0.55) 78%, rgba(2,4,10,0.8))",
+            "radial-gradient(ellipse 72% 60% at 50% 44%, transparent 42%, rgba(11,10,9,0.55) 78%, rgba(11,10,9,0.82))",
         }}
       />
 
@@ -139,7 +139,7 @@ export function AuthEnvironment({
         animate={{ opacity: Math.max(0, s.bloom + bloomQuietOffset), scale: s.bloomScale }}
         transition={{ duration: 1, ease: "easeOut" }}
         style={{
-          background: "radial-gradient(closest-side, rgba(251,191,36,0.16), transparent 72%)",
+          background: "radial-gradient(closest-side, rgba(240,201,135,0.18), transparent 72%)",
         }}
       />
 
@@ -153,8 +153,8 @@ export function AuthEnvironment({
               left: e.left,
               width: e.size,
               height: e.size,
-              backgroundColor: "#34d399",
-              boxShadow: `0 0 ${e.size * 3}px #34d399`,
+              backgroundColor: "#ff8a5c",
+              boxShadow: `0 0 ${e.size * 3}px #ff8a5c`,
               ["--ember-duration" as string]: `${e.duration}s`,
               ["--ember-delay" as string]: `${e.delay}s`,
               ["--ember-drift" as string]: `${e.drift}px`,

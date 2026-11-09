@@ -515,7 +515,7 @@
 }
 
 /* ── Ninth-Signal Aurora Iris (coach identity tokens) ─────────────
-   The AI coach reads in Aurora Iris — teal → sky → blue → mint —
+   The AI coach reads in Warm Ember — coral → sand → amber → peach —
    while tutor/assistant stay in the neutral accent. `.text-aurora-iris` is a
    self-animated sheen; `.aurora-glow` casts the aurora as an outer aura for
    running states. Both respect prefers-reduced-motion for the shine. */
@@ -525,11 +525,11 @@
 .text-aurora-iris {
   background: linear-gradient(
     90deg,
-    #14b8a6,
-    #22d3ee,
-    #3b82f6,
-    #6ee7b7,
-    #14b8a6
+    #FF6A3D,
+    #F0C987,
+    #FF8259,
+    #E8B07A,
+    #FF6A3D
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -539,8 +539,8 @@
 }
 .aurora-glow {
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #3b82f6 22%, transparent),
-    0 0 24px color-mix(in srgb, #22d3ee 16%, transparent);
+    0 0 0 1px color-mix(in srgb, #FF6A3D 22%, transparent),
+    0 0 24px color-mix(in srgb, #F0C987 16%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
   .text-aurora-iris {
@@ -550,7 +550,7 @@
 
 /* Streaming caret during an AI coach (agent) turn — tinted Aurora Iris. */
 .ai-stream-caret--aurora::after {
-  background: linear-gradient(180deg, #22d3ee, #3b82f6, #6ee7b7);
+  background: linear-gradient(180deg, #F0C987, #FF6A3D, #FF8259);
   animation: aurora-caret-blink 1s steps(2) infinite;
 }
 @keyframes aurora-caret-blink {
@@ -605,15 +605,15 @@
    glass elevation, and orchestrated micro-motion. Every token increased for
    perfect legibility on both themes.
 
-   UX-REFACTOR (Phase 3A): accent unified to the canonical indigo system
-   (was: green fork #236342/#7dbf92, which fought globals.css per-theme).
+   UX-REFACTOR (Phase 3A): accent unified to the canonical warm studio
+   system (coral + sand, matching globals.css and the marketing landing).
    Structure, AAA muted text, and button visibility work below is unchanged —
    only hues now resolve to one accent in both themes.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   color-scheme: light;
-  --background: #E8DFC9;
+  --background: #E9E1D3;
   --surface: oklch(0.955 0.022 85);
   --surface-soft: oklch(0.925 0.028 85);
   --surface-elevated: oklch(0.975 0.015 85);
@@ -624,20 +624,20 @@
   --text-disabled: oklch(0.68 0.02 80);
   --border: oklch(0.815 0.032 80);
   --border-strong: oklch(0.735 0.038 78);
-  --primary: #6366F1;
-  --primary-hover: #4F46E5;
-  --primary-active: #4338CA;
-  --primary-soft: rgb(99 102 241 / 0.08);
-  --primary-muted: rgb(99 102 241 / 0.05);
-  --sidebar-bg: #E5D9BE;
-  --sidebar-bg-active: #6366F1;
+  --primary: #C2410C;
+  --primary-hover: #9A3412;
+  --primary-active: #7C2D12;
+  --primary-soft: rgb(194 65 12 / 0.08);
+  --primary-muted: rgb(194 65 12 / 0.05);
+  --sidebar-bg: #E3D8C4;
+  --sidebar-bg-active: #C2410C;
   --sidebar-text-active: #FFFFFF;
-  --sidebar-text: #5B5344;
-  --sidebar-border: #D5C8A4;
+  --sidebar-text: #5B5348;
+  --sidebar-border: #D2C4AD;
   --input-focus: var(--primary);
-  --chart-1: #6366F1;
-  --focus-ring: rgb(99 102 241 / 0.4);
-  --border-focus: rgb(99 102 241 / 0.5);
+  --chart-1: #C2410C;
+  --focus-ring: rgb(194 65 12 / 0.4);
+  --border-focus: rgb(194 65 12 / 0.5);
   --shadow-sm: 0 1px 2px oklch(0.4 0.03 80 / 0.06), 0 2px 8px oklch(0.4 0.03 80 / 0.05), inset 0 1px 0 oklch(1 0 0 / 0.9);
   --shadow-md: 0 4px 16px oklch(0.4 0.03 80 / 0.08), 0 1px 3px oklch(0.4 0.03 80 / 0.06);
   --shadow-lg: 0 12px 32px oklch(0.4 0.03 80 / 0.11), 0 4px 12px oklch(0.4 0.03 80 / 0.07);
@@ -645,32 +645,32 @@
 
 .dashboard-theme-scope[data-dashboard-theme="dark"] {
   color-scheme: dark;
-  --background: #000000;
-  --surface: #0D0D0D;
-  --surface-soft: #0D0D0D;
-  --surface-elevated: #111111;
-  --surface-highest: #161616;
-  --surface-hover: #1A1D24;
-  --surface-active: #22262E;
-  --input-bg: #111111;
-  --sidebar-bg: #0D0D0D;
-  --sidebar-bg-active: #6366F1;
-  --sidebar-text-active: #FFFFFF;
-  --sidebar-text: #B7BFCC;
-  --sidebar-border: #252A33;
-  --chart-1: #818CF8;
-  --focus-ring: rgb(129 140 248 / 0.6);
-  --border-focus: rgb(129 140 248 / 0.6);
-  --text-primary: oklch(0.97 0.005 260);
-  --text-secondary: oklch(0.78 0.01 260);
-  --text-muted: oklch(0.62 0.01 260);
-  --border: oklch(0.22 0.015 260);
-  --border-strong: oklch(0.28 0.015 260);
-  --primary: oklch(0.68 0.18 278);
-  --primary-hover: oklch(0.74 0.16 278);
-  --primary-active: oklch(0.80 0.12 278);
-  --primary-soft: oklch(0.22 0.08 278 / 0.18);
-  --primary-muted: oklch(0.18 0.06 278 / 0.10);
+  --background: #0B0A09;
+  --surface: #12100E;
+  --surface-soft: #0F0D0B;
+  --surface-elevated: #17140F;
+  --surface-highest: #1D1915;
+  --surface-hover: #211C17;
+  --surface-active: #2A231D;
+  --input-bg: #12100E;
+  --sidebar-bg: #0F0D0B;
+  --sidebar-bg-active: #2A1710;
+  --sidebar-text-active: #FF9A78;
+  --sidebar-text: #C3BBB1;
+  --sidebar-border: #2A241E;
+  --chart-1: #FF6A3D;
+  --focus-ring: rgb(255 106 61 / 0.55);
+  --border-focus: rgb(255 106 61 / 0.55);
+  --text-primary: #F5F1EA;
+  --text-secondary: #C3BBB1;
+  --text-muted: #918A80;
+  --border: #2A241E;
+  --border-strong: #3A322A;
+  --primary: #FF6A3D;
+  --primary-hover: #FF8259;
+  --primary-active: #FF9A78;
+  --primary-soft: rgb(255 106 61 / 0.18);
+  --primary-muted: rgb(255 106 61 / 0.10);
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.5), 0 2px 8px oklch(0 0 0 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.06);
   --shadow-md: 0 8px 24px oklch(0 0 0 / 0.5), 0 2px 6px oklch(0 0 0 / 0.4);
   --shadow-lg: 0 16px 40px oklch(0 0 0 / 0.6), 0 4px 12px oklch(0 0 0 / 0.45);
@@ -731,10 +731,10 @@
 
 /* Premium visibility for muted text — WCAG AAA */
 .dashboard-theme-scope[data-dashboard-theme="light"] [style*="--dashboard-text-muted"] {
-  color: oklch(0.47 0.012 260) !important;
+  color: oklch(0.47 0.015 70) !important;
 }
 .dashboard-theme-scope[data-dashboard-theme="dark"] [style*="--dashboard-text-muted"] {
-  color: oklch(0.62 0.01 260) !important;
+  color: oklch(0.66 0.015 70) !important;
 }
 
 /* Focus ring — premium, highly visible */

@@ -83,7 +83,7 @@ export function SurfaceField({
             error
               ? "border-red-500/50 focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
               : focused
-                ? "border-emerald-400/70 shadow-[0_0_0_3px_rgba(52,211,153,0.15)]"
+                ? "border-emerald-400/70 shadow-[0_0_0_3px_rgba(255,138,92,0.15)]"
                 : "border-white/10 hover:border-white/20"
           }`}
         />

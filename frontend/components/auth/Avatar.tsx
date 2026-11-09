@@ -267,7 +267,7 @@ export function Avatar({
             {/* ── Shield crest headframe ── */}
             <motion.g animate={headControls} style={{ transformOrigin: "120px 128px" }}>
               {/* Antenna sigil */}
-              <rect x="117" y="14" width="6" height="22" rx="3" fill="#1f2b44" />
+              <rect x="117" y="14" width="6" height="22" rx="3" fill="#3a322a" />
               <motion.circle
                 cx="120"
                 cy="12"
@@ -289,17 +289,17 @@ export function Avatar({
               <path
                 d="M 66 58 L 174 58 Q 184 58 184 70 L 184 122 C 184 162 154 190 120 210 C 86 190 56 162 56 122 L 56 70 Q 56 58 66 58 Z"
                 fill="none"
-                stroke="#eafffb"
+                stroke="#f5f1ea"
                 strokeOpacity={0.22}
                 strokeWidth={1}
               />
 
               {/* Visor */}
               <rect x="66" y="66" width="108" height="104" rx="20" fill="url(#unit9-visor)" />
-              <rect x="66" y="66" width="108" height="104" rx="20" fill="none" stroke="#04101c" strokeWidth="2" />
+              <rect x="66" y="66" width="108" height="104" rx="20" fill="none" stroke="#0f0d0b" strokeWidth="2" />
 
               {/* Engraved brand mark on the crest chin */}
-              <g opacity="0.92" stroke="#eafffb" fill="none">
+              <g opacity="0.92" stroke="#f5f1ea" fill="none">
                 <circle cx="120" cy="180" r="5" strokeWidth="1.1" />
                 <g strokeWidth="0.6" opacity="0.7">
                   <line x1="120" y1="180" x2="120" y2="174.8" />
@@ -307,7 +307,7 @@ export function Avatar({
                   <line x1="120" y1="180" x2="125.2" y2="177.2" />
                   <line x1="120" y1="180" x2="120" y2="185.2" />
                 </g>
-                <g fill="#eafffb" stroke="none">
+                <g fill="#f5f1ea" stroke="none">
                   <circle cx="120" cy="180" r="1.5" />
                   <circle cx="120" cy="174.8" r="0.9" />
                   <circle cx="114.8" cy="177.2" r="0.9" />
@@ -348,8 +348,8 @@ export function Avatar({
               {/* Privacy shutter while a password field is focused */}
               {privacyOn && (
                 <g>
-                  <rect x="150" y="72" width="20" height="11" rx="5.5" fill="#fbbf24" opacity="0.16" />
-                  <circle cx="160" cy="77.5" r="2.6" fill="#fbbf24">
+                  <rect x="150" y="72" width="20" height="11" rx="5.5" fill="#f0c987" opacity="0.16" />
+                  <circle cx="160" cy="77.5" r="2.6" fill="#f0c987">
                     <animate attributeName="opacity" values="1;0.35;1" dur="1.8s" repeatCount="indefinite" />
                   </circle>
                 </g>
@@ -377,7 +377,7 @@ export function Avatar({
                   y="66"
                   width="26"
                   height="104"
-                  fill="#eafffb"
+                  fill="#f5f1ea"
                   opacity="0.14"
                   initial={{ x: -30 }}
                   animate={{ x: 196 }}

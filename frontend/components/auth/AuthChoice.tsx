@@ -87,7 +87,7 @@ export function AuthChoice({
       <button
         type="button"
         onClick={() => onChoose("login")}
-        className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left transition-all duration-200 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.28),0_8px_24px_rgba(6,214,160,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+        className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left transition-all duration-200 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(255,106,61,0.28),0_8px_24px_rgba(255,106,61,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
       >
         <span className="min-w-0">
           <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-400/70">
@@ -106,7 +106,7 @@ export function AuthChoice({
       <button
         type="button"
         onClick={() => onChoose("signup")}
-        className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left transition-all duration-200 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.28),0_8px_24px_rgba(6,214,160,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+        className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left transition-all duration-200 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(255,106,61,0.28),0_8px_24px_rgba(255,106,61,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
       >
         <span className="min-w-0">
           <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-400/70">

@@ -77,7 +77,7 @@ export function ConstellationField({
     focused: {
       glow: "rgba(45, 212, 191, 0.15)",
       border: "rgba(45, 212, 191, 0.6)",
-      text: "#2dd4bf",
+      text: "#f0c987",
     },
     filled: {
       glow: "rgba(45, 212, 191, 0.1)",
@@ -92,7 +92,7 @@ export function ConstellationField({
     pulse: {
       glow: "rgba(45, 212, 191, 0.2)",
       border: "rgba(45, 212, 191, 0.8)",
-      text: "#2dd4bf",
+      text: "#f0c987",
     },
   }
 
