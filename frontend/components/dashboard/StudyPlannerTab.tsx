@@ -30,7 +30,6 @@ export default function StudyPlannerTab() {
   const router = useRouter();
   const t = useT();
   const toast = useToastSafe();
-  const { setPracticeIntent } = useDashboardStore();
   const [selectedDay, setSelectedDay] = useState(0);
   const [tasks, setTasks] = useState<TaskDTO[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -102,9 +101,12 @@ export default function StudyPlannerTab() {
   };
 
   // "Start" navigates into practice, it never marks the task complete.
+  // The subject rides in the URL so the session is scoped, deep-linkable and
+  // survives a reload.
   const startTask = (task: TaskDTO) => {
-    setPracticeIntent({ subject: task.subject, mode: "quick" });
-    router.push("/dashboard/practice?mode=quick");
+    const params = new URLSearchParams({ mode: "quick" });
+    if (task.subject) params.set("subject", task.subject);
+    router.push(`/dashboard/practice?${params.toString()}`);
   };
 
   const completedSet = new Set(

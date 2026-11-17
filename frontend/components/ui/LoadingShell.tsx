@@ -23,17 +23,20 @@ export function LoadingShell({
   className?: string;
   showProgress?: boolean;
 }) {
-  const [progress, setProgress] = useState(18);
+  const [elapsed, setElapsed] = useState(0);
   const networkStatus = useNetworkStatus();
   const slow = networkStatus === "slow";
   const offline = networkStatus === "offline";
 
+  // These screens are genuinely indeterminate (auth check, redirect, lazy
+  // chunk) — there is no real progress to report. A percentage that creeps
+  // toward 90% and then freezes reads as a broken app, so we report elapsed
+  // time instead, which is both honest and still shows that work is ongoing.
   useEffect(() => {
     const start = Date.now();
     const tick = setInterval(() => {
-      const elapsed = Date.now() - start;
-      setProgress(Math.min(90, 18 + (elapsed / 1800) * 72));
-    }, 40);
+      setElapsed(Math.floor((Date.now() - start) / 1000));
+    }, 250);
     return () => clearInterval(tick);
   }, []);
 
@@ -87,23 +90,18 @@ export function LoadingShell({
               <span className="relative font-display text-[22px] font-bold text-white">9G</span>
             </div>
 
-            <div
-              className="w-full max-w-[220px]"
-              role="progressbar"
-              aria-label={progressLabel}
-              aria-valuenow={Math.round(progress)}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
+            {/* The ticking counter must not re-announce every second — the
+                surrounding role="status" announces the title once. */}
+            <div className="w-full max-w-[220px]" aria-live="off">
               <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.18em] text-[#918a80]">
                 <span>{slow ? "slow connection" : progressLabel}</span>
-                <span className="tabular-nums text-[#ff8a5c]/80">{Math.round(progress)}%</span>
+                <span className="tabular-nums text-[#ff8a5c]/80">{elapsed}s</span>
               </div>
               <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#ff6a3d] via-[#f0c987] to-[#ff8259]"
-                  animate={{ width: `${progress}%` }}
-                  transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
+                  className="h-full w-1/3 rounded-full bg-gradient-to-r from-[#ff6a3d] via-[#f0c987] to-[#ff8259]"
+                  animate={{ x: ["-100%", "300%"] }}
+                  transition={{ ease: "easeInOut", duration: 1.4, repeat: Infinity }}
                 />
               </div>
             </div>

@@ -14,6 +14,7 @@ import { account } from "@/lib/services/api";
 import { handleApiError } from "@/lib/errors";
 import LogoutButton from "./LogoutButton";
 import { useT } from "@/lib/i18n";
+import { useToastSafe } from "@/lib/toast-ctx";
 
 const STORE_KEY = "9th_grade_ai_store_v2";
 const NOTIF_KEY = "9th_grade_ai_notif_pref"; // gitleaks:allow — localStorage preference key name, not a credential
@@ -104,6 +105,7 @@ function Field({
 
 export default function SettingsTab() {
   const t = useT();
+  const toast = useToastSafe();
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
   const { user, updateProfile, logout, tokenExpiry, refreshToken } = useAuth();
@@ -147,8 +149,18 @@ export default function SettingsTab() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  // ── Clear local data modal ──
+  // Clearing the local store discards cached UI state; it is destructive and
+  // must be confirmed, exactly like account deletion.
+  const [confirmClearLocal, setConfirmClearLocal] = useState(false);
+  const clearLocalDialogRef = useDialogA11y<HTMLDivElement>(confirmClearLocal, () => setConfirmClearLocal(false));
+  useScrollLock(confirmClearLocal);
+
   // ── Unsaved changes tracker ──
-  const hasUnsavedNameChange = nameDraft.trim().length > 0 && !editingName;
+  // A draft counts as unsaved only while it differs from the saved name —
+  // cancelling an edit must not leave a stale "unsaved" badge behind.
+  const hasUnsavedNameChange =
+    nameDraft.trim().length > 0 && nameDraft.trim() !== (user?.name ?? "").trim();
   const hasUnsavedPwChange = pw.next.length > 0 || pw.current.length > 0;
   const hasUnsavedChanges = hasUnsavedNameChange || hasUnsavedPwChange;
 
@@ -185,22 +197,8 @@ export default function SettingsTab() {
       await updateProfile(trimmed);
       setNameMsg({ ok: true, text: t("settings.profileUpdated") });
       setEditingName(false);
-      // Announce success
-      const statusDiv = document.createElement("div");
-      statusDiv.setAttribute("role", "status");
-      statusDiv.className = "sr-only";
-      statusDiv.textContent = t("settings.profileUpdated");
-      document.body.appendChild(statusDiv);
-      setTimeout(() => statusDiv.remove(), 3000);
     } catch (error) {
       setNameMsg({ ok: false, text: handleApiError(error).message });
-      // Announce error
-      const statusDiv = document.createElement("div");
-      statusDiv.setAttribute("role", "alert");
-      statusDiv.className = "sr-only";
-      statusDiv.textContent = handleApiError(error).message;
-      document.body.appendChild(statusDiv);
-      setTimeout(() => statusDiv.remove(), 5000);
     } finally {
       setSavingName(false);
     }
@@ -224,22 +222,8 @@ export default function SettingsTab() {
       await refreshToken();
       setPwMsg({ ok: true, text: t("settings.pwChanged") });
       setPw({ current: "", next: "", confirm: "" });
-      // Announce success
-      const statusDiv = document.createElement("div");
-      statusDiv.setAttribute("role", "status");
-      statusDiv.className = "sr-only";
-      statusDiv.textContent = t("settings.pwChanged");
-      document.body.appendChild(statusDiv);
-      setTimeout(() => statusDiv.remove(), 3000);
     } catch (error) {
       setPwMsg({ ok: false, text: handleApiError(error).message });
-      // Announce error
-      const statusDiv = document.createElement("div");
-      statusDiv.setAttribute("role", "alert");
-      statusDiv.className = "sr-only";
-      statusDiv.textContent = handleApiError(error).message;
-      document.body.appendChild(statusDiv);
-      setTimeout(() => statusDiv.remove(), 5000);
     } finally {
       setChangingPw(false);
     }
@@ -257,28 +241,31 @@ export default function SettingsTab() {
     }
   };
 
-  const exportData = () => {
-    let local = {};
+  const [exporting, setExporting] = useState(false);
+  const [exportMsg, setExportMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // Full account export comes from the server (GDPR Article 15/20). The
+  // previous client-side version only dumped four profile fields and the
+  // local UI cache, so it was not a real export of the user's data.
+  const exportData = async () => {
+    setExporting(true);
+    setExportMsg(null);
     try {
-      const raw = localStorage.getItem(STORE_KEY);
-      if (raw) local = JSON.parse(raw);
-    } catch {
-      /* ignore */
+      const blob = await account.exportData();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `9th-grade-ai-export-${user?.handle ?? "user"}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setExportMsg({ ok: true, text: t("settings.exportDone") });
+    } catch (error) {
+      setExportMsg({ ok: false, text: handleApiError(error).message });
+    } finally {
+      setExporting(false);
     }
-
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      user: user ? { name: user.name, email: user.email, handle: user.handle, role: user.role } : null,
-      local,
-    };
-
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `9th-grade-ai-export-${user?.handle ?? "user"}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   const handleDelete = async () => {
@@ -322,13 +309,11 @@ export default function SettingsTab() {
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)]/30 to-[var(--info)]/10 border border-[var(--accent)]/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
               {initial}
             </div>
-            {hasUnsavedNameChange && (
-              <span className="absolute top-1 left-1 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5" title="Unsaved changes">
-                +
-              </span>
-            )}
-            {hasUnsavedPwChange && (
-              <span className="absolute top-1 left-1.5 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5" title="Unsaved password change">
+            {(hasUnsavedNameChange || hasUnsavedPwChange) && (
+              <span
+                className="absolute top-1 left-1 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5"
+                title={hasUnsavedPwChange ? "Unsaved password change" : "Unsaved changes"}
+              >
                 +
               </span>
             )}
@@ -358,6 +343,7 @@ export default function SettingsTab() {
                 <button
                   onClick={() => {
                     setEditingName(false);
+                    setNameDraft("");
                     setNameMsg(null);
                   }}
                   className="min-h-11 px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
@@ -386,7 +372,10 @@ export default function SettingsTab() {
           </div>
         </div>
         {nameMsg ? (
-          <p className={`text-xs font-mono mb-4 flex items-center gap-1.5 ${nameMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}>
+          <p
+            role={nameMsg.ok ? "status" : "alert"}
+            className={`text-xs font-mono mb-4 flex items-center gap-1.5 ${nameMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}
+          >
             <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
             {nameMsg.text}
           </p>
@@ -443,7 +432,10 @@ export default function SettingsTab() {
           />
         </div>
         {pwMsg ? (
-          <p className={`text-xs font-mono mt-3 flex items-center gap-1.5 ${pwMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}>
+          <p
+            role={pwMsg.ok ? "status" : "alert"}
+            className={`text-xs font-mono mt-3 flex items-center gap-1.5 ${pwMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}
+          >
             <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
             {pwMsg.text}
           </p>
@@ -482,7 +474,7 @@ export default function SettingsTab() {
           </button>
         </div>
         {revokeMsg && !revokeMsg.ok ? (
-          <p className="mt-2 text-xs font-mono text-[var(--dashboard-danger)] flex items-center gap-1.5">
+          <p role="alert" className="mt-2 text-xs font-mono text-[var(--dashboard-danger)] flex items-center gap-1.5">
             <Warning className="w-3.5 h-3.5" aria-hidden="true" />
             {revokeMsg.text}
           </p>
@@ -588,22 +580,34 @@ export default function SettingsTab() {
 
         <div className="flex flex-wrap gap-3">
           <button
-            onClick={exportData}
-            className="inline-flex items-center gap-2 min-h-11 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+            onClick={() => void exportData()}
+            disabled={exporting}
+            aria-busy={exporting}
+            className="inline-flex items-center gap-2 min-h-11 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Download className="w-4 h-4" aria-hidden="true" />
-            {t("settings.exportData")}
+            {exporting ? (
+              <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Download className="w-4 h-4" aria-hidden="true" />
+            )}
+            {exporting ? t("settings.exporting") : t("settings.exportData")}
           </button>
           <button
-            onClick={() => {
-              resetStore();
-            }}
+            onClick={() => setConfirmClearLocal(true)}
             className="inline-flex items-center gap-2 min-h-11 px-4 py-2.5 rounded-xl border border-[var(--border-strong)] bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-[var(--border-default)] hover:text-[var(--text-primary)] transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
             {t("settings.clearLocal")}
           </button>
         </div>
+        {exportMsg ? (
+          <p
+            role={exportMsg.ok ? "status" : "alert"}
+            className={`mt-3 text-xs font-mono ${exportMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}
+          >
+            {exportMsg.text}
+          </p>
+        ) : null}
       </SectionCard>
 
       {/* Danger zone */}
@@ -664,6 +668,77 @@ export default function SettingsTab() {
         </dl>
       </motion.section>
 
+      {/* Clear local data confirmation modal */}
+      <AnimatePresence>
+        {confirmClearLocal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="clear-local-title"
+          >
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-hidden="true"
+              className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
+              onClick={() => setConfirmClearLocal(false)}
+            />
+            <motion.div
+              ref={clearLocalDialogRef}
+              tabIndex={-1}
+              initial={{ scale: shouldReduceMotion ? 1 : 0.95, y: shouldReduceMotion ? 0 : 8 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="relative w-full max-w-md rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-6 shadow-panel"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-subtle border border-[var(--border-strong)] flex items-center justify-center">
+                    <Database className="w-5 h-5 text-[var(--dashboard-text-primary)]" aria-hidden="true" />
+                  </div>
+                  <h2 id="clear-local-title" className="text-lg font-semibold text-[var(--text-primary)]">
+                    {t("settings.clearLocalTitle")}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setConfirmClearLocal(false)}
+                  className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  aria-label={t("common.close")}
+                >
+                  <X className="w-5 h-5" aria-hidden="true" />
+                </button>
+              </div>
+              <p className="text-sm text-[var(--dashboard-text-muted)] leading-relaxed">
+                {t("settings.clearLocalBody")}
+              </p>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setConfirmClearLocal(false)}
+                  className="min-h-11 px-4 py-2 rounded-xl border border-[var(--border-strong)] text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  {t("common.cancel")}
+                </button>
+                <button
+                  onClick={() => {
+                    resetStore();
+                    setConfirmClearLocal(false);
+                    toast.success(t("settings.clearLocalDone"));
+                  }}
+                  className="min-h-11 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/30 text-[var(--dashboard-danger)] text-sm font-mono hover:brightness-110 transition-colors"
+                >
+                  {t("settings.clearLocalConfirm")}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Delete confirmation modal */}
       <AnimatePresence>
         {confirmDelete && (
@@ -678,7 +753,8 @@ export default function SettingsTab() {
           >
             <button
               type="button"
-              aria-label="বাতিল করুন"
+              tabIndex={-1}
+              aria-hidden="true"
               className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
               onClick={() => setConfirmDelete(false)}
             />
@@ -710,7 +786,7 @@ export default function SettingsTab() {
                 {t("settings.deleteBody")}
               </p>
               {deleteError ? (
-                <p className="mt-3 text-xs font-mono text-[var(--dashboard-danger)]">{deleteError}</p>
+                <p role="alert" className="mt-3 text-xs font-mono text-[var(--dashboard-danger)]">{deleteError}</p>
               ) : null}
               <div className="mt-6 flex justify-end gap-3">
                 <button

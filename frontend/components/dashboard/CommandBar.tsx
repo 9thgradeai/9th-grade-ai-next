@@ -53,9 +53,8 @@ const QUICK_ACTION_DEFS: {
     bn: "প্র্যাকটিস শুরু করুন",
     keywords: "practice start quick প্র্যাকটিস",
     icon: LightningA,
-    run: ({ setPracticeIntent, go }) => {
-      setPracticeIntent({ mode: "quick" });
-      go("practice");
+    run: ({ go }) => {
+      go("practice", { practiceIntent: { mode: "quick" } });
     },
   },
   {
@@ -64,9 +63,8 @@ const QUICK_ACTION_DEFS: {
     bn: "মক টেস্ট দিন",
     keywords: "mock test timed মক",
     icon: LightningA,
-    run: ({ setPracticeIntent, go }) => {
-      setPracticeIntent({ mode: "mock" });
-      go("practice");
+    run: ({ go }) => {
+      go("practice", { practiceIntent: { mode: "mock" } });
     },
   },
   {
@@ -75,9 +73,8 @@ const QUICK_ACTION_DEFS: {
     bn: "ভুলগুলো রিভিউ করুন",
     keywords: "mistakes wrong review ভুল",
     icon: Target,
-    run: ({ setMistakeIntent, go }) => {
-      setMistakeIntent(null);
-      go("mistakes");
+    run: ({ go }) => {
+      go("mistakes", { mistakeIntent: null });
     },
   },
   {
@@ -117,7 +114,15 @@ const QUICK_ACTION_DEFS: {
 type ActionCtx = {
   setPracticeIntent: (v: { mode: "quick" | "mock" | "custom"; subject?: string } | null) => void;
   setMistakeIntent: (v: { subject?: string; status?: string } | null) => void;
-  go: (tab: TabId) => void;
+  /** Navigate to a tab. Intents passed here are applied atomically with the
+   *  tab switch so they survive to the target tab. */
+  go: (
+    tab: TabId,
+    opts?: {
+      practiceIntent?: { mode: "quick" | "mock" | "custom"; subject?: string } | null;
+      mistakeIntent?: { subject?: string; status?: string } | null;
+    },
+  ) => void;
 };
 
 function matches(query: string, ...fields: string[]) {
@@ -156,8 +161,14 @@ export default function CommandBar() {
   useScrollLock(open);
 
   const go = useCallback(
-    (tab: TabId) => {
-      setActiveTab(tab);
+    (
+      tab: TabId,
+      opts?: {
+        practiceIntent?: { mode: "quick" | "mock" | "custom"; subject?: string } | null;
+        mistakeIntent?: { subject?: string; status?: string } | null;
+      },
+    ) => {
+      setActiveTab(tab, opts);
       router.push(`/dashboard/${tab}`);
     },
     [router, setActiveTab],
@@ -264,8 +275,7 @@ export default function CommandBar() {
             keywords: "",
             icon: Target,
             run: () => {
-              setMistakeIntent(m.lastSubject ? { subject: m.lastSubject } : null);
-              go("mistakes");
+              go("mistakes", { mistakeIntent: m.lastSubject ? { subject: m.lastSubject } : null });
             },
           })),
         });

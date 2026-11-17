@@ -12,16 +12,19 @@ export default function ForgotPasswordClient() {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle")
   const [message, setMessage] = useState("")
+  const [emailError, setEmailError] = useState<string | undefined>(undefined)
   const [devLink, setDevLink] = useState<string | undefined>()
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     const trimmed = email.trim().toLowerCase()
     if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setMessage("Please enter a valid email address.")
+      setEmailError("Please enter a valid email address.")
+      setMessage("")
       setStatus("error")
       return
     }
+    setEmailError(undefined)
     setStatus("sending")
     setMessage("")
     setDevLink(undefined)

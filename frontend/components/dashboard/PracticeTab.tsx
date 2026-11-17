@@ -1363,8 +1363,12 @@ export default function PracticeTab() {
                           const ua = answers[q.id] ?? [];
                           return ua.length > 0 && !isAnswerCorrect(q, ua);
                         })?.subject;
-                        setMistakeIntent(wrongSubject ? { subject: wrongSubject } : null);
-                        router.push("/dashboard/mistakes");
+                        // Scope the review by subject through the URL so the
+                        // mistakes tab opens pre-filtered and the link is
+                        // shareable.
+                        const params = new URLSearchParams();
+                        if (wrongSubject) params.set("subject", wrongSubject);
+                        router.push(`/dashboard/mistakes${params.toString() ? `?${params.toString()}` : ""}`);
                       }}
                       className="px-5 py-2.5 bg-[var(--dashboard-warning-subtle)] border border-[var(--dashboard-warning)]/30 font-mono text-sm rounded-xl hover:brightness-110 transition-all flex items-center gap-2"
                       style={{ color: "color-mix(in srgb, var(--dashboard-warning) 60%, var(--dashboard-text-primary))" }}

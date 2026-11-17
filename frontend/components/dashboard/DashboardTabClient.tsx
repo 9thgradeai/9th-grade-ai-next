@@ -75,7 +75,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
 
 function TabSwitcher({ tab }: { tab: TabId }) {
   const searchParams = useSearchParams();
-  const { activeTab, setActiveTab, setPracticeIntent, setQuestionBankFilters } = useDashboardStore();
+  const { activeTab, setActiveTab, setPracticeIntent, setMistakeIntent, setQuestionBankFilters } = useDashboardStore();
   const shouldReduceMotion = useReducedMotion();
 
   const ActiveComponent = TAB_COMPONENTS[tab] ?? TAB_COMPONENTS.home;
@@ -89,6 +89,7 @@ function TabSwitcher({ tab }: { tab: TabId }) {
 
   const mode = searchParams.get("mode");
   const view = searchParams.get("view");
+  const subject = searchParams.get("subject");
   // URL is the source of truth: the path segment wins over store state,
   // including on first load (fixes stale-localStorage-wins deep-link bug).
   useEffect(() => {
@@ -97,14 +98,18 @@ function TabSwitcher({ tab }: { tab: TabId }) {
     }
   }, [tab, activeTab, setActiveTab]);
   // Distinct nav hrefs carry intent: ?mode= selects the practice mode,
-  // ?view=bookmarks lands on the saved-questions view (not the generic bank).
+  // ?view=bookmarks lands on the saved-questions view (not the generic bank),
+  // ?subject= scopes the session/mistake list to one subject. Keeping intent
+  // in the URL makes deep links and shared links work across sessions.
   useEffect(() => {
     if (tab === "practice" && (mode === "quick" || mode === "mock" || mode === "custom")) {
-      setPracticeIntent({ mode });
+      setPracticeIntent({ mode, subject: subject ?? undefined });
     } else if (tab === "question-bank" && view === "bookmarks") {
       setQuestionBankFilters({ query: "", category: "__saved__" });
+    } else if (tab === "mistakes" && subject) {
+      setMistakeIntent({ subject });
     }
-  }, [tab, mode, view, setPracticeIntent, setQuestionBankFilters]);
+  }, [tab, mode, view, subject, setPracticeIntent, setMistakeIntent, setQuestionBankFilters]);
 
   return (
     <AnimatePresence mode="wait" initial={false}>

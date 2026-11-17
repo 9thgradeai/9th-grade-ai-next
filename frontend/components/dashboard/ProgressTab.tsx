@@ -237,8 +237,7 @@ export default function ProgressTab() {
       <MistakeRecoveryCard
         intelligence={intelligence}
         onOpenMistakes={(subject) => {
-          setMistakeIntent(subject ? { subject } : null);
-          setActiveTab("mistakes");
+          setActiveTab("mistakes", { mistakeIntent: subject ? { subject } : null });
         }}
       />
 

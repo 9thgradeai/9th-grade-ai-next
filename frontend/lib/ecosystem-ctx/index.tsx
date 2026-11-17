@@ -4,10 +4,13 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type { ExamEcosystemCode } from "@/lib/types";
+import { invalidateCache } from "@/lib/services/api";
 
 type EcosystemContextType = {
   ecosystem: ExamEcosystemCode;
@@ -52,10 +55,21 @@ function writeEcosystem(eco: ExamEcosystemCode) {
  */
 export function EcosystemProvider({ children }: { children: React.ReactNode }) {
   const [ecosystem, setEcosystemState] = useState<ExamEcosystemCode>(readEcosystem);
+  // Mirror of `ecosystem` so `setEcosystem` keeps a stable identity.
+  const ecosystemRef = useRef(ecosystem);
+  useEffect(() => {
+    ecosystemRef.current = ecosystem;
+  }, [ecosystem]);
 
   const setEcosystem = useCallback((eco: ExamEcosystemCode) => {
+    if (eco === ecosystemRef.current) return;
+    ecosystemRef.current = eco;
     writeEcosystem(eco);
     setEcosystemState(eco);
+    // The ecosystem scopes every exam/question read. Cached GETs were fetched
+    // under the previous ecosystem, so they must be dropped or the dashboard
+    // keeps serving BCS-scoped data after switching to Bangladesh Bank.
+    invalidateCache();
   }, []);
 
   // Memoized so unrelated parent renders don't cascade to all consumers.

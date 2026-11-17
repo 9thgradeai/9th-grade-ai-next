@@ -123,17 +123,37 @@ if (typeof window !== "undefined") {
 
 // ── Actions (module-stable references) ─────────────────────
 
-function setActiveTab(tab: TabId, opts?: { keepIntent?: boolean }) {
+function setActiveTab(
+  tab: TabId,
+  opts?: {
+    keepIntent?: boolean;
+    /** Set (or clear, with `null`) the practice intent atomically with the tab switch. */
+    practiceIntent?: DashboardState["practiceIntent"];
+    /** Set (or clear, with `null`) the mistake intent atomically with the tab switch. */
+    mistakeIntent?: DashboardState["mistakeIntent"];
+  },
+) {
   setStore((prev) => {
-    if (prev.activeTab === tab && (opts?.keepIntent || (!prev.practiceIntent && !prev.mistakeIntent))) return prev;
+    // An intent belongs to its own target tab: navigating to `practice` must
+    // not wipe a practice intent that was just set for it (and vice versa).
+    // Intents for *other* tabs are dropped so a stale intent can never
+    // replay on an unrelated visit.
+    const keepPractice = opts?.keepIntent || tab === "practice";
+    const keepMistake = opts?.keepIntent || tab === "mistakes";
+    const nextPractice = opts?.practiceIntent !== undefined ? opts.practiceIntent : keepPractice ? prev.practiceIntent : null;
+    const nextMistake = opts?.mistakeIntent !== undefined ? opts.mistakeIntent : keepMistake ? prev.mistakeIntent : null;
+    if (
+      prev.activeTab === tab &&
+      nextPractice === prev.practiceIntent &&
+      nextMistake === prev.mistakeIntent
+    ) {
+      return prev;
+    }
     return {
       ...prev,
       activeTab: tab,
-      // Tab switches consume cross-tab intents by default so a stale
-      // practice/mistake intent can't replay on an unrelated visit.
-      // Pass { keepIntent: true } for URL-driven intent handoffs.
-      practiceIntent: opts?.keepIntent ? prev.practiceIntent : null,
-      mistakeIntent: opts?.keepIntent ? prev.mistakeIntent : null,
+      practiceIntent: nextPractice,
+      mistakeIntent: nextMistake,
     };
   });
 }

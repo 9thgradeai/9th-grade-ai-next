@@ -1072,6 +1072,12 @@ export const account = {
   revokeAllSessions: (): Promise<{ success: boolean }> =>
     mutate<{ success: boolean }>("/api/auth/sessions/revoke-all", "POST"),
 
+  // GDPR Article 15/20 portability export. Returns the server-side archive
+  // (profile, questions, attempts, progress, mistakes, history) — the client
+  // must not try to reconstruct this from local state.
+  exportData: (): Promise<Blob> =>
+    downloadFile("/api/auth/export", { ...AUTH_FETCH_INIT }),
+
   forgotPassword: (email: string): Promise<{ ok: boolean; devLink?: string }> =>
     mutate<{ ok: boolean; devLink?: string }>("/api/auth/forgot-password", "POST", { email }),
 

@@ -1133,6 +1133,52 @@ hr {
   color: var(--dashboard-primary);
 }
 
+/* ── Generic primary button ────────────────────────────────────────────────
+   `.btn-primary` is the short-form alias used by inline retry / action
+   buttons (HomeTab scope errors, vocab quiz errors). It was referenced by
+   several components but never defined, so those buttons rendered as
+   unstyled browser defaults. Mirrors `.command-primary-btn` and inherits the
+   dashboard theme tokens so it works in every dashboard theme. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dashboard-text-inverse, var(--text-inverse));
+  background: var(--dashboard-primary, var(--primary));
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 200ms ease,
+    filter 200ms ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--dashboard-focus-ring, var(--focus-ring, currentColor));
+  outline-offset: 2px;
+}
+
 .command-secondary-btn:active {
   transform: scale(0.98);
 }

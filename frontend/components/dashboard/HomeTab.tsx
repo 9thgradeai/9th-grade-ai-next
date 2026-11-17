@@ -325,8 +325,7 @@ export default function HomeTab() {
       revalidateAll();
     };
     const onStartPractice = () => {
-      setPracticeIntent({ mode: "quick" });
-      setActiveTab("practice");
+      setActiveTab("practice", { practiceIntent: { mode: "quick" } });
     };
     // Long-open tabs go stale (no polling by design), refresh on return.
     const onVisible = () => {
@@ -399,20 +398,16 @@ export default function HomeTab() {
   };
 
   const practiceSubject = (subject?: string, recId?: string) => {
-    setPracticeIntent({ subject, mode: "quick", recId });
     if (subject) setQuestionBankFilters({ category: subject });
-    setActiveTab("practice");
+    setActiveTab("practice", { practiceIntent: { subject, mode: "quick", recId } });
   };
 
   const mistakeSubject = (subject?: string) => {
-    if (subject) setMistakeIntent({ subject });
-    else setMistakeIntent(null);
-    setActiveTab("mistakes");
+    setActiveTab("mistakes", { mistakeIntent: subject ? { subject } : null });
   };
 
   const startDailyWarmup = () => {
-    setPracticeIntent({ mode: "quick" });
-    setActiveTab("practice");
+    setActiveTab("practice", { practiceIntent: { mode: "quick" } });
   };
 
   const handleRecommendation = (rec: PrepIntelligenceRecommendation) => {
@@ -424,8 +419,7 @@ export default function HomeTab() {
         break;
       case "resume-exam": /* unfinished mock resumes in mock mode */
       case "exam-near":
-        setPracticeIntent({ mode: "mock", recId: rec.id });
-        setActiveTab("practice");
+        setActiveTab("practice", { practiceIntent: { mode: "mock", recId: rec.id } });
         break;
       case "daily-quiz":
       case "daily-warmup":
@@ -666,8 +660,7 @@ export default function HomeTab() {
           <ContinueLearning
             intelligence={intelligence}
             onResumeExam={() => {
-              setPracticeIntent({ mode: "mock" });
-              setActiveTab("practice");
+              setActiveTab("practice", { practiceIntent: { mode: "mock" } });
             }}
             onStartDailyQuiz={startDailyWarmup}
           />

@@ -85,16 +85,27 @@ export default function NotificationCenter() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetchNotifications = useCallback(async (opts?: { limit?: number; cursor?: number; type?: string }) => {
+  const fetchNotifications = useCallback(async (opts?: { limit?: number; cursor?: number; type?: string; merge?: boolean }) => {
     try {
       const result = await api.notifications(opts);
-      if (!opts?.cursor) {
-        setNotifications(result.notifications);
-      } else {
+      if (opts?.cursor) {
         setNotifications((prev) => [...prev, ...result.notifications]);
+      } else if (opts?.merge) {
+        // Poll mode: prepend genuinely new items only. Replacing the list
+        // would drop every page the user already loaded via "Load more" and
+        // reset their scroll position mid-read.
+        setNotifications((prev) => {
+          const known = new Set(prev.map((n) => n.id));
+          const fresh = result.notifications.filter((n) => !known.has(n.id));
+          return fresh.length > 0 ? [...fresh, ...prev] : prev;
+        });
+        // The cursor tracks the deepest page already loaded — a poll must not
+        // rewind it or "Load more" would re-fetch an existing page.
+      } else {
+        setNotifications(result.notifications);
+        setNextCursor(result.nextCursor);
       }
       setTotal(result.total);
-      setNextCursor(result.nextCursor);
       setUnreadCount(result.unreadCount);
     } catch {
       // keep existing state
@@ -158,7 +169,7 @@ export default function NotificationCenter() {
       return;
     }
     pollingRef.current = setInterval(() => {
-      void fetchNotifications({ type: filterType === "ALL" ? undefined : filterType });
+      void fetchNotifications({ type: filterType === "ALL" ? undefined : filterType, merge: true });
     }, 30000);
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);

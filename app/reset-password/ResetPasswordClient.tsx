@@ -1,12 +1,16 @@
 "use client"
 
-import { Suspense, useState, type FormEvent } from "react"
+import { useState, type FormEvent, type KeyboardEvent } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
+import Link from "next/link"
 import { Eye, EyeSlash, Key } from "@phosphor-icons/react"
 import { account } from "@/lib/services/api"
 import { AuthShell } from "@/components/auth/AuthShell"
 import { AuthField } from "@/components/auth/AuthField"
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton"
+import { CapsLockWarning, readCapsLock } from "@/components/auth/CapsLockWarning"
+
+type FieldErrors = { password?: string; confirm?: string; form?: string }
 
 export default function ResetPasswordClient() {
   const params = useSearchParams()
@@ -15,20 +19,19 @@ export default function ResetPasswordClient() {
 
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
-  const [show, setShow] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [capsLock, setCapsLock] = useState(false)
   const [status, setStatus] = useState<"idle" | "saving" | "done" | "error">("idle")
-  const [message, setMessage] = useState("")
+  const [errors, setErrors] = useState<FieldErrors>({})
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
-    setMessage("")
-    if (password.length < 8) {
-      setMessage("Password must be at least 8 characters.")
-      setStatus("error")
-      return
-    }
-    if (password !== confirm) {
-      setMessage("Passwords do not match.")
+    const next: FieldErrors = {}
+    if (password.length < 8) next.password = "Password must be at least 8 characters."
+    if (password !== confirm) next.confirm = "Passwords do not match."
+    setErrors(next)
+    if (Object.keys(next).length > 0) {
       setStatus("error")
       return
     }
@@ -37,37 +40,117 @@ export default function ResetPasswordClient() {
       await account.resetPassword(token, password)
       setStatus("done")
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+      setErrors({ form: err instanceof Error ? err.message : "Something went wrong. Please try again." })
       setStatus("error")
     }
   }
 
-  if (!token) {
-    return (
-      <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-        This reset link is missing its token. Request a new one.
-      </p>
-    )
-  }
+  const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => setCapsLock(readCapsLock(e.nativeEvent))
 
-  const eyeToggle = (
-    <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? "Hide password" : "Show password"} className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80">
-      {show ? <EyeSlash className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+  const eyeToggle = (visible: boolean, toggle: () => void) => (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={visible ? "Hide password" : "Show password"}
+      aria-pressed={visible}
+      className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+    >
+      {visible ? <EyeSlash className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
     </button>
   )
 
+  // A reset link without its token is unusable — say so inside the same
+  // shell as the rest of the recovery flow instead of rendering a bare
+  // paragraph at the top-left of an unstyled page.
+  if (!token) {
+    return (
+      <AuthShell
+        eyebrow="Exam hall · Account recovery"
+        title="This reset link is invalid"
+        description="The link is missing its security token. Request a new one to continue."
+      >
+        <div className="space-y-3">
+          <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            This reset link is missing its token. Request a new one.
+          </p>
+          <Link
+            href="/forgot-password"
+            className="block w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-500/20"
+          >
+            Request a new reset link
+          </Link>
+          <Link href="/login" className="block text-center text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
+            Back to sign in
+          </Link>
+        </div>
+      </AuthShell>
+    )
+  }
+
   return (
-    <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-3 sm:gap-4">
-      {status === "error" && message && (
-        <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{message}</p>
-      )}
-      <AuthField id="password" label="New password" type={show ? "text" : "password"} name="new-password" value={password} onChange={setPassword} autoComplete="new-password" placeholder="At least 8 characters" leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />} rightSlot={eyeToggle} />
-      <AuthField id="confirm" label="Confirm new password" type={show ? "text" : "password"} name="new-password" value={confirm} onChange={setConfirm} autoComplete="new-password" placeholder="Repeat your password" leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />} />
-      {status === "done" ? (
-        <button type="button" onClick={() => router.push("/login")} className="block w-full text-center text-sm font-medium text-emerald-400/80 transition-colors hover:text-emerald-400">Password updated, continue to sign in</button>
-      ) : (
-        <AuthSubmitButton busy={status === "saving"} busyLabel="Updating…">Update password</AuthSubmitButton>
-      )}
-    </form>
+    <AuthShell
+      eyebrow="Exam hall · Account recovery"
+      title="Set a new password"
+      description="Choose a new password for your 9Th-Grade AI account."
+    >
+      <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-3 sm:gap-4" noValidate>
+        {errors.form ? (
+          <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            {errors.form}
+          </p>
+        ) : null}
+        <AuthField
+          id="password"
+          label="New password"
+          type={showPassword ? "text" : "password"}
+          name="new-password"
+          value={password}
+          onChange={(v) => {
+            setPassword(v)
+            if (errors.password) setErrors((e) => ({ ...e, password: undefined }))
+          }}
+          onKeyUp={onKeyUp}
+          error={errors.password}
+          autoComplete="new-password"
+          placeholder="At least 8 characters"
+          leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />}
+          rightSlot={eyeToggle(showPassword, () => setShowPassword((s) => !s))}
+        />
+        <CapsLockWarning visible={capsLock} />
+        <AuthField
+          id="confirm"
+          label="Confirm new password"
+          type={showConfirm ? "text" : "password"}
+          // Distinct name: Chrome ignores autocomplete="off" on password
+          // fields, and a duplicate name lets a password manager autofill the
+          // confirm box with a generated password, producing a bogus
+          // "passwords do not match" error.
+          name="confirm-password"
+          value={confirm}
+          onChange={(v) => {
+            setConfirm(v)
+            if (errors.confirm) setErrors((e) => ({ ...e, confirm: undefined }))
+          }}
+          onKeyUp={onKeyUp}
+          error={errors.confirm}
+          autoComplete="new-password"
+          placeholder="Repeat your password"
+          leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />}
+          rightSlot={eyeToggle(showConfirm, () => setShowConfirm((s) => !s))}
+        />
+        {status === "done" ? (
+          <>
+            <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+              Password updated. You can sign in with your new password.
+            </p>
+            <button type="button" onClick={() => router.push("/login")} className="block w-full text-center text-sm font-medium text-emerald-400/80 transition-colors hover:text-emerald-400">
+              Continue to sign in
+            </button>
+          </>
+        ) : (
+          <AuthSubmitButton busy={status === "saving"} busyLabel="Updating…">Update password</AuthSubmitButton>
+        )}
+      </form>
+    </AuthShell>
   )
 }

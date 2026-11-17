@@ -1,4 +1,3 @@
-import "./home-tab-redesign.test";
 import { it, expect } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import { mkdirSync, writeFileSync } from "node:fs";

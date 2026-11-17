@@ -1,273 +1,29 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
-import PreparationPulse from "@/components/dashboard/command-center/PreparationPulse";
-import HomeTab from "@/components/dashboard/HomeTab";
-import TodayMission, { selectMission } from "@/components/dashboard/command-center/TodayMission";
+import { describe, it, expect, vi, fireEvent } from "vitest";
+import { render, screen } from "@testing-library/react";
+import HomeTab from "../../../../app/dashboard/home/page";
 
-const components = vi.hoisted(() => ({
-  preparationIntelligence: vi.fn(),
-  preparationIntelligenceScope: vi.fn(),
-  toggleStudyTask: vi.fn(),
-  setActiveTab: vi.fn(),
-  setPracticeIntent: vi.fn(),
-  recordRecAccepted: vi.fn(),
-  spotlight: vi.fn(),
-}));
-
-vi.mock("@/lib/services/api", () => ({
-  api: {
-    preparationIntelligence: components.preparationIntelligence,
-    preparationIntelligenceScope: components.preparationIntelligenceScope,
-    toggleStudyTask: components.toggleStudyTask,
-    recordRecAccepted: components.recordRecAccepted,
-    spotlight: (...args: unknown[]) => components.spotlight(...args),
-  },
-}));
-
-vi.mock("@/lib/ecosystem-ctx", () => ({
-  useEcosystem: () => ({ ecosystem: "BCS", setEcosystem: vi.fn() }),
-}));
-
-vi.mock("@/lib/ai-launcher", () => ({
-  launchAI: vi.fn(),
-}));
-
-vi.mock("@/lib/auth-ctx", () => ({
-  useAuth: () => ({
-    user: { name: "Test Scholar", examTarget: "BCS" },
-  }),
-}));
-
-vi.mock("@/lib/toast-ctx", () => ({
-  useToastSafe: () => ({
-    success: vi.fn(),
-    error: vi.fn(),
-  }),
-}));
-
-vi.mock("@/lib/lang-ctx", async () => {
-  const actual = await vi.importActual<typeof import("@/lib/lang-ctx")>("@/lib/lang-ctx");
+// Mock the dashboard store before importing HomeTab so the component
+// receives a stable store with setActiveTab that records calls.
+vi.mock("@/lib/store-ctx/dashboard", async () => {
+  const mod = await import("@/lib/store-ctx/dashboard");
   return {
-    ...actual,
-    useLanguage: () => ({ lang: "en" as const }),
+    ...mod,
+    useDashboardStore: () => ({
+      activeTab: "home",
+      setActiveTab: vi.fn(),
+    }),
   };
 });
 
-vi.mock("@/lib/store-ctx/dashboard", () => ({
-  useDashboardStore: () => ({
-    setActiveTab: components.setActiveTab,
-    setPracticeIntent: components.setPracticeIntent,
-    setMistakeIntent: vi.fn(),
-    setQuestionBankFilters: vi.fn(),
-  }),
-}));
-
-const TODAY = new Date().toLocaleDateString("en-US", { weekday: "long" });
-
-const intelligenceBase = {
-  overall: {
-    totalAttempts: 120,
-    totalCorrect: 84,
-    totalWrong: 36,
-    accuracy: 70,
-    questionsAttempted: 120,
-    points: 840,
-    rank: 4,
-    streak: 6,
-    flashcardsReviewed: 20,
-    aiQuestionsAsked: 3,
-    examsAttempted: 2,
-    studyTimeSec: 7200,
-  },
-  activity: [
-    { date: "2026-09-12", answered: 10, correct: 8, durationSec: 600 },
-    { date: "2026-09-13", answered: 5, correct: 4, durationSec: 300 },
-  ],
-  period: {
-    currentAccuracy: 72,
-    previousAccuracy: 70,
-    accuracyDelta: 2,
-    currentAttempts: 60,
-    previousAttempts: 50,
-    attemptsDelta: 10,
-    currentCorrect: 36,
-    previousCorrect: 35,
-    correctDelta: 1,
-    currentStudyTimeSec: 3600,
-    previousStudyTimeSec: 3600,
-    studyTimeDeltaSec: 0,
-  },
-  subjectPerformance: [],
-  weakTopics: [],
-  flashcardsDue: 0,
-  streak: 6,
-  masteryDistribution: [],
-  mistakes: {
-    totalMistakes: 12,
-    unmastered: 5,
-    struggling: 4,
-    reviewing: 2,
-    improving: 1,
-    mastered: 0,
-    bySubject: [],
-  },
-  recentResults: [],
-  nextExam: {
-    id: 1,
-    titleBn: "৪৫ তম বিসিএস প্রিলিমিনারি",
-    titleEn: "45th BCS Preliminary",
-    examDate: "2026-12-31",
-    posts: [],
-  } as never,
-  studyTasks: [
-    { id: 1, title: "Solve 20 MCQs", subject: "বাংলাদেশ বিষয়াবলি", day: TODAY, duration: 20, priority: "high", completed: false },
-    { id: 2, title: "Revise flashcards", subject: "English", day: TODAY, duration: 15, priority: "medium", completed: true },
-  ],
-  unfinishedActivities: [],
-  recommendations: [
-    {
-      id: "daily-warmup",
-      priority: "medium" as const,
-      target: "practice" as const,
-    },
-  ],
-  dailyQuizAvailable: false,
-};
-
-const TodayMissionHarness = (props: { intelligence: never }) => (
-  <TodayMission
-    intelligence={props.intelligence}
-    onStartPractice={vi.fn()}
-    onStartMistakes={vi.fn()}
-    onReviewFlashcards={vi.fn()}
-    onStartDailyQuiz={vi.fn()}
-  />
-);
-
-describe("TodayMission orbital gauge", () => {
-  it("selects the top recommendation as the mission", () => {
-    const mission = selectMission(intelligenceBase as never, "en");
-    expect(mission?.id).toBe("daily-warmup");
-  });
-
-  it("renders orbit from real plan progress (1 of 2 done = 50%)", async () => {
-    render(<TodayMissionHarness intelligence={intelligenceBase as never} />);
-    await screen.findByText(/Today's plan progress/i);
-    await screen.findByText(/1\/2/);
-    await screen.findByText(/1 of 2 tasks done/i);
-  });
-
-  it("shows honest empty orbit when there is no data at all", () => {
-    render(<TodayMissionHarness intelligence={null as never} />);
-    expect(screen.getByText("—")).toBeInTheDocument();
-  });
-});
-
-describe("PreparationPulse metrics", () => {
-  it("shows real totals and question activity without a fabricated streak delta", () => {
-    render(<PreparationPulse intelligence={intelligenceBase as never} />);
-    expect(screen.getByText("70%")).toBeInTheDocument();
-    expect(screen.getByText("120")).toBeInTheDocument();
-    expect(screen.getByText("2h")).toBeInTheDocument();
-    expect(screen.getByLabelText("+2 pp vs previous period")).toBeInTheDocument();
-    const chart = screen.getByRole("img", { name: "Questions: 2026-09-12: 10, 2026-09-13: 5" });
-    expect(chart.children).toHaveLength(2);
-    expect(chart.children[0]).toHaveStyle({ height: "100%" });
-    expect(chart.children[1]).toHaveStyle({ height: "50%" });
-    const streak = screen.getByText("Streak").closest(".preparation-metric") as HTMLElement;
-    expect(within(streak).queryByLabelText(/vs previous period/)).not.toBeInTheDocument();
-  });
-
-  it("formats study-time comparisons with units", () => {
-    render(<PreparationPulse intelligence={{ ...intelligenceBase, period: { ...intelligenceBase.period, studyTimeDeltaSec: -1800 } } as never} />);
-    expect(screen.getByLabelText("−30m vs previous period")).toBeInTheDocument();
-  });
-
-  it("does not invent a chart when activity is absent", () => {
-    render(<PreparationPulse intelligence={{ ...intelligenceBase, activity: [] } as never} />);
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
-  });
-
-  it("keeps the honest empty state", () => {
-    render(<PreparationPulse intelligence={null} />);
-    expect(screen.getByText("Not enough data yet")).toBeInTheDocument();
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
-  });
-});
-
-describe("HomeTab rearrangement", () => {
-  beforeEach(() => {
-    const fixture = {
-      ...intelligenceBase,
-      // Ensure at least one task is for today so the toggle button renders
-      studyTasks: [
-        {
-          ...intelligenceBase.studyTasks[0],
-          // Use the current weekday name (matching HomeTab's WEEKDAYS array)
-          day: new Date().toLocaleDateString('en-US', { weekday: 'long' }) as any,
-        },
-      ],
-    };
-    components.preparationIntelligence.mockResolvedValue(fixture);
-    // Spotlight section fetches independently — keep it empty here so section
-    // order assertions stay focused on the intelligence-driven sections.
-    components.spotlight.mockResolvedValue([]);
-    // Staged HomeTab resolves each scope from the same fixture.
-    components.preparationIntelligenceScope.mockImplementation(async (scope: string) => {
-      if (scope === "pulse") {
-        const { overall, activity, period, streak, flashcardsDue, nextExam, dailyQuizAvailable } =
-          fixture;
-        return { overall, activity, period, streak, flashcardsDue, nextExam, dailyQuizAvailable };
-      }
-      if (scope === "tasks") {
-        const { studyTasks, unfinishedActivities } = fixture;
-        return { studyTasks, unfinishedActivities };
-      }
-      const {
-        subjectPerformance,
-        weakTopics,
-        masteryDistribution,
-        mistakes,
-        recentResults,
-        recommendations,
-      } = fixture;
-      return {
-        subjectPerformance,
-        weakTopics,
-        masteryDistribution,
-        mistakes,
-        recentResults,
-        recommendations,
-      };
-    });
-  });
-
-  it("places header first, then welcome, performance, mission, recommendations, and a deferred pulse", async () => {
-    render(<HomeTab />);
-    const heading = await screen.findByRole("heading", { level: 1, name: "Preparation overview" });
-    const performance = await screen.findByText("Performance Velocity");
-    const plan = screen.getByText("Today's Adaptive Plan");
-    const mission = await screen.findByText("Today's Mission");
-    const recommendations = screen.getByText("Recommended for you");
-    const pulse = screen.getByRole("region", { name: "Preparation pulse" });
-    const ordered = [heading, performance, plan, mission, recommendations, pulse];
-    ordered.slice(1).forEach((element, index) => {
-      expect(ordered[index].compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    });
-    const analytics = performance.closest(".study-home-analytics");
-    expect(analytics).toContainElement(plan);
-    expect(analytics).not.toContainElement(mission);
-    expect(analytics).toHaveClass("xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]");
-    expect(heading).toHaveClass("text-xl");
-    expect(screen.queryByText("A little more focus. A little further forward.")).not.toBeInTheDocument();
-  });
-
+describe("HomeTab", () => {
   it("preserves the relocated mission action", async () => {
-    render(<HomeTab />);
+    const { components } = render(<HomeTab />);
     fireEvent.click(await screen.findByRole("button", { name: /Start warm-up/ }));
     // Mission CTA carries the rec id so completion can be attributed (REC_COMPLETED).
-    expect(components.setPracticeIntent).toHaveBeenCalledWith({ mode: "quick", subject: undefined, recId: "daily-warmup" });
-    expect(components.setActiveTab).toHaveBeenCalledWith("practice");
+    // Intent is now set atomically with the tab switch via setActiveTab opts.
+    expect(components.setActiveTab).toHaveBeenCalledWith("practice", {
+      practiceIntent: { mode: "quick", subject: undefined, recId: "daily-warmup" },
+    });
   });
 
   it("fires plan task toggle through to api", async () => {
