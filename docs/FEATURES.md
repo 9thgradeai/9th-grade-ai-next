@@ -157,6 +157,6 @@ Role-gated (`ADMIN`); sensitive mutations are recorded in `AuditLog`.
 | Theme (dark/light) | `theme-ctx/`, `SettingsTab.tsx` |
 | Offline service worker | hand-rolled SW copied by `scripts/copy-sw.mjs` (ADR-061) |
 | Error boundary | `app/error.tsx` + `frontend/components/ui/ErrorBoundary.tsx` |
-| Sentry error reporting | `instrumentation.ts`, `backend/infrastructure/observability/sentry.ts` |
+| Sentry error reporting | `instrumentation.ts`, `frontend/lib/sentry.tsx` |
 
 > The Prisma schema holds **61 models** — full reference in `DATABASE.md`.

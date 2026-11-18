@@ -47,7 +47,7 @@ Rules:
 | Tool | Where | Notes |
 |------|-------|-------|
 | **pino logger** | `backend/infrastructure/observability/logger.ts` | JSON lines in prod, pretty one-liners in dev, **no-op in tests**. Auto-redacts `password|secret|token|authorization|cookie|apikey`. Level via `LOG_LEVEL`. |
-| **Sentry** | `instrumentation.ts`, `backend/infrastructure/observability/sentry.ts`, `frontend/lib/sentry.tsx` | Enabled only in production; client is **error-only** (no replay/browser tracing, ADR-0013). No-op without `SENTRY_DSN`. |
+| **Sentry** | `instrumentation.ts`, `frontend/lib/sentry.tsx` | Enabled only in production; client is **error-only** (no replay/browser tracing, ADR-0013). No-op without `SENTRY_DSN`. |
 | **`X-Request-ID`** | set on every response (`proxy.ts`) | Correlate a user report with server logs |
 | **`/api/health`** | `app/api/health` | Post-deploy and uptime checks |
 | **Runbook** | `RUNBOOK.md` | Incident response, escalation, backups |
