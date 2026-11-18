@@ -21,8 +21,12 @@
  *       scrambled rows that no structural rule can catch).
  *   3. EMPTY_EXPLANATION   — question-bank policy: explanations are mandatory.
  *   4. DUPLICATE           — duplicate of a kept row by normalized
- *      (question | correctAnswer | explanation) across the WHOLE database;
- *      the oldest row (MIN id) is kept.
+ *      (question | correctAnswer | explanation) WITHIN THE SAME subject+path.
+ *      Scoping matters: this schema legitimately stores identical content once
+ *      per ecosystem/subject (per-ecosystem practice pools; the Bangla union
+ *      merges both subjects), so a database-global dedupe once wiped the whole
+ *      BANGLADESH_BANK copy of shared content (see docs/PITFALL_REGISTER.md
+ *      P-Q1). Within one leaf only the oldest row (MIN id) is kept.
  *
  * Safety by default: DRY RUN — scans, groups by subject/reason, and writes a
  * JSON + Markdown report WITHOUT touching the database.
@@ -31,6 +35,10 @@
  *   npx tsx scripts/clean-broken-questions.ts            # dry-run report
  *   npx tsx scripts/clean-broken-questions.ts --yes      # backup + transactional delete
  *   npx tsx scripts/clean-broken-questions.ts --verify   # post-clean invariant check
+ *   npx tsx scripts/clean-broken-questions.ts --reasons=DUPLICATE,UNICODE_CORRUPTION
+ *       # staged cleanup: restrict the plan (dry-run or --yes) to the listed
+ *       # removal reasons. Used to ship the unambiguous rows first while
+ *       # ANSWER_MISMATCH / repairable structural rows are investigated.
  *
  * Deleting a Question cascades to Bookmark / UserQuestionProgress (both are the
  * user's record of a broken question) and SetNull on QuestionAttempt (attempt
@@ -53,6 +61,7 @@ export type RemovalReason =
 
 export interface ScanRow extends McaInput {
   id: number;
+  subjectId: number;
   subjectName?: string;
   topic?: string;
   subtopic?: string;
@@ -178,22 +187,35 @@ export function buildRemovalPlan(rows: ScanRow[]): RemovalPlan {
     kept.push(r);
   }
 
-  // ── Global duplicates (across all subjects): normalized identity ──
-  const sigToId = new Map<string, number>();
+  // ── Duplicates: scoped to one leaf (subjectId + path) ──
+  // Content is legitimately shared ACROSS subjects/ecosystems (per-ecosystem
+  // practice pools; the Bangla union serves both subjects), so only two rows
+  // sitting in the SAME leaf with the same identity are a double-import.
+  const locationOf = (r: ScanRow): string => `${r.subjectId}\u0000${r.path ?? ""}`;
   const bySignature = new Map<string, ScanRow[]>();
   for (const r of kept) {
     const sig = mcaSignature(r);
     const group = bySignature.get(sig) ?? [];
     group.push(r);
     bySignature.set(sig, group);
-    if (!sigToId.has(sig) || r.id < (sigToId.get(sig) ?? Infinity)) sigToId.set(sig, r.id);
   }
   for (const [sig, group] of bySignature) {
     if (group.length < 2) continue;
-    const keepId = sigToId.get(sig)!;
+    // Cluster the group by leaf; within each leaf the lowest id survives.
+    const byLocation = new Map<string, ScanRow[]>();
     for (const r of group) {
-      if (r.id === keepId) continue;
-      entry(r, "DUPLICATE", "DUPLICATE", `Duplicate of #${keepId} by normalized question+answer+explanation`);
+      const loc = locationOf(r);
+      const arr = byLocation.get(loc) ?? [];
+      arr.push(r);
+      byLocation.set(loc, arr);
+    }
+    for (const rows of byLocation.values()) {
+      if (rows.length < 2) continue;
+      const keepId = rows.reduce((min, r) => (r.id < min ? r.id : min), rows[0].id);
+      for (const r of rows) {
+        if (r.id === keepId) continue;
+        entry(r, "DUPLICATE", "DUPLICATE", `Duplicate of #${keepId} in the same subject+path by normalized question+answer+explanation (signature ${sig.slice(0, 12)}…)`);
+      }
     }
   }
 
@@ -206,6 +228,75 @@ export function buildRemovalPlan(rows: ScanRow[]): RemovalPlan {
     bySubject,
     byPath,
   };
+}
+
+/**
+ * Restrict a removal plan to the given reasons (staged cleanup).
+ *
+ * Pure: recomputes every derived field (removedIds / keptIds / counters) from
+ * the filtered entry list, so the result is indistinguishable from a plan that
+ * was built with only those reasons in mind. Rows whose reason is filtered out
+ * stay in the database (they are re-evaluated on the next run).
+ *
+ * Each row gets at most one entry in `buildRemovalPlan` (first matching rule
+ * wins, duplicates are only computed among kept rows), so filtering by reason
+ * is a clean subset — no deleted row leaves an identical twin behind: every
+ * DUPLICATE group keeps its lowest-id member, which never carries an entry.
+ */
+export function filterPlanByReasons(
+  plan: RemovalPlan,
+  reasons: ReadonlySet<RemovalReason>,
+): RemovalPlan {
+  const removed = plan.removed.filter((e) => reasons.has(e.reason));
+  const removedIds = new Set(removed.map((e) => e.id));
+  const byReason: Record<RemovalReason, number> = {
+    UNICODE_CORRUPTION: 0,
+    STRUCTURAL_BROKEN: 0,
+    EMPTY_EXPLANATION: 0,
+    DUPLICATE: 0,
+  };
+  const bySubject: Record<string, number> = {};
+  const byPath: Record<string, number> = {};
+  for (const e of removed) {
+    byReason[e.reason] += 1;
+    bySubject[e.subjectName] = (bySubject[e.subjectName] ?? 0) + 1;
+    byPath[e.path] = (byPath[e.path] ?? 0) + 1;
+  }
+  return {
+    scanned: plan.scanned,
+    removed,
+    removedIds: [...removedIds].sort((a, b) => a - b),
+    keptIds: Array.from(
+      new Set([...plan.removedIds, ...plan.keptIds].filter((id) => !removedIds.has(id))),
+    ).sort((a, b) => a - b),
+    byReason,
+    bySubject,
+    byPath,
+  };
+}
+
+/** Parse `--reasons=A,B` into a validated set; returns null when absent. */
+export function parseReasonsFlag(argv: string[]): Set<RemovalReason> | null {
+  const arg = argv.find((a) => a.startsWith("--reasons="));
+  if (!arg) return null;
+  const valid = new Set<RemovalReason>([
+    "UNICODE_CORRUPTION",
+    "STRUCTURAL_BROKEN",
+    "EMPTY_EXPLANATION",
+    "DUPLICATE",
+  ]);
+  const raw = arg.slice("--reasons=".length).split(",").map((s) => s.trim()).filter(Boolean);
+  if (raw.length === 0) throw new Error("--reasons= requires at least one reason name");
+  const out = new Set<RemovalReason>();
+  for (const name of raw) {
+    if (!valid.has(name as RemovalReason)) {
+      throw new Error(
+        `Unknown removal reason "${name}". Valid: ${[...valid].join(", ")}`,
+      );
+    }
+    out.add(name as RemovalReason);
+  }
+  return out;
 }
 
 async function scanRows(prisma: PrismaClient): Promise<ScanRow[]> {
@@ -229,6 +320,7 @@ async function scanRows(prisma: PrismaClient): Promise<ScanRow[]> {
   const nameById = new Map(subjects.map((s) => [s.id, s.nameBn]));
   return rows.map((r) => ({
     id: r.id,
+    subjectId: r.subjectId,
     subjectName: nameById.get(r.subjectId) ?? `subject:${r.subjectId}`,
     topic: r.topic,
     subtopic: r.subtopic,
@@ -327,11 +419,11 @@ async function applyPlan(prisma: PrismaClient, plan: RemovalPlan): Promise<void>
   console.log(`Deleted ${ids.length} questions.`);
 }
 
-/** Verify the invariant: every remaining row passes the gate, has an explanation, and is globally unique. */
+/** Verify the invariant: every remaining row passes the gate, has an explanation, and is unique WITHIN its subject+path (cross-subject content sharing is legitimate — see the DUPLICATE policy note in the header). */
 async function verifyInvariant(prisma: PrismaClient): Promise<boolean> {
   const remaining = await scanRows(prisma);
   const gateProblems: string[] = [];
-  const sigToId = new Map<string, number>();
+  const seenByLocation = new Map<string, number>();
   for (const r of remaining) {
     const gate = scanMca(r);
     if (gate.verdict === "REJECT") {
@@ -340,11 +432,12 @@ async function verifyInvariant(prisma: PrismaClient): Promise<boolean> {
     if (!r.explanation.trim()) {
       gateProblems.push(`#${r.id}: empty explanation`);
     }
-    const sig = mcaSignature(r);
-    if (sigToId.has(sig)) {
-      gateProblems.push(`#${r.id}: duplicate of #${sigToId.get(sig)} (global identity)`);
+    const locKey = `${r.subjectId}\u0000${r.path ?? ""}\u0000${mcaSignature(r)}`;
+    const prior = seenByLocation.get(locKey);
+    if (prior !== undefined) {
+      gateProblems.push(`#${r.id}: duplicate of #${prior} in the same subject+path`);
     } else {
-      sigToId.set(sig, r.id);
+      seenByLocation.set(locKey, r.id);
     }
   }
   console.log(`Verify: ${remaining.length} questions remaining.`);
@@ -364,6 +457,8 @@ async function main(): Promise<void> {
   const prisma = new PrismaClient();
 
   try {
+    const onlyReasons = parseReasonsFlag(argv);
+
     if (verifyOnly) {
       const ok = await verifyInvariant(prisma);
       process.exitCode = ok ? 0 : 1;
@@ -372,7 +467,14 @@ async function main(): Promise<void> {
 
     console.log("Scanning database...");
     const rows = await scanRows(prisma);
-    const plan = buildRemovalPlan(rows);
+    const fullPlan = buildRemovalPlan(rows);
+    const plan = onlyReasons ? filterPlanByReasons(fullPlan, onlyReasons) : fullPlan;
+    if (onlyReasons) {
+      console.log(
+        `Staged run — only reasons: ${[...onlyReasons].join(", ")} ` +
+          `(filtered ${fullPlan.removed.length - plan.removed.length} of ${fullPlan.removed.length} flagged rows).`,
+      );
+    }
     const paths = writeReport(plan, !yes);
     printSummary(plan, !yes);
     console.log("\nReports:");

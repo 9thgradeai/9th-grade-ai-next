@@ -1182,3 +1182,30 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   7. **Field conventions matched to the existing 305 rows**: `topic`/`subtopic` = leaf basename, `difficulty: "MEDIUM"`, `year: null`, `questionType: SINGLE_CHOICE`, `sourceExam` = `Bank Analytical · coding-decoding` / `Bank Analytical · number-series` (the existing rows say `Bank Analytical · verbal-reasoning`), `questionNumber` left null, and an empty source explanation never erases an explanation a row already carries. `topic.questionCount` was refreshed on every touched leaf and ancestor group node from a fresh count.
 - **Rationale**: Keeping the Coding set on the existing logical-reasoning leaf (rather than a new one) avoids a taxonomy edit the user did not ask for while staying accurate (coding/decoding *is* a Verbal Reasoning, Logical Deduction topic). Moving the trailing brackets instead of discarding them is the only repair that does not invent content or silently drop it: the single `answer-letter` code point where a record already records the corrected answer inside its own parentheses (`195. If SCHOOL …`) still stores the letter's option, with the parenthetical kept as the explanation verbatim, so a future data review can either trust or replace both together. Collapsing the repeated stems is deliberate even though it drops 204 records: the Practice tab draws randomly from a leaf, and a 300-row bank with 133 distinct questions would repeat a question in roughly half of a 20-question session.
 - **Consequences**: Live run (`--yes`) on `BANGLADESH_BANK`: 659 record slots → 455 inserted, 204 repeat-folded, 0 updated, 0 rejected, 0 unparsed, 11 repairs, 29 gate-waivers. Leaf counts go `Logical_Deduction_and_Syllogism` **305 → 438** and `Number_and_Alphabet_Series` **0 → 322** (subject total 305 → 760). The repair distribution is `answer-suffix` ×5 (16, 121, 137, 195 in Coding; 28 in Series) and `answer-letter` ×6 (Series 77, 108, 151, 303, 319, 320); the waivers are `EMPTY_EXPLANATION` ×5 (44, 154, 234, 299, 304) and `DUPLICATE_OPTION` ×24. Verification on both leaves: **0 duplicate normalized stems introduced by this import**, all `topicId` non-null, all `topic.questionCount` matching recompute, and an idempotent re-run writes nothing (`inserted=0, updated=0, skipped=455, repeats=204`). `typecheck` clean, `lint:ui` clean, eslint clean (`tests/qb-import-analytical-skills.test.ts` added, covering `splitOptions`, both repairs via `resolveAnswer`, the now-three skip paths via `parseRecord`, and the `waiveGateCodes` policy), and the full suite stays at 1864/1864 pass. Residual: the subject already held 3 stem-duplicate pairs under verbal-reasoning (six rows, identical question with different correct answers/explanations) — pre-existing, untouched, and logged as out of scope here. The 11 conflicting answer keys listed above survive in 11 pairs of dropped variants so a future data review can swap a kept variant in without re-extracting the documents.
+
+## ADR-074: Question dedupe scoped to (subjectId, path) — cross-subject content is legal
+
+- **Date**: 2026-11-19
+- **Status**: Accepted
+- **Context**: The first-release cleanup (`scripts/clean-broken-questions.ts`) treated a DUPLICATE as
+  "same normalized (question | correctAnswer | explanation) anywhere in the database" and deleted the
+  losing row. Stage 1 of that cleanup removed 9,744 rows; 9,142 of them were flagged DUPLICATE but were
+  actually the *other ecosystems'* copies of content that legitimately lives in both a BANGLADESH_BANK and
+  a BCS practice pool (the Bangla union serves both subjects merged — see ADR-072/073). The staged run
+  wiped essentially the whole BANGLADESH_BANK copy of shared content, which the read-path integration test
+  surfaced as "BANGLADESH_BANK rows missing". The deletion was then partially repaired from the pre-deletion
+  pg_dump backup (questions + UserQuestionProgress re-insert + QuestionAttempt relink); the invariant and
+  dedupe policy were also found to be global.
+- **Decision**: Dedup and the "globally unique identity" verify check now scope to a leaf —
+  `(subjectId, path)` — so identical content at *different* subjects is treated as per-ecosystem pool
+  content, not duplicates; only identical content within the *same* leaf triggers DUPLICATE removal (keep
+  the lowest id). Cross-subject / cross-path sharing is expected and must not be deduped away.
+- **Rationale**: One DB-wide content key cannot express a schema where subjects are the per-ecosystem
+  units of personalization. Scoping to the leaf preserves intentional cross-listings while still catching
+  true double-imports.
+- **Consequences**: The cleanup plan/dedup now uses (subjectId, path) keys; the invariant check
+  (`verifyInvariant`) validates uniqueness within the leaf; the Bangla/GKB restore state was reconciled
+  (post-restore question count 46,886 = 47,175 − 187 SAFE (true double-imports) − 102 GROUP_WIPED (corrupt or
+  empty-explanation, correctly removed)). Follow-up work: stage-2 cleanup must resolve the remaining
+  4,458 STRUCTURAL_BROKEN ANSWER_MISMATCH rows (letter-prefixed answers such as `"d. 3"`) before re-running
+  the post-clean invariant.

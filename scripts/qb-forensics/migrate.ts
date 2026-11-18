@@ -83,7 +83,18 @@ function invariant(records: ClassifiedRecord[], fixMap: Map<string, Map<string, 
   return violations;
 }
 
-export function backupDatabase(dumpPath: string, binary = "pg_dump"): void {
+/**
+ * Logical backup via pg_dump (custom format).
+ *
+ * `binary` can be overridden with $PG_DUMP_BIN — required when the pg_dump on
+ * PATH is older than the server (e.g. Homebrew pg_dump 16 vs Neon server 18:
+ * pg_dump aborts on a server-version mismatch). Pick a client of the same
+ * major version as the server: `PG_DUMP_BIN=$(brew --prefix libpq@18)/bin/pg_dump`.
+ */
+export function backupDatabase(
+  dumpPath: string,
+  binary = process.env.PG_DUMP_BIN ?? "pg_dump",
+): void {
   execFileSync(binary, ["-d", process.env.DATABASE_URL as string, "-F", "c", "-f", dumpPath], {
     stdio: "inherit",
     env: process.env,

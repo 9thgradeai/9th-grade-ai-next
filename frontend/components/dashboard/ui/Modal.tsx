@@ -165,7 +165,8 @@ export function Modal({
                   type="button"
                   onClick={onClose}
                   className={[
-                    'ml-4 flex-shrink-0 p-2 rounded-xl',
+                    'ml-4 flex-shrink-0 p-3 rounded-xl',
+                    'min-h-[44px] min-w-[44px]',
                     'text-[var(--text-muted)]',
                     'hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]',
                     'transition-colors duration-150',

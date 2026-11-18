@@ -32,7 +32,7 @@ export default function QuestionPalette({
             onClick={() => onJump(id)}
             aria-label={`Question ${i + 1}${st === "answered" ? ", answered" : st === "current" ? ", current" : ", unseen"}`}
             aria-current={st === "current" ? "true" : undefined}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
             style={
               st === "current"
                 ? { borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }

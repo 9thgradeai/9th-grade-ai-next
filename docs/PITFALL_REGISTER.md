@@ -73,6 +73,16 @@ as `EMPTY_EXPLANATION`, and the MCQ never lands in the bank · Medium · Termino
 ` ${tail.slice(explIdx)}` after the letter — the pattern `import-bangla-grammar-ii.ts` ships as
 `repairAnswerByLetter` · None · Trivial.
 
+**P-Q1** · Data · `scripts/clean-broken-questions.ts` — database-global content dedupe wiped an entire
+ecosystem's question copies · BANGLADESH_BANK had 0 rows for all four Bangla-Grammar sourceExams right
+after the staged cleanup · Integrity + availability · Critical · The dedup key was normalized
+(question|answer|explanation) across the WHOLE database, but identical content legitimately repeats per
+subject/ecosystem (per-ecosystem practice pools; the Bangla union serves both subjects merged). Stage 1
+removed 9,744 rows; 9,142 were cross-subject deletes (9,082 BANGLADESH_BANK→BCS) of legally-shared copies —
+restored from the pg_dump backup (questions + UserQuestionProgress + QuestionAttempt relink), then the
+dedupe was re-scoped to (subjectId, path). Stage 2 must clear the remaining STRUCTURAL_BROKEN rows
+(ANSWER_MISMATCH ×4,458) before re-running the invariant check. · None · Medium.
+
 **P-C1** · Content/Data · `MockTestResult(mockTestId=null)` mixes exam + mock rows · History ambiguity ·
 Analytics · Low · Schema note · Add `kind` discriminator · Migration · Small.
 
