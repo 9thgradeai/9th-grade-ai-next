@@ -30,9 +30,11 @@ const QUESTION_TIME_LIMIT = 30;
 function DrillTimer({
   remaining,
   onExpire,
+  regime,
 }: {
   remaining: number;
   onExpire: () => void;
+  regime?: "advance-only";
 }) {
   const onExpireRef = useRef(onExpire);
   useEffect(() => { onExpireRef.current = onExpire; }, [onExpire]);
@@ -48,8 +50,14 @@ function DrillTimer({
     return () => clearInterval(id);
   }, [secs <= 0]);
   const timeLow = secs > 0 && secs <= 10;
+  const regimeLabel = regime === "advance-only" ? "Advance-only · per-question timeout auto-submits" : undefined;
   return (
     <span className={`font-mono text-xs ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>
+      {regimeLabel && (
+        <span className="block text-[11px] tracking-wide" data-timer-regime="advance-only" style={{ color: "var(--dashboard-text-muted)" }}>
+          {regimeLabel}
+        </span>
+      )}
       <Timer className="w-3 h-3 inline mr-1" />
       {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
     </span>
@@ -237,6 +245,7 @@ export default function QuestionDrill({
               key={`timer-${timerKey}`}
               remaining={QUESTION_TIME_LIMIT}
               onExpire={() => { void handleAutoSubmit(); }}
+              regime="advance-only"
             />
           )}
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">

@@ -13,15 +13,25 @@ function formatClock(totalSec: number): string {
  * Wall-clock session countdown. The deadline is derived from
  * `startsAt + durationSec` (authoritative, survives remounts and tab
  * switches), the 1s interval only re-renders this leaf. Expiry fires once.
+ *
+ * `regime` labels the session semantics for the user (P-U4): what happens to
+ * an unanswered session when the clock runs out.
+ *  - "deadline"     — wall-clock session deadline; on expiry the session
+ *                    auto-submits (mock / custom exams).
+ *  - "advance-only" — per-question advance; each question gets its own
+ *                    `QUESTION_TIME_LIMIT` and a timeout auto-submits that
+ *                    question's attempt (quick practice).
  */
 export default function SessionTimer({
   startsAt,
   durationSec,
   onExpire,
+  regime,
 }: {
   startsAt: number;
   durationSec: number;
   onExpire: () => void;
+  regime?: "deadline" | "advance-only";
 }) {
   const [remaining, setRemaining] = useState(() =>
     Math.max(0, durationSec - Math.floor((Date.now() - startsAt) / 1000)),
@@ -57,6 +67,13 @@ export default function SessionTimer({
       : "var(--dashboard-text-muted)";
   const label = `বাকি সময় ${Math.floor(remaining / 60)} মিনিট ${remaining % 60} সেকেন্ড`;
 
+  const regimeLabel =
+    regime === "deadline"
+      ? "Session deadline · auto-submit on expiry"
+      : regime === "advance-only"
+        ? "Advance-only · per-question time, auto-submit on timeout"
+        : undefined;
+
   return (
     <span
       className="inline-flex items-center gap-1.5"
@@ -65,6 +82,15 @@ export default function SessionTimer({
       aria-label={label}
       title={label}
     >
+      {regimeLabel && (
+        <span
+          className="text-xs font-mono"
+          style={{ color: "var(--dashboard-text-muted)" }}
+          data-timer-regime={regime}
+        >
+          {regimeLabel}
+        </span>
+      )}
       <span
         aria-hidden="true"
         className={`font-mono text-sm font-bold tabular-nums ${critical ? "animate-pulse motion-reduce:animate-none" : ""}`}

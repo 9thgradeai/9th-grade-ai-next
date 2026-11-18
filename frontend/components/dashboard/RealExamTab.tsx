@@ -805,6 +805,7 @@ export default function RealExamTab() {
                       totalSec={(selectedPaper?.durationMin ?? customDurationMin ?? 60) * 60}
                       answered={Object.keys(answers).length}
                       total={questions.length}
+                      regime="local-lock"
                     />
                   )}
                   <div className="flex gap-2">

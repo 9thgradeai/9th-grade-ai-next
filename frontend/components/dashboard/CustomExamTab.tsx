@@ -84,7 +84,7 @@ function ExamTimer({
   return (
     <span className="inline-flex items-center gap-2">
       <Timer className="w-4 h-4 text-[var(--dashboard-primary)]" aria-hidden="true" />
-      <SessionTimer startsAt={startsAt} durationSec={durationSec} onExpire={onExpire} />
+      <SessionTimer startsAt={startsAt} durationSec={durationSec} onExpire={onExpire} regime="deadline" />
     </span>
   );
 }

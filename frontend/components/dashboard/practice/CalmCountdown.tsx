@@ -13,11 +13,13 @@ export default function CalmCountdown({
   totalSec,
   answered,
   total,
+  regime,
 }: {
   remainingSec: number;
   totalSec: number;
   answered: number;
   total: number;
+  regime?: "deadline" | "local-lock";
 }) {
   const level = calmTimerLevel(remainingSec);
   const pct = totalSec > 0 ? Math.max(0, Math.min(100, (remainingSec / totalSec) * 100)) : 0;
@@ -27,6 +29,12 @@ export default function CalmCountdown({
       : level === "low"
         ? "var(--dashboard-warning)"
         : "var(--dashboard-primary)";
+  const regimeLabel =
+    regime === "local-lock"
+      ? "Local lock · answers stay on this device, nothing is persisted"
+      : regime === "deadline"
+        ? "Deadline · auto-submit on expiry"
+        : undefined;
 
   return (
     <div className="flex items-center gap-3 min-w-0" role="timer" aria-live="polite" aria-label={`${formatClock(remainingSec)} remaining`}>
@@ -36,6 +44,11 @@ export default function CalmCountdown({
         aria-hidden="true"
       />
       <div className="min-w-0">
+        {regimeLabel && (
+          <span className="block text-xs font-mono text-[var(--dashboard-text-muted)]" data-timer-regime={regime}>
+            {regimeLabel}
+          </span>
+        )}
         <span className="font-mono text-lg font-bold tabular-nums" style={{ color }}>
           {formatClock(remainingSec)}
         </span>

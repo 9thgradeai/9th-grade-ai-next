@@ -90,12 +90,14 @@ function PracticeTimer({
   startsAt,
   durationSec,
   onExpire,
+  regime,
 }: {
   startsAt: number;
   durationSec: number;
   onExpire: () => void;
+  regime?: "deadline" | "advance-only";
 }) {
-  return <SessionTimer startsAt={startsAt} durationSec={durationSec} onExpire={onExpire} />;
+  return <SessionTimer startsAt={startsAt} durationSec={durationSec} onExpire={onExpire} regime={regime} />;
 }
 
 export default function PracticeTab() {
@@ -1008,6 +1010,7 @@ export default function PracticeTab() {
                         startsAt={sessionStartsAt}
                         durationSec={sessionDurationSec}
                         onExpire={() => { void handleAutoSubmit(); }}
+                        regime="advance-only"
                       />
                     )}
                     <span className="text-xs font-mono tabular-nums" style={{ color: "var(--dashboard-text-muted)" }} aria-live="polite">

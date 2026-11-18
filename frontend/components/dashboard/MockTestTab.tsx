@@ -859,6 +859,9 @@ export default function MockTestTab() {
                   <span className={`font-mono text-lg font-bold tabular-nums ${timeLow ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`} aria-live="polite">
                     {formatTime(timeRemaining)}
                   </span>
+                  <span className="text-xs font-mono text-[var(--dashboard-text-muted)]" data-timer-regime="deadline">
+                    Deadline · auto-submit on expiry
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-[var(--dashboard-text-muted)] font-mono tabular-nums">
