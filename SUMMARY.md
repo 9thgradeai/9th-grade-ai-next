@@ -10,19 +10,29 @@ Comprehensive analysis of pitfalls/drawbacks for launching 9Th-Grade AI v0.2.2 f
 4. ✅ **Question bank** — STAGED CLEANUP DONE: 9,744 safe rows deleted, cross-subject damage restored, dedupe re-scoped to (subjectId, path). **Action**: stage 2 — resolve 4,458 ANSWER_MISMATCH rows; then `qb:clean-broken:verify` green.
 5. ✅ **Sentry replay** — verified compliant with ADR-0013 (client error-only; server tracing intentionally kept).
 
-## High-Priority Fixes (Phase 2 next)
-6. ✅ **Event wiring** — NEW: restored `register()` → subscribers (P0).
-7. **WCAG violations** - Sub-44px interactive targets (steppers, modals) — Phase 2.
-8. **Accessibility gaps** - useDialogA11y on remaining dialogs — Phase 2.
+## High-Priority Fixes (Phase 2 — completed 2026-11-19/20)
+6. ✅ **Event wiring** — restored `instrumentation.ts` register() → subscribers (P0, commit `7ec4151`).
+7. ✅ **WCAG violations** — QuestionPalette 36px→44px targets + Modal close hit-area fixed (commit `d7e87a2`).
+8. ✅ **Accessibility gaps** — `useDialogA11y` verified on all cited dialogs (NotificationCenter included).
+9. ✅ **Timer regimes** — P10 DONE (commit `d738065`): SessionTimer/PracticeTimer/DrillTimer/CalmCountdown now render user-visible regime labels.
+10. ✅ **Difficulty picker** — P11 DONE (commit `90d7af5`): custom-exam build accepts `difficulty` (EASY|MEDIUM|HARD); picker UI in CustomExamTab.
+11. ✅ **Leaderboard optimization** — P12 verified already fixed: batched `computeStreaks` (single `IN` query) + 30s `QueryCache`.
+12. ✅ **Funnel analytics** — P15 DONE: REC_ACCEPTED/REC_COMPLETED fire-and-forget events on `/api/learning-events`.
+13. ✅ **Regex bug** — P16 verified already fixed: stateful `/g` regex removed.
+
+## Math-Heal Status (P9)
+- Dry-run: 46,896 rows scanned → 40,500 clean / 6,174 HEALED / 222 REVIEW.
+- **Apply failed twice**: (a) interactive-transaction 600s→1800s timeout fix applied in `scripts/heal-latex-artifacts.ts`; (b) first retry hit transient Neon pooler connectivity error — retry in flight.
+- Backup taken before every attempt: `backups/latex-heal-*.dump`. DB confirmed unmutated (heal transaction rolls back cleanly on failure).
 
 ## Launch Action Checklist
 - [ ] Configure SMTP or Resend API key for email verification (P1)
 - [ ] Set REDIS_URL in production or document limitation (P3)
 - [ ] Set GROQ_API_KEY (minimum) or add "AI features disabled until keys set" messaging (P2)
-- [ ] Verify Sentry config: replay and tracing removed per ADR-0013 (P5/P8)
-- [ ] Fix all interactive targets to min 44px (P6 — pending)
-- [ ] Adopt useDialogA11y on remaining dialogs (P7 — pending)
-- [ ] Resolve stage-2 ANSWER_MISMATCH data cleanup (P4 follow-up)
+- [ ] Verify Sentry config: replay and tracing removed per ADR-0013 (P5/P8) — DONE
+- [ ] Interactive-target audit — DONE (P6: palette + modal fixed; remaining inventory in baseline)
+- [ ] Dialog a11y adoption — DONE (P7: verified on cited dialogs)
+- [ ] Stage-2 ANSWER_MISMATCH data cleanup (P4 follow-up) — pending
 
 ## Key Files Analyzed
 - `AGENTS.md` - Project contract and conventions

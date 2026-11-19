@@ -3,7 +3,9 @@
 ## Plan Overview
 This plan addresses all 22 identified pitfalls from the deep dive analysis, organized by priority and dependency. Following the project's change workflow (UNDERSTAND → INSPECT → PLAN → IMPLEMENT → TEST → VERIFY → DOCUMENT).
 
-> **Update 2026-11-19 — Phase 1 status**: P0 (newly found: domain-event subscriber wiring lost in `fbab8e2`) DONE; P1–P3 DONE (startup config warnings wired via `backend/lib/startup-checks.ts`); P4 DONE — **staged** (9,744 safe rows deleted, cross-subject damage restored, dedupe re-scoped); P5/P8 DONE (verified compliant with ADR-0013). Phase 2 next.
+> **Update 2026-11-19 → 2026-11-20 — Phase status**: P0 DONE; P1–P3 DONE (startup warnings); P4 DONE — **staged** + repaired (ADR-074 re-scoped dedupe to `(subjectId, path)`); P5/P8 DONE; P6 DONE (WCAG 44px); P7 DONE (dialog a11y verified); P13 DONE (Asia/Dhaka); P14 DONE (dead sentry removed). **Phase 1 shipped as commits `7ec4151`** (+ follow-ups `d7e87a2`).
+>
+> **Phase 2 status (2026-11-20)**: P10 DONE (`d738065` — timer regimes labeled); P11 DONE (`90d7af5` — custom-exam difficulty band); P12 verified already fixed (batched `computeStreaks`); P15 DONE (funnel events wired); P16 verified already fixed (stateful `/g` regex gone). **P9 (math heal) apply pending** — interactive-transaction timeout raised to 30min; retry in flight (DB connectivity blip hit on first retry attempt). Phase 2 essentially complete; remaining: P9 heal fixpoint + final wrap-up.
 
 ---
 ## Phase 1: Critical Blockers (Launch-Blocking - Must Complete Before Release)
