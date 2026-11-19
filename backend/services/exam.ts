@@ -14,6 +14,7 @@ import {
   foldSiblingCounts,
   unionEligibleLeaves,
 } from "~backend/services/bangla-union";
+import { DIFFICULTIES } from "~backend/validation";
 import type {
   ExamSubjectDTO,
   ExamSelectionRequest,
@@ -234,9 +235,13 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
 
 // Leaf question counts per subject: path -> count. The path on a Question row
 // is always a leaf path, so this is the "available question pool" per subject.
-async function getLeafCounts(): Promise<Map<number, Map<string, number>>> {
+async function getLeafCounts(difficulty?: string): Promise<Map<number, Map<string, number>>> {
+  const where = difficulty
+    ? { difficulty: difficulty as "EASY" | "MEDIUM" | "HARD" }
+    : undefined;
   const rows = await prisma.question.groupBy({
     by: ["subjectId", "path"],
+    where,
     _count: { _all: true },
   });
   const map = new Map<number, Map<string, number>>();
@@ -252,7 +257,9 @@ async function getLeafCounts(): Promise<Map<number, Map<string, number>>> {
 }
 
 // ── Validation ─────────────────────────────────────────────
-function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionRequest> {
+function validateConfig(
+  config: ExamSelectionRequest,
+): Required<Omit<ExamSelectionRequest, "difficulty">> & { difficulty?: string } {
   if (!config || typeof config !== "object") {
     throw new AppError(400, "Invalid exam configuration.", "VALIDATION_ERROR");
   }
@@ -275,6 +282,19 @@ function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionReq
     : 0;
   if (durationSec > 24 * 60 * 60) {
     throw new AppError(400, "durationSec is unreasonably large.", "VALIDATION_ERROR");
+  }
+
+  // Optional difficulty band for the built exam (P-U1/P11): absent → mixed pool.
+  const difficulty =
+    typeof config.difficulty === "string" && config.difficulty.trim().length > 0
+      ? config.difficulty.trim().toUpperCase()
+      : undefined;
+  if (difficulty && !(DIFFICULTIES as readonly string[]).includes(difficulty)) {
+    throw new AppError(
+      400,
+      `difficulty must be one of: ${DIFFICULTIES.join(", ").toLowerCase()}.`,
+      "VALIDATION_ERROR",
+    );
   }
 
   for (const subject of config.subjects) {
@@ -333,6 +353,7 @@ function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionReq
     durationSec,
     shuffleQuestions: config.shuffleQuestions !== false,
     seed: typeof config.seed === "number" && Number.isInteger(config.seed) ? config.seed : Date.now(),
+    difficulty,
   };
 }
 
@@ -346,7 +367,7 @@ function groupWhere(subjectId: number, paths: string[]) {
 // ── Build an exam ──────────────────────────────────────────
 export async function buildCustomExam(config: ExamSelectionRequest): Promise<ExamBuildResultDTO> {
   const validated = validateConfig(config);
-  const { subjects, questionCount, durationSec, shuffleQuestions, seed } = validated;
+  const { subjects, questionCount, durationSec, shuffleQuestions, seed, difficulty } = validated;
 
   try {
     const subjectIds = subjects.map((s) => s.subjectId);
@@ -365,7 +386,7 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
     const nameBySubject = new Map(subjectRows.map((s) => [s.id, s.nameBn]));
 
     // Leaf question counts per subject drive availability + selection.
-    const leafCounts = await getLeafCounts();
+    const leafCounts = await getLeafCounts(difficulty);
 
     // Per-subject availability: eligible (subjectId, path) pairs — the union
     // of every selected node's subtree, plus sibling Bangla leaves mapped by
@@ -409,11 +430,19 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
           eligible.map(async (pair, li) => {
             const need = perLeafAlloc[li];
             if (need <= 0) return;
-            const ids = await pickQuestionIds({ subjectId: pair.subjectId, path: { in: [pair.path] } } as unknown as Record<string, unknown>, need, seed + si * 131_071 + li * 7919);
+            const ids = await pickQuestionIds(
+              {
+                subjectId: pair.subjectId,
+                path: { in: [pair.path] },
+                ...(difficulty ? { difficulty } : {}),
+              } as unknown as Record<string, unknown>,
+              need,
+              seed + si * 131_071 + li * 7919,
+            );
             leafIds.push(...ids);
           }),
         );
-        selected.push(...(await fetchQuestionsByIds(leafIds, nameBySubject)));
+        selected.push(...(await fetchQuestionsByIds(leafIds, nameBySubject, difficulty)));
       }),
     );
 
@@ -466,10 +495,13 @@ async function pickQuestionIds(
 async function fetchQuestionsByIds(
   ids: number[],
   nameBySubject: Map<number, string>,
+  difficulty?: string,
 ): Promise<ExamQuestionDTO[]> {
   if (ids.length === 0) return [];
   const rows = await prisma.question.findMany({
-    where: { id: { in: ids } },
+    where: difficulty
+      ? { id: { in: ids }, difficulty: difficulty as "EASY" | "MEDIUM" | "HARD" }
+      : { id: { in: ids } },
     select: {
       id: true,
       subjectId: true,

@@ -149,6 +149,22 @@ describe("CustomExamTab (config phase)", () => {
       expect(screen.getAllByText("20").length).toBeGreaterThan(0);
     });
   });
+
+  it("renders the difficulty band and toggles the chosen level (P-U1)", async () => {
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
+    const group = await screen.findByTestId("exam-difficulty");
+
+    const all = within(group).getByText("সব").closest("button") as HTMLElement;
+    const hard = within(group).getByText("কঠিন").closest("button") as HTMLElement;
+    const easy = within(group).getByText("সহজ").closest("button") as HTMLElement;
+    expect(all).toHaveAttribute("aria-pressed", "true");
+    expect(hard).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(hard);
+    expect(hard).toHaveAttribute("aria-pressed", "true");
+    expect(all).toHaveAttribute("aria-pressed", "false");
+    expect(easy).toHaveAttribute("aria-pressed", "false");
+  });
 });
 
 describe("CustomExamTab — results review colors + jump tiles", () => {

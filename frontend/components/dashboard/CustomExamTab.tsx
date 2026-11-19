@@ -106,6 +106,7 @@ export default function CustomExamTab() {
   const [selection, setSelection] = useState<Selection>({});
   const [durationMin, setDurationMin] = useState(15);
   const [durationTouched, setDurationTouched] = useState(false);
+  const [examDifficulty, setExamDifficulty] = useState<"ALL" | "EASY" | "MEDIUM" | "HARD">("ALL");
   const [showConfirm, setShowConfirm] = useState(false);
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
@@ -371,7 +372,7 @@ export default function CustomExamTab() {
   };
 
   const buildSelectionRequest = (): Server.ExamSelectionRequest =>
-    buildExamSelectionRequest(selectedSubjects, selection, totalCount, durationMin * 60);
+    buildExamSelectionRequest(selectedSubjects, selection, totalCount, durationMin * 60, examDifficulty);
 
   const confirmAndStart = async () => {
     setBuildLoading(true);
@@ -631,6 +632,33 @@ export default function CustomExamTab() {
               selection={selection}
               onSelectionChange={setSelection}
             />
+
+            {/* Difficulty band for the built exam (P-U1/P11) */}
+            <div className="glass-card rounded-xl border border-terminal-border p-4" data-testid="exam-difficulty">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm text-[var(--dashboard-text-secondary)] font-mono">কাঠিন্য</span>
+                {(["ALL", "EASY", "MEDIUM", "HARD"] as const).map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setExamDifficulty(d)}
+                    aria-pressed={examDifficulty === d}
+                    className={`min-h-[44px] px-3.5 rounded-xl border font-mono text-xs transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                      examDifficulty === d
+                        ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
+                        : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--accent)]/40"
+                    }`}
+                  >
+                    {d === "ALL" ? "সব" : DIFFICULTY_LABEL[d]}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono mt-2">
+                {examDifficulty === "ALL"
+                  ? "মিশ্র প্রশ্ন সমগ্র (সব কাঠিন্য)"
+                  : `শুধু ${DIFFICULTY_LABEL[examDifficulty]} কাঠিন্যের প্রশ্নগুলো`}
+              </p>
+            </div>
 
             {/* Total question count + duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

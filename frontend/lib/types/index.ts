@@ -814,6 +814,8 @@ export namespace Server {
     durationSec: number;
     shuffleQuestions?: boolean;
     seed?: number;
+    /** Optional difficulty band for the built exam (P-U1/P11). Absent = mixed pool. */
+    difficulty?: string;
   };
 
   export type ExamQuestionDTO = {

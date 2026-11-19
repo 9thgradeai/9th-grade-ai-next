@@ -561,7 +561,7 @@ export async function validateChangePasswordInput(body: unknown): Promise<Change
   return { currentPassword, newPassword, confirmPassword };
 }
 
-const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
+export const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 
 export function validateQuestionSearchParams(params: URLSearchParams): QuestionSearchFilters {
   const filters: QuestionSearchFilters = {};

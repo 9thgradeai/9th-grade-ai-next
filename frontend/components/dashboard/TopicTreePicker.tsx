@@ -63,6 +63,7 @@ export function buildExamSelectionRequest(
   selection: Selection,
   totalCount: number,
   durationSec: number,
+  difficulty?: Server.ExamSelectionRequest["difficulty"],
 ): Server.ExamSelectionRequest {
   return {
     subjects: subjects
@@ -74,6 +75,7 @@ export function buildExamSelectionRequest(
       })),
     questionCount: totalCount,
     durationSec,
+    ...(difficulty ? { difficulty } : {}),
   };
 }
 

@@ -232,6 +232,35 @@ describe("buildCustomExam", () => {
     });
   });
 
+  it("rejects an unknown difficulty band", async () => {
+    await expect(buildCustomExam({ ...config, difficulty: "EXTREME" })).rejects.toMatchObject({
+      statusCode: 400,
+    });
+  });
+
+  it("filters the built exam to the chosen difficulty band", async () => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    ] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: "ভাষা/বানান", _count: { _all: 10 } },
+    ] as never);
+    mockFindMany();
+
+    const exam = await buildCustomExam({
+      ...config,
+      subjects: [{ subjectId: 1, paths: ["ভাষা"] }],
+      difficulty: "EASY",
+    });
+
+    const pickCall = vi.mocked(prisma.question.findMany).mock.calls.find((c) => {
+      const where = c[0]?.where as { path?: { in?: string[] }; difficulty?: string } | undefined;
+      return !!where?.path?.in;
+    });
+    expect(pickCall?.[0]?.where).toMatchObject({ difficulty: "EASY" });
+    expect(pickCall?.[0]?.where).toMatchObject({ path: { in: expect.any(Array) } });
+  });
+
   it("keeps selection-tree counts strictly per ecosystem (no sibling fold)", async () => {
     const BANK = "01_বাংলা_ভাষা_ও_সাহিত্য";
     const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
