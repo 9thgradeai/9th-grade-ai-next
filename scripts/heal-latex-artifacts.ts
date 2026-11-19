@@ -10,8 +10,9 @@
  *
  * Contract (qb-forensics/migrate.ts parity):
  *   1. DRY-RUN (default) — full report, zero writes.
- *   2. --apply           — pg_dump backup, then a single transactional
- *                          write of all HEALED rows, then re-verify
+ *   2. --apply           — pg_dump backup, then batched transactional writes
+ *                          of all HEALED rows (chunks of 250 via short interactive
+ *                          transactions, each under the timeout cap), then re-verify
  *                          (must end with 0 HEALED rows = idempotent).
  *   3. --skip-backup     — opt out of the backup (not recommended).
  *
@@ -122,28 +123,33 @@ function printPlan(healed: RowResult[], sampleLimit: number): void {
 
 async function writeRows(healed: RowResult[]): Promise<number> {
   let written = 0;
-  await prisma.$transaction(
-    async (tx) => {
-      for (const r of healed) {
-        const data = r.changes;
-        if (r.table === "Question") {
-          await tx.question.update({ where: { id: r.id }, data });
-        } else if (r.table === "QuizQuestion") {
-          await tx.quizQuestion.update({ where: { id: r.id }, data });
-        } else if (r.table === "MockTestQuestion") {
-          await tx.mockTestQuestion.update({ where: { id: r.id }, data });
-        } else {
-          throw new Error(`unknown table ${r.table}`);
+  // The full HEALED set (6,174 rows / 13k fields over the Neon pooler) exceeded
+  // even the raised 30-min interactive-transaction ceiling, so write in bounded
+  // chunks: each chunk is its own short interactive transaction (well under the
+  // cap) and a failure aborts that chunk only — the pre-write pg_dump backup
+  // remains the recovery path for any partial progress.
+  const CHUNK_SIZE = 250;
+  for (let start = 0; start < healed.length; start += CHUNK_SIZE) {
+    const chunk = healed.slice(start, start + CHUNK_SIZE);
+    await prisma.$transaction(
+      async (tx) => {
+        for (const r of chunk) {
+          const data = r.changes;
+          if (r.table === "Question") {
+            await tx.question.update({ where: { id: r.id }, data });
+          } else if (r.table === "QuizQuestion") {
+            await tx.quizQuestion.update({ where: { id: r.id }, data });
+          } else if (r.table === "MockTestQuestion") {
+            await tx.mockTestQuestion.update({ where: { id: r.id }, data });
+          } else {
+            throw new Error(`unknown table ${r.table}`);
+          }
         }
-        written++;
-      }
-    },
-    // 1243+ sequential updates over a pooled remote connection exceed the
-    // interactive-transaction default by a wide margin. The first --apply run
-    // hit the 600s cap mid-write (686s elapsed) and aborted cleanly (backup
-    // taken, DB untouched); raise the ceiling so the fixpoint transaction fits.
-    { timeout: 1_800_000, maxWait: 30_000 },
-  );
+      },
+      { timeout: 120_000, maxWait: 30_000 },
+    );
+    written += chunk.length;
+  }
   return written;
 }
 
