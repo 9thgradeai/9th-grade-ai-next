@@ -139,8 +139,10 @@ async function writeRows(healed: RowResult[]): Promise<number> {
       }
     },
     // 1243+ sequential updates over a pooled remote connection exceed the
-    // 5s interactive-transaction default by a wide margin.
-    { timeout: 600_000, maxWait: 15_000 },
+    // interactive-transaction default by a wide margin. The first --apply run
+    // hit the 600s cap mid-write (686s elapsed) and aborted cleanly (backup
+    // taken, DB untouched); raise the ceiling so the fixpoint transaction fits.
+    { timeout: 1_800_000, maxWait: 30_000 },
   );
   return written;
 }
