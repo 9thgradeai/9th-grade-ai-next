@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkle, Copy, ArrowClockwise, Check } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
@@ -27,6 +27,19 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
   const [showSeed, setShowSeed] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Cache AI mnemonics per word so regeneration isn't needed on revisit.
+  const cacheKey = `vocab:mnemonic:${word.toLowerCase()}`;
+  useEffect(() => {
+    try {
+      const cached = window.localStorage.getItem(cacheKey);
+      if (cached) {
+        setAiMnemonic(cached);
+        setAiSource("cache");
+        setState("generated");
+      }
+    } catch { /* ignore */ }
+  }, [cacheKey]);
+
   const generate = useCallback(async () => {
     if (state === "generated") {
       setState("idle");
@@ -39,6 +52,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
       setAiMnemonic(result.mnemonic);
       setAiSource(result.source ?? "");
       setState("generated");
+      try { window.localStorage.setItem(cacheKey, result.mnemonic); } catch { /* ignore */ }
       onMnemonicGenerated?.(result.mnemonic);
     } catch {
       toast.error(t(lang, "AI মনেমন্ত্র তৈরি করা যায়নি", "Failed to generate AI mnemonic"));
