@@ -1236,6 +1236,13 @@ model VocabWord {
   examRelevance     Json? // ["BCS","Bank","9th Grade"]
   frequency         Int             @default(0)
   difficulty        String          @default("MEDIUM")
+  // ── Enrichment (optional; backfilled progressively) ──
+  ipa               String?
+  audioUrl          String?
+  register          String?         // formal | neutral | informal
+  collocations      Json?
+  wordFamily        Json?
+  confusables       Json?
   createdAt         DateTime        @default(now())
   progress          VocabProgress[]
   vocabDeckWords    VocabDeckWord[]

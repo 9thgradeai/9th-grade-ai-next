@@ -22,6 +22,12 @@ export type VocabWordDTO = {
   examRelevance: string[] | null;
   frequency: number;
   difficulty: string;
+  ipa?: string | null;
+  audioUrl?: string | null;
+  register?: string | null;
+  collocations?: string[] | null;
+  wordFamily?: string[] | null;
+  confusables?: string[] | null;
   progress?: {
     status: string;
     nextReview: string | null;
@@ -357,6 +363,7 @@ export async function getVocabWords(
 function toDTO(w: {
   id: number; word: string; bengaliMeaning: string; partOfSpeech: string; verbForms: unknown; synonyms: unknown; antonyms: unknown;
   exampleSentence: string; exampleSentenceBn: string | null; context: string; mnemonic: string; examRelevance: unknown; frequency: number; difficulty: string;
+  ipa?: string | null; audioUrl?: string | null; register?: string | null; collocations?: unknown; wordFamily?: unknown; confusables?: unknown;
 }, progress?: { status: string; nextReview: Date | null; interval: number; repetitions: number; totalReviews: number; correctCount: number; consecutiveCorrect?: number; isLeech?: boolean } | null): VocabWordDTO {
   return {
     id: w.id,
@@ -373,6 +380,12 @@ function toDTO(w: {
     examRelevance: (w.examRelevance as string[] | null) ?? null,
     frequency: w.frequency,
     difficulty: w.difficulty,
+    ipa: w.ipa ?? null,
+    audioUrl: w.audioUrl ?? null,
+    register: w.register ?? null,
+    collocations: (w.collocations as string[] | null) ?? null,
+    wordFamily: (w.wordFamily as string[] | null) ?? null,
+    confusables: (w.confusables as string[] | null) ?? null,
     progress: progress ? {
       status: progress.status,
       nextReview: progress.nextReview ? progress.nextReview.toISOString() : null,
