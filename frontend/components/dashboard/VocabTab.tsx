@@ -147,6 +147,30 @@ export default function VocabTab() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Flush queued offline reviews when connectivity returns.
+  useEffect(() => {
+    const flush = async () => {
+      try {
+        const key = "vocab:pendingReviews";
+        const q = JSON.parse(window.localStorage.getItem(key) || "[]");
+        if (!Array.isArray(q) || q.length === 0) return;
+        const remaining: unknown[] = [];
+        for (const item of q as { wordId: number; rating: number }[]) {
+          try {
+            await api.reviewVocab(item.wordId, item.rating);
+          } catch {
+            remaining.push(item);
+          }
+        }
+        window.localStorage.setItem(key, JSON.stringify(remaining));
+        if (remaining.length === 0) void load();
+      } catch { /* ignore */ }
+    };
+    flush();
+    window.addEventListener("online", flush);
+    return () => window.removeEventListener("online", flush);
+  }, [load]);
+
   // Reset per-session counters whenever the working set changes (filter/search),
   // so "Session: x/y correct" stays meaningful.
   useEffect(() => {
@@ -231,6 +255,13 @@ export default function VocabTab() {
       await api.reviewVocab(current.id, ratingNum);
     } catch {
       toast.error(t(lang, "রিভিউ সংরক্ষণ করা যায়নি", "Failed to save review"));
+      // Offline queue: persist for retry when connectivity returns.
+      try {
+        const key = "vocab:pendingReviews";
+        const q = JSON.parse(window.localStorage.getItem(key) || "[]");
+        q.push({ wordId: current.id, rating: ratingNum, at: Date.now() });
+        window.localStorage.setItem(key, JSON.stringify(q));
+      } catch { /* ignore */ }
       // Roll back: do not advance, do not count.
       setRevealed(false);
       return;
