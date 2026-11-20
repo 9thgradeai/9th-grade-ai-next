@@ -96,6 +96,8 @@ export default function VocabTab() {
 
   const [showQuiz, setShowQuiz] = useState(false);
   const [productionMode, setProductionMode] = useState(false);
+  const [listeningMode, setListeningMode] = useState(false);
+  const [contextMode, setContextMode] = useState(false);
   const [typedAnswer, setTypedAnswer] = useState("");
   const [productionResult, setProductionResult] = useState<"correct" | "wrong" | null>(null);
 
@@ -183,7 +185,8 @@ export default function VocabTab() {
   useEffect(() => {
     setTypedAnswer("");
     setProductionResult(null);
-  }, [current?.id]);
+    if (listeningMode) speak(current?.word ?? "");
+  }, [current?.id, listeningMode]);
 
   // 1s ticker: drives the countdown chip and advances one word when the
   // full period elapses under eligible conditions. Hidden tabs never
@@ -543,7 +546,7 @@ export default function VocabTab() {
                       context={current.context}
                       existingMnemonic={current.mnemonic}
                     />
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
                         onClick={() => { setProductionMode((p) => !p); setTypedAnswer(""); setProductionResult(null); }}
@@ -551,25 +554,51 @@ export default function VocabTab() {
                       >
                         {productionMode ? "Production: ON" : "Production: OFF"}
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => { setListeningMode((p) => !p); setTypedAnswer(""); setProductionResult(null); if (!listeningMode) speak(current?.word ?? ""); }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${listeningMode ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
+                      >
+                        {listeningMode ? "Listening: ON" : "Listening: OFF"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setContextMode((p) => !p); setTypedAnswer(""); setProductionResult(null); }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${contextMode ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
+                      >
+                        {contextMode ? "Context: ON" : "Context: OFF"}
+                      </button>
                     </div>
-                    {productionMode && (
-                      <div className="flex gap-2 items-center">
-                        <input
-                          value={typedAnswer}
-                          onChange={(e) => { setTypedAnswer(e.target.value); setProductionResult(null); }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              const ok = typedAnswer.trim().toLowerCase() === current.word.trim().toLowerCase();
-                              setProductionResult(ok ? "correct" : "wrong");
-                              if (ok) void review("good");
-                            }
-                          }}
-                          placeholder="Type the word…"
-                          className="flex-1 min-h-11 px-3 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm font-mono"
-                          aria-label="Type the word"
-                        />
-                        {productionResult === "correct" && <span className="text-emerald-600 text-sm font-mono">✓</span>}
-                        {productionResult === "wrong" && <span className="text-[var(--danger)] text-sm font-mono">✗ try again</span>}
+                    {(productionMode || listeningMode || contextMode) && (
+                      <div className="space-y-2">
+                        {contextMode && (
+                          <p className="text-sm leading-relaxed text-[var(--dashboard-text-secondary)]">
+                            { (current.exampleSentence || "").replace(new RegExp(current.word.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&"), "i"), "______") }
+                          </p>
+                        )}
+                        {listeningMode && (
+                          <button type="button" onClick={() => speak(current.word)} className="px-3 py-1.5 rounded-full text-xs font-mono border border-terminal-border bg-[var(--surface-raised)]">
+                            🔊 Play word
+                          </button>
+                        )}
+                        <div className="flex gap-2 items-center">
+                          <input
+                            value={typedAnswer}
+                            onChange={(e) => { setTypedAnswer(e.target.value); setProductionResult(null); }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                const ok = typedAnswer.trim().toLowerCase() === current.word.trim().toLowerCase();
+                                setProductionResult(ok ? "correct" : "wrong");
+                                if (ok) void review("good");
+                              }
+                            }}
+                            placeholder={listeningMode ? "What did you hear?" : contextMode ? "Fill the blank…" : "Type the word…"}
+                            className="flex-1 min-h-11 px-3 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm font-mono"
+                            aria-label="Type the word"
+                          />
+                          {productionResult === "correct" && <span className="text-emerald-600 text-sm font-mono">✓</span>}
+                          {productionResult === "wrong" && <span className="text-[var(--danger)] text-sm font-mono">✗ try again</span>}
+                        </div>
                       </div>
                     )}
                     <div className="flex gap-2 flex-wrap">

@@ -29,6 +29,8 @@ export type VocabWordDTO = {
     repetitions: number;
     totalReviews: number;
     correctCount: number;
+    consecutiveCorrect?: number;
+    isLeech?: boolean;
   } | null;
 };
 
@@ -355,7 +357,7 @@ export async function getVocabWords(
 function toDTO(w: {
   id: number; word: string; bengaliMeaning: string; partOfSpeech: string; verbForms: unknown; synonyms: unknown; antonyms: unknown;
   exampleSentence: string; exampleSentenceBn: string | null; context: string; mnemonic: string; examRelevance: unknown; frequency: number; difficulty: string;
-}, progress?: { status: string; nextReview: Date | null; interval: number; repetitions: number; totalReviews: number; correctCount: number } | null): VocabWordDTO {
+}, progress?: { status: string; nextReview: Date | null; interval: number; repetitions: number; totalReviews: number; correctCount: number; consecutiveCorrect?: number; isLeech?: boolean } | null): VocabWordDTO {
   return {
     id: w.id,
     word: w.word,
@@ -378,6 +380,8 @@ function toDTO(w: {
       repetitions: progress.repetitions,
       totalReviews: progress.totalReviews,
       correctCount: progress.correctCount,
+      consecutiveCorrect: progress.consecutiveCorrect,
+      isLeech: progress.isLeech,
     } : null,
   };
 }
@@ -401,11 +405,12 @@ export async function reviewVocabWord(userId: string, wordId: number, rating: nu
   }
 
   // SM-2 with 4-grade rating
-  let { ease, interval, repetitions, totalReviews, correctCount } = progress;
+  let { ease, interval, repetitions, totalReviews, correctCount, consecutiveCorrect, isLeech } = progress;
   totalReviews += 1;
 
   if (correct) {
     correctCount += 1;
+    if (clampedRating >= 3) consecutiveCorrect += 1;
     // Quality factor: Again=0, Hard=2, Good=3, Easy=4 (standard SM-2 scale mapped)
     const q = clampedRating === 3 ? 3 : clampedRating === 4 ? 4 : 2;
 
@@ -434,6 +439,8 @@ export async function reviewVocabWord(userId: string, wordId: number, rating: nu
       repetitions = 0;
       interval = 1;
       ease = Math.max(1.3, ease - 0.2);
+      consecutiveCorrect = 0;
+      if (totalReviews >= 8) isLeech = true;
     } else {
       // Hard: partial penalty
       repetitions = Math.max(0, repetitions - 1);
@@ -442,12 +449,13 @@ export async function reviewVocabWord(userId: string, wordId: number, rating: nu
     }
   }
 
-  const status = interval >= 21 ? "MASTERED" : interval >= 7 ? "REVIEW" : repetitions >= 1 ? "LEARNING" : "NEW";
+  const mastered = interval >= 21 && consecutiveCorrect >= 3;
+  const status = mastered ? "MASTERED" : interval >= 7 ? "REVIEW" : repetitions >= 1 ? "LEARNING" : "NEW";
   const nextReview = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000);
 
   const updated = await prisma.vocabProgress.update({
     where: { userId_wordId: { userId, wordId } },
-    data: { status, ease, interval, repetitions, nextReview, lastReviewedAt: now, totalReviews, correctCount },
+    data: { status, ease, interval, repetitions, nextReview, lastReviewedAt: now, totalReviews, correctCount, consecutiveCorrect, isLeech },
   });
   return { progress: updated, word };
 }
