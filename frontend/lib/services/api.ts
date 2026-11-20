@@ -982,6 +982,9 @@ export const api = {
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
     return cachedGet<{ words: Server.VocabWordDTO[] }>(`/api/vocab/words${suffix}`).then((d) => d.words);
   },
+
+  vocabAdd: (payload: Record<string, unknown>): Promise<{ created: boolean; word: Server.VocabWordDTO }> =>
+    fetch("/api/vocab/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).then((r) => r.json()),
   vocabStats: (): Promise<{ total: number; mastered: number; learning: number; due: number; reviewed: number }> =>
     cachedGet<{ total: number; mastered: number; learning: number; due: number; reviewed: number }>("/api/vocab/stats").then((d) => d),
   reviewVocab: (wordId: number, rating: number): Promise<VocabReviewResult> =>

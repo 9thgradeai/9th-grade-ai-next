@@ -97,6 +97,14 @@ export default function VocabTab() {
 
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSession, setShowSession] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [noteWords, setNoteWords] = useState<Server.VocabWordDTO[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(window.localStorage.getItem("vocab:notes") || "[]"); } catch { return []; }
+  });
+  const [newWord, setNewWord] = useState("");
+  const [newMeaning, setNewMeaning] = useState("");
+  const [addMsg, setAddMsg] = useState("");
   const [productionMode, setProductionMode] = useState(false);
   const [listeningMode, setListeningMode] = useState(false);
   const [contextMode, setContextMode] = useState(false);
@@ -148,6 +156,10 @@ export default function VocabTab() {
   }, [buildParams, lang, toast, statusFilter, searchQuery]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    try { window.localStorage.setItem("vocab:notes", JSON.stringify(noteWords)); } catch { /* ignore */ }
+  }, [noteWords]);
 
   // Flush queued offline reviews when connectivity returns.
   useEffect(() => {
@@ -431,6 +443,89 @@ export default function VocabTab() {
             </div>
           )}
 
+          {showNotes && (
+            <div className="rounded-2xl border border-terminal-border bg-[var(--surface-raised)] p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold">My Vocab Notes ({noteWords.length})</h3>
+                <button onClick={() => setShowNotes(false)} className="text-xs font-mono text-[var(--dashboard-text-muted)]">Close</button>
+              </div>
+
+              {/* Add new word */}
+              <div className="flex gap-2 flex-wrap">
+                <input value={newWord} onChange={(e) => setNewWord(e.target.value)} placeholder="New word" className="flex-1 min-w-[120px] min-h-9 px-3 rounded-lg bg-[var(--surface)] border border-terminal-border text-sm font-mono" />
+                <input value={newMeaning} onChange={(e) => setNewMeaning(e.target.value)} placeholder="Meaning (Bengali)" className="flex-1 min-w-[120px] min-h-9 px-3 rounded-lg bg-[var(--surface)] border border-terminal-border text-sm font-mono" />
+                <button
+                  onClick={async () => {
+                    if (!newWord.trim() || !newMeaning.trim()) { setAddMsg("Word and meaning required"); return; }
+                    try {
+                      const res = await api.vocabAdd({ word: newWord.trim(), bengaliMeaning: newMeaning.trim() });
+                      setAddMsg(res.created ? "Added to DB" : "Already exists — linked");
+                      if (res.word) setNoteWords((p) => (p.some((w) => w.id === res.word.id) ? p : [...p, res.word]));
+                      setNewWord(""); setNewMeaning("");
+                    } catch {
+                      setAddMsg("Failed to add");
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs"
+                >
+                  Add
+                </button>
+              </div>
+              {addMsg && <p className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">{addMsg}</p>}
+
+              {/* Notes list */}
+              <div className="max-h-60 overflow-y-auto space-y-2">
+                {noteWords.length === 0 && <p className="text-xs font-mono text-[var(--dashboard-text-muted)]">No saved words yet.</p>}
+                {noteWords.map((w) => (
+                  <div key={w.id} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-[var(--surface)] border border-terminal-border">
+                    <div className="min-w-0">
+                      <span className="font-bold text-sm">{w.word}</span>
+                      <span className="ml-2 text-xs text-[var(--dashboard-text-muted)]">{w.bengaliMeaning}</span>
+                    </div>
+                    <button onClick={() => setNoteWords((p) => p.filter((x) => x.id !== w.id))} className="text-xs text-[var(--danger)]">✕</button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Export */}
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => {
+                    const txt = noteWords.map((w) => `${w.word} — ${w.bengaliMeaning}\n  Synonyms: ${(w.synonyms ?? []).join(", ")}\n  Antonyms: ${(w.antonyms ?? []).join(", ")}\n  Example: ${w.exampleSentence}\n`).join("\n");
+                    const blob = new Blob([txt], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a"); a.href = url; a.download = "vocab-notes.txt"; a.click(); URL.revokeObjectURL(url);
+                  }}
+                  className="px-3 py-1.5 rounded-lg border border-terminal-border font-mono text-xs"
+                >
+                  Export TXT
+                </button>
+                <button
+                  onClick={() => {
+                    const html = `<html><body><h1>Vocab Notes</h1>${noteWords.map((w) => `<h3>${w.word}</h3><p><b>Meaning:</b> ${w.bengaliMeaning}</p><p><b>Synonyms:</b> ${(w.synonyms ?? []).join(", ")}</p><p><b>Antonyms:</b> ${(w.antonyms ?? []).join(", ")}</p><p><b>Example:</b> ${w.exampleSentence}</p>`).join("")}</body></html>`;
+                    const blob = new Blob([html], { type: "application/msword" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a"); a.href = url; a.download = "vocab-notes.doc"; a.click(); URL.revokeObjectURL(url);
+                  }}
+                  className="px-3 py-1.5 rounded-lg border border-terminal-border font-mono text-xs"
+                >
+                  Export DOC
+                </button>
+                <button
+                  onClick={() => {
+                    const w = window.open("", "_blank");
+                    if (!w) return;
+                    w.document.write(`<html><head><title>Vocab Notes</title></head><body><h1>Vocab Notes</h1>${noteWords.map((x) => `<h3>${x.word}</h3><p>${x.bengaliMeaning}</p>`).join("")}<script>window.print();</script></body></html>`);
+                    w.document.close();
+                  }}
+                  className="px-3 py-1.5 rounded-lg border border-terminal-border font-mono text-xs"
+                >
+                  Export PDF (print)
+                </button>
+              </div>
+            </div>
+          )}
+
           <WordOfDayCard />
 
           {/* ─── Toolbar: search + status + quiz ─── */}
@@ -471,6 +566,21 @@ export default function VocabTab() {
               <option value="Bank">Bank</option>
               <option value="9th Grade">9th Grade</option>
             </select>
+            <button
+              onClick={() => {
+                if (!current) return;
+                setNoteWords((p) => (p.some((w) => w.id === current.id) ? p : [...p, current]));
+              }}
+              className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--surface-raised)] text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all flex items-center gap-1.5"
+            >
+              Save note
+            </button>
+            <button
+              onClick={() => setShowNotes(true)}
+              className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-terminal-border bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 transition-all flex items-center gap-1.5"
+            >
+              Notes ({noteWords.length})
+            </button>
             <button
               onClick={() => setShowSession(true)}
               className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--surface-raised)] text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all flex items-center gap-1.5"

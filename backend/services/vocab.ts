@@ -532,6 +532,55 @@ export type VocabQuizWordDTO = {
   collocation?: { word: string; partner: string; meaning: string };
 };
 
+/**
+ * Add a new vocabulary word to the shared corpus.
+ * - Validates required fields.
+ * - Rejects duplicates (case-insensitive) so the corpus stays clean.
+ * - Returns { created, existing } so the caller can react accordingly.
+ */
+export async function addVocabWord(input: {
+  word: string;
+  bengaliMeaning: string;
+  partOfSpeech?: string;
+  synonyms?: string[];
+  antonyms?: string[];
+  exampleSentence?: string;
+  context?: string;
+  mnemonic?: string;
+  examRelevance?: string[];
+  frequency?: number;
+  difficulty?: string;
+}): Promise<{ created: boolean; word: Awaited<ReturnType<typeof prisma.vocabWord.findUnique>> }> {
+  const word = (input.word ?? "").trim();
+  if (!word || word.length < 2) throw new Error("Word is required");
+  const meaning = (input.bengaliMeaning ?? "").trim();
+  if (!meaning) throw new Error("Meaning is required");
+
+  const existing = await prisma.vocabWord.findFirst({
+    where: { word: { equals: word, mode: "insensitive" } },
+  });
+  if (existing) {
+    return { created: false, word: existing };
+  }
+
+  const created = await prisma.vocabWord.create({
+    data: {
+      word,
+      bengaliMeaning: meaning,
+      partOfSpeech: input.partOfSpeech?.trim() || "Noun",
+      synonyms: input.synonyms ?? undefined,
+      antonyms: input.antonyms ?? undefined,
+      exampleSentence: input.exampleSentence?.trim() || `Example with ${word}.`,
+      context: input.context?.trim() || "User-added.",
+      mnemonic: input.mnemonic?.trim() || "",
+      examRelevance: input.examRelevance ?? undefined,
+      frequency: input.frequency ?? 50,
+      difficulty: input.difficulty ?? "MEDIUM",
+    },
+  });
+  return { created: true, word: created };
+}
+
 export async function getVocabQuizWords(
   userId: string,
   opts?: { count?: number; difficulty?: string; mode?: VocabQuizMode },
