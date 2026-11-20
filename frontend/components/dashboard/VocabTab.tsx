@@ -82,7 +82,14 @@ export default function VocabTab() {
 
   const [sessionReviewed, setSessionReviewed] = useState(0);
   const [sessionCorrect, setSessionCorrect] = useState(0);
-  const [dailyGoal] = useState(20);
+  const [dailyGoal, setDailyGoal] = useState<number>(() => {
+    if (typeof window === "undefined") return 20;
+    const v = Number(window.localStorage.getItem("vocab:dailyGoal"));
+    return Number.isFinite(v) && v > 0 && v <= 200 ? v : 20;
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") window.localStorage.setItem("vocab:dailyGoal", String(dailyGoal));
+  }, [dailyGoal]);
   const [dailyProgress, setDailyProgress] = useState<{ wordsReviewed: number; streak: number } | null>(null);
 
   const [showQuiz, setShowQuiz] = useState(false);
@@ -131,11 +138,23 @@ export default function VocabTab() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Reset per-session counters whenever the working set changes (filter/search),
+  // so "Session: x/y correct" stays meaningful.
+  useEffect(() => {
+    setSessionReviewed(0);
+    setSessionCorrect(0);
+  }, [statusFilter, searchQuery]);
+
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return words;
     return words.filter((w) => w.word.toLowerCase().includes(q) || w.bengaliMeaning.toLowerCase().includes(q));
   }, [words, searchQuery]);
+
+  // Clamp the cursor whenever the filtered list shrinks (search/filter/re-fetch).
+  useEffect(() => {
+    setIdx((i) => (filtered.length === 0 ? 0 : Math.min(i, filtered.length - 1)));
+  }, [filtered.length]);
 
   const current = filtered[idx] ?? filtered[0];
 
@@ -191,10 +210,15 @@ export default function VocabTab() {
   const review = useCallback(async (rating: ReviewRating) => {
     if (!current) return;
     const ratingNum = { again: 1, hard: 2, good: 3, easy: 4 }[rating];
+    // Optimistic: remember where we are so we can roll back on failure.
+    const prevIdx = idx;
     try {
       await api.reviewVocab(current.id, ratingNum);
     } catch {
       toast.error(t(lang, "রিভিউ সংরক্ষণ করা যায়নি", "Failed to save review"));
+      // Roll back: do not advance, do not count.
+      setRevealed(false);
+      return;
     }
     setRevealed(false);
     setSessionReviewed((p) => p + 1);
@@ -206,9 +230,10 @@ export default function VocabTab() {
       if (s) setStats(s);
       api.vocabDaily().then((d) => setDailyProgress(d)).catch(() => {});
     } catch {
-      // non-critical refresh failure
+      // non-critical refresh failure; keep the optimistic advance
     }
-  }, [current, filtered.length, buildParams, lang, toast]);
+    void prevIdx;
+  }, [current, idx, filtered.length, buildParams, lang, toast]);
 
   const handleSwipe = useCallback((dir: "left" | "right" | "up" | "down") => {
     if (section !== "words" || showQuiz) return;
@@ -315,6 +340,18 @@ export default function VocabTab() {
                   <span className="font-mono text-[var(--dashboard-text-muted)]">
                     {t(lang, "আজকের লক্ষ্য", "Daily goal")}: {dailyProgress.wordsReviewed}/{dailyGoal}
                   </span>
+                  <input
+                    type="number"
+                    min={5}
+                    max={200}
+                    value={dailyGoal}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      if (Number.isFinite(v) && v > 0) setDailyGoal(Math.min(200, Math.max(5, Math.round(v))));
+                    }}
+                    className="w-14 h-7 px-1 rounded border border-terminal-border bg-[var(--surface-raised)] text-xs font-mono text-center"
+                    aria-label="Daily goal"
+                  />
                   {dailyProgress.streak > 1 && (
                     <span className="flex items-center gap-1 text-amber-500 font-mono">
                       <Lightning className="w-3 h-3" /> {dailyProgress.streak}d
@@ -423,6 +460,12 @@ export default function VocabTab() {
                       {current.progress && (
                         <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono border ${STATUS_COLORS[current.progress.status] ?? STATUS_COLORS.new}`}>
                           {(current.progress.status ?? "new").toUpperCase()}
+                        </span>
+                      )}
+                      {current.progress?.nextReview && (
+                        <span className="px-2 py-0.5 rounded-full text-[11px] font-mono border border-terminal-border text-[var(--dashboard-text-muted)]" title="Next review">
+                          next {new Date(current.progress.nextReview).toLocaleDateString()}
+                          {typeof current.progress.interval === "number" ? ` · ${current.progress.interval}d` : ""}
                         </span>
                       )}
                     </div>
