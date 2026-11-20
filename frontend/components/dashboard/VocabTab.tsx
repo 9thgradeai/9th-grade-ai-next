@@ -75,6 +75,7 @@ export default function VocabTab() {
   const [idx, setIdx] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [stats, setStats] = useState<{ total: number; mastered: number; learning: number; due: number; reviewed: number } | null>(null);
+  const [analytics, setAnalytics] = useState<Server.VocabAnalyticsDTO | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [examFilter, setExamFilter] = useState<string>("ALL");
@@ -135,6 +136,7 @@ export default function VocabTab() {
       setRevealed(false);
       if (st) setStats(st);
       api.vocabDaily().then((d) => setDailyProgress(d)).catch(() => {});
+      api.vocabAnalytics().then((a) => setAnalytics(a)).catch(() => {});
     } catch {
       toast.error(t(lang, "ভোকাব লোড করা যায়নি", "Failed to load vocabulary"));
     }
@@ -377,6 +379,19 @@ export default function VocabTab() {
               </div>
             )}
           </div>
+
+          {analytics?.topWeakWords && analytics.topWeakWords.length > 0 && (
+            <div className="rounded-2xl border border-terminal-border bg-[var(--surface-raised)] p-4">
+              <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] mb-2">Weakest words (focus next)</p>
+              <div className="flex flex-wrap gap-2">
+                {analytics.topWeakWords.map((w) => (
+                  <span key={w.word} className="px-2 py-1 rounded-full bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 text-xs font-mono text-[var(--dashboard-danger)]">
+                    {w.word} · {w.accuracy}%
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <WordOfDayCard />
 
