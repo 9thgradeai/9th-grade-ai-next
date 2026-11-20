@@ -21,6 +21,7 @@ import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useSwipeGesture } from "@/lib/hooks/useSwipeGesture";
 import QuizMode from "./vocab/QuizMode";
+import VocabSessionRunner from "./vocab/VocabSessionRunner";
 import WordOfDayCard from "./vocab/WordOfDayCard";
 import IdiomsTab from "./vocab/IdiomsTab";
 import AIMnemonicButton from "./vocab/AIMnemonicButton";
@@ -95,6 +96,7 @@ export default function VocabTab() {
   const [dailyProgress, setDailyProgress] = useState<{ wordsReviewed: number; streak: number } | null>(null);
 
   const [showQuiz, setShowQuiz] = useState(false);
+  const [showSession, setShowSession] = useState(false);
   const [productionMode, setProductionMode] = useState(false);
   const [listeningMode, setListeningMode] = useState(false);
   const [contextMode, setContextMode] = useState(false);
@@ -356,6 +358,8 @@ export default function VocabTab() {
 
       {section === "idioms" ? (
         <IdiomsTab />
+      ) : showSession ? (
+        <VocabSessionRunner onExit={() => setShowSession(false)} />
       ) : showQuiz ? (
         <QuizMode onExit={() => setShowQuiz(false)} />
       ) : (
@@ -467,6 +471,12 @@ export default function VocabTab() {
               <option value="Bank">Bank</option>
               <option value="9th Grade">9th Grade</option>
             </select>
+            <button
+              onClick={() => setShowSession(true)}
+              className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--surface-raised)] text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all flex items-center gap-1.5"
+            >
+              Session
+            </button>
             <button
               onClick={() => setShowQuiz(true)}
               className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5"
