@@ -16,8 +16,9 @@ export async function GET(request: Request) {
     const due = searchParams.get("due") ?? undefined;
     const status = searchParams.get("status") ?? undefined;
     const kind = searchParams.get("kind") ?? undefined;
+    const all = searchParams.get("all") === "true";
     const userId = await getUserIdFromRequest(request);
-    const words = await getVocabWords(userId ?? undefined, { limit, exam, difficulty, search, due, status, kind });
+    const words = await getVocabWords(userId ?? undefined, { limit, exam, difficulty, search, due, status, kind, all });
     const res = NextResponse.json({ words });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

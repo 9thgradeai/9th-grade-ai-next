@@ -969,7 +969,7 @@ export const api = {
   },
 
   // ── Vocab — AI-Powered Vocabulary Mastery ──────────
-  vocabWords: (params?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string; kind?: "words" | "idioms" }): Promise<Server.VocabWordDTO[]> => {
+  vocabWords: (params?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string; kind?: "words" | "idioms"; all?: boolean }): Promise<Server.VocabWordDTO[]> => {
     const qs = new URLSearchParams();
     if (params?.limit) qs.set("limit", String(params.limit));
     if (params?.exam) qs.set("exam", params.exam);
@@ -978,6 +978,7 @@ export const api = {
     if (params?.due) qs.set("due", params.due);
     if (params?.status) qs.set("status", params.status);
     if (params?.kind) qs.set("kind", params.kind);
+    if (params?.all) qs.set("all", "true");
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
     return cachedGet<{ words: Server.VocabWordDTO[] }>(`/api/vocab/words${suffix}`).then((d) => d.words);
   },

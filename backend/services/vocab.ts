@@ -264,9 +264,9 @@ export async function seedVocabWords() {
 
 export async function getVocabWords(
   userId?: string,
-  opts?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string; kind?: string },
+  opts?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string; kind?: string; all?: boolean },
 ) {
-  const limit = Math.min(opts?.limit ?? 20, 100);
+  const limit = Math.min(opts?.limit ?? 20, 500);
 
   // DB-level difficulty filter
   const where: Record<string, unknown> = {};
@@ -287,7 +287,7 @@ export async function getVocabWords(
 
   const words = await prisma.vocabWord.findMany({
     orderBy: [{ frequency: "desc" }, { word: "asc" }],
-    take: 200,
+    take: opts?.all ? 5000 : 200,
     where,
   });
 

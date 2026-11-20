@@ -56,7 +56,7 @@ function speak(word: string) {
 }
 
 /** Auto-rotation period: hands-free word tour, one step per 10 minutes. */
-export const WORD_ROTATE_MS = 10 * 60 * 1000;
+export const WORD_ROTATE_MS = 2 * 60 * 1000;
 
 /** "09:42" countdown text for the rotation chip. Clamped, never negative. */
 export function formatRotationCountdown(remainingMs: number): string {
@@ -484,11 +484,17 @@ export default function VocabTab() {
               <GameController className="w-3.5 h-3.5" /> {t(lang, "কুইজ", "Quiz")}
             </button>
             <button
-              onClick={() => {
+              onClick={async () => {
                 setStatusFilter("all");
                 setSearchQuery("");
                 setIdx(0);
                 setRevealed(false);
+                setLoading(true);
+                try {
+                  const ws = await api.vocabWords({ all: true, kind: "words" });
+                  setWords(ws.map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" })));
+                } catch { /* keep */ }
+                setLoading(false);
               }}
               className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-all flex items-center gap-1.5"
             >
