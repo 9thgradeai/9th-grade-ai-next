@@ -531,6 +531,14 @@ export namespace Server {
     count: number;
   };
 
+  /** Distinct PYQ facet values for one subject (server-aggregated, not a
+   *  limited question page — 5k+ rows make client-side derivation unsound). */
+  export type QuestionBankFacetsDTO = {
+    years: number[];
+    terms: string[];
+    sources: string[];
+  };
+
   export type ExamArchiveDTO = {
     id: number;
     name: string;
@@ -1432,6 +1440,7 @@ export type TopicDTO = Server.TopicDTO;
 export type QuestionDTO = Server.QuestionDTO;
 export type VocabWordDTO = Server.VocabWordDTO;
 export type QuestionBankCategoryDTO = Server.QuestionBankCategoryDTO;
+export type QuestionBankFacetsDTO = Server.QuestionBankFacetsDTO;
 export type ExamPaperDTO = Server.ExamPaperDTO;
 export type ExamDTO = Server.ExamDTO;
 export type ExamCategoryDTO = Server.ExamCategoryDTO;

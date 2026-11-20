@@ -24,6 +24,7 @@ import {
 import type {
   QuestionDTO,
   QuestionBankCategoryDTO,
+  QuestionBankFacetsDTO,
   ExamCategoryDTO,
   FlashcardDTO,
   StudyTaskDTO,
@@ -383,6 +384,72 @@ export async function getQuestionBankCategories(ecosystemId?: number): Promise<Q
   } catch {
     throw new InternalServerError("Failed to fetch question bank categories");
   }
+}
+
+/**
+ * Distinct PYQ facet values (year / BCS term / source exam) for one subject.
+ *
+ * The Question Bank used to derive its filter chips from a 200-row page, which
+ * silently loses terms once a subject holds thousands of rows. This aggregates
+ * in the database instead, scoped exactly like the question list (subject +
+ * ecosystem + `paperId NOT NULL`), so every option is represented regardless
+ * of page size.
+ */
+export async function getQuestionBankFacets(opts: {
+  subject?: string;
+  ecosystemId?: number;
+}): Promise<QuestionBankFacetsDTO> {
+  try {
+    const where = (await buildQuestionWhere({
+      subject: opts.subject,
+      ecosystemId: opts.ecosystemId,
+      pyqOnly: true,
+    })) as Record<string, unknown>;
+
+    const [years, terms, sources] = await Promise.all([
+      prisma.question.groupBy({
+        by: ["year"],
+        where: { ...where, year: { not: null } } as never,
+        _count: { _all: true },
+      }),
+      prisma.question.groupBy({
+        by: ["bcsTerm"],
+        where: { ...where, bcsTerm: { not: null } } as never,
+        _count: { _all: true },
+      }),
+      prisma.question.groupBy({
+        by: ["sourceExam"],
+        where: { ...where, sourceExam: { not: "" } } as never,
+        _count: { _all: true },
+      }),
+    ]);
+
+    return {
+      years: years
+        .map((r) => r.year as number | null)
+        .filter((y): y is number => typeof y === "number")
+        .sort((a, b) => b - a),
+      terms: terms
+        .map((r) => r.bcsTerm as string | null)
+        .filter((t): t is string => typeof t === "string" && t.length > 0)
+        .sort((a, b) => ordinalValue(b) - ordinalValue(a)),
+      sources: sources
+        .map((r) => r.sourceExam)
+        .filter((s): s is string => typeof s === "string" && s.length > 0)
+        .sort((a, b) => a.localeCompare(b)),
+    };
+  } catch {
+    throw new InternalServerError("Failed to fetch question bank facets");
+  }
+}
+
+/** Numeric order of a term label ("50th", "11th", legacy "৪৮তম বিসিএস"). */
+function ordinalValue(term: string): number {
+  const en = term.match(/\d+/);
+  if (en) return Number(en[0]);
+  const bn = "০১২৩৪৫৬৭৮৯";
+  const digits = [...term].map((c) => bn.indexOf(c)).filter((i) => i >= 0);
+  return digits.length ? Number(digits.join("")) : 0;
 }
 
 // ── Exam library (BCS → Preliminary → specific paper) ────

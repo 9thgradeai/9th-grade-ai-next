@@ -495,6 +495,14 @@ export const api = {
     return cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>(`/api/question-bank/categories${qs}`).then((d) => d.categories);
   },
 
+  /** Distinct PYQ facet values (years / BCS terms / source exams) for a subject. */
+  questionBankFacets: (subject: string, ecosystem?: string): Promise<Server.QuestionBankFacetsDTO> => {
+    const qs = new URLSearchParams();
+    qs.set("subject", subject);
+    if (ecosystem) qs.set("ecosystem", ecosystem);
+    return cachedGet<{ facets: Server.QuestionBankFacetsDTO }>(`/api/question-bank/facets?${qs.toString()}`).then((d) => d.facets);
+  },
+
   /** Exam-library hierarchy: ExamCategory → Exam → ExamPaper (BCS → Preliminary → specific paper). */
   examLibrary: (ecosystem?: string): Promise<Server.ExamCategoryDTO[]> => {
     const qs = ecosystem ? `?ecosystem=${encodeURIComponent(ecosystem)}` : "";

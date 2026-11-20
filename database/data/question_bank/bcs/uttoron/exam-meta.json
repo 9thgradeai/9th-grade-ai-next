@@ -1,0 +1,289 @@
+{
+  "10th_bcs": {
+    "title": "10th BCS",
+    "date": "1989-01-01",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "11st_bcs": {
+    "title": "11st BCS",
+    "date": "1991-10-17",
+    "totalMarks": 100,
+    "setCode": "পদ্মা",
+    "totalQuestions": 100
+  },
+  "12nd_bcs": {
+    "title": "12nd BCS",
+    "date": "1991-01-01",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "13rd_bcs": {
+    "title": "13rd BCS",
+    "date": "1992-01-01",
+    "totalMarks": 100,
+    "setCode": "চামেলী",
+    "totalQuestions": 100
+  },
+  "14th_bcs": {
+    "title": "14th BCS",
+    "date": "1992-01-01",
+    "totalMarks": 100,
+    "setCode": "পদ্ম",
+    "totalQuestions": 100
+  },
+  "15th_bcs": {
+    "title": "15th BCS",
+    "date": "1993-01-01",
+    "totalMarks": 100,
+    "setCode": "শাপলা",
+    "totalQuestions": 100
+  },
+  "16th_bcs": {
+    "title": "16th BCS",
+    "date": "1994-01-01",
+    "totalMarks": 100,
+    "setCode": "শাপলা",
+    "totalQuestions": 100
+  },
+  "17th_bcs": {
+    "title": "17th BCS",
+    "date": "1995-01-01",
+    "totalMarks": 100,
+    "setCode": "পদ্ম",
+    "totalQuestions": 100
+  },
+  "18th_bcs": {
+    "title": "18th BCS",
+    "date": "1996-10-10",
+    "totalMarks": 100,
+    "setCode": "দোয়েল",
+    "totalQuestions": 100
+  },
+  "19th_bcs": {
+    "title": "19th BCS",
+    "date": "1998-12-11",
+    "totalMarks": 50,
+    "setCode": "শাপলা",
+    "totalQuestions": 50
+  },
+  "20th_bcs": {
+    "title": "20th BCS",
+    "date": "1998-12-11",
+    "totalMarks": 100,
+    "setCode": "পদ্ম",
+    "totalQuestions": 100
+  },
+  "21st_bcs": {
+    "title": "21st BCS",
+    "date": "1999-12-24",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "22nd_bcs": {
+    "title": "22nd BCS",
+    "date": "2001-02-02",
+    "totalMarks": 100,
+    "setCode": "চামেলী",
+    "totalQuestions": 100
+  },
+  "23rd_bcs": {
+    "title": "23rd BCS",
+    "date": "2001-03-23",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "24th_bcs": {
+    "title": "24th BCS",
+    "date": "2003-08-08",
+    "totalMarks": 100,
+    "setCode": "পদ্ম",
+    "totalQuestions": 100
+  },
+  "25th_bcs": {
+    "title": "25th BCS",
+    "date": "2004-03-09",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "26th_bcs": {
+    "title": "26th BCS",
+    "date": "2000-12-13",
+    "totalMarks": 200,
+    "setCode": "সুরমা",
+    "totalQuestions": 200
+  },
+  "27th_bcs": {
+    "title": "27th BCS",
+    "date": "2005-11-18",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "28th_bcs": {
+    "title": "28th BCS",
+    "date": "2008-11-28",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "29th_bcs": {
+    "title": "29th BCS",
+    "date": "2009-08-14",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "30th_bcs": {
+    "title": "30th BCS",
+    "date": "2010-07-30",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "31st_bcs": {
+    "title": "31st BCS",
+    "date": "2011-05-27",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "32nd_bcs": {
+    "title": "32nd BCS",
+    "date": "2012-03-03",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "33rd_bcs": {
+    "title": "33rd BCS",
+    "date": "2012-06-01",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "34th_bcs": {
+    "title": "34th BCS",
+    "date": "2013-05-24",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "35th_bcs": {
+    "title": "35th BCS",
+    "date": "2015-03-06",
+    "totalMarks": 200,
+    "setCode": "চামেলি",
+    "totalQuestions": 200
+  },
+  "36th_bcs": {
+    "title": "36th BCS",
+    "date": "2016-01-08",
+    "totalMarks": 200,
+    "setCode": "দোলনচাঁপা",
+    "totalQuestions": 200
+  },
+  "37th_bcs": {
+    "title": "37th BCS",
+    "date": "2016-09-30",
+    "totalMarks": 200,
+    "setCode": "চিত্রা",
+    "totalQuestions": 200
+  },
+  "38th_bcs": {
+    "title": "38th BCS",
+    "date": "2017-12-29",
+    "totalMarks": 200,
+    "setCode": "সুরমা",
+    "totalQuestions": 200
+  },
+  "39th_bcs": {
+    "title": "39th BCS",
+    "date": "2018-08-03",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "40th_bcs": {
+    "title": "40th BCS",
+    "date": "2019-05-03",
+    "totalMarks": 200,
+    "setCode": "সুরমা",
+    "totalQuestions": 200
+  },
+  "41st_bcs": {
+    "title": "41st BCS",
+    "date": "2021-03-19",
+    "totalMarks": 200,
+    "setCode": "হাসনাহেনা",
+    "totalQuestions": 200
+  },
+  "42nd_bcs": {
+    "title": "42nd BCS",
+    "date": "2021-02-26",
+    "totalMarks": 100,
+    "setCode": "সুরমা",
+    "totalQuestions": 100
+  },
+  "43rd_bcs": {
+    "title": "43rd BCS",
+    "date": "2021-10-29",
+    "totalMarks": 200,
+    "setCode": "নীলকণ্ঠ",
+    "totalQuestions": 200
+  },
+  "44th_bcs": {
+    "title": "44th BCS",
+    "date": "2022-05-27",
+    "totalMarks": 200,
+    "setCode": "হেমন্ত",
+    "totalQuestions": 200
+  },
+  "45th_bcs": {
+    "title": "45th BCS",
+    "date": "2023-05-19",
+    "totalMarks": 200,
+    "setCode": "মনপুরা",
+    "totalQuestions": 200
+  },
+  "46th_bcs": {
+    "title": "46th BCS",
+    "date": "2024-04-26",
+    "totalMarks": 200,
+    "setCode": "কপোতাক্ষ",
+    "totalQuestions": 200
+  },
+  "47th_bcs": {
+    "title": "47th BCS",
+    "date": "2025-09-19",
+    "totalMarks": 200,
+    "setCode": "রক্তকমল",
+    "totalQuestions": 200
+  },
+  "48th_bcs": {
+    "title": "48th BCS",
+    "date": "2025-07-18",
+    "totalMarks": 100,
+    "setCode": "০২",
+    "totalQuestions": 100
+  },
+  "49th_bcs": {
+    "title": "49th BCS",
+    "date": "2025-10-10",
+    "totalMarks": 100,
+    "setCode": "3",
+    "totalQuestions": 100
+  },
+  "50th_bcs": {
+    "title": "50th BCS",
+    "date": "2026-01-30",
+    "totalMarks": 200,
+    "setCode": "ধরলা",
+    "totalQuestions": 200
+  }
+}

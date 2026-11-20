@@ -43,6 +43,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import RichText from "@/components/ui/RichText";
 import { SkeletonTable } from "@/components/ui/Skeleton";
 import ExamLibraryView from "@/components/dashboard/ExamLibraryView";
+import MediaAttachmentView from "@/components/dashboard/practice/MediaAttachmentView";
 import ScrollPractice from "@/components/dashboard/ScrollPractice";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
@@ -195,7 +196,16 @@ function QuestionCard({ item, index, expanded, onToggle, query, bookmarked, onBo
         >
           <span className="sr-only">প্রশ্ন {index + 1}. </span>
           <span className="text-base leading-relaxed font-medium text-[var(--text-primary)]">
-            <RichText text={item.question} query={query} />
+            {item.question ? (
+              <RichText text={item.question} query={query} />
+            ) : (
+              <span className="text-sm font-normal text-[var(--text-muted)]">(চিত্রনির্ভর প্রশ্ন)</span>
+            )}
+            {item.media && item.media.length > 0 && item.question === "" && (
+              <div className="mt-2">
+                <MediaAttachmentView media={item.media}>{null}</MediaAttachmentView>
+              </div>
+            )}
           </span>
         </button>
         <button
@@ -236,6 +246,10 @@ function QuestionCard({ item, index, expanded, onToggle, query, bookmarked, onBo
         hidden={!expanded}
         className="border-t border-[var(--border-subtle)] p-4 pt-3 space-y-2"
       >
+        {item.media && item.media.length > 0 && item.question !== "" && (
+          <MediaAttachmentView media={item.media}>{null}</MediaAttachmentView>
+        )}
+
         {item.options.length > 0 && (
           <ul className="space-y-2">
             {item.options.map((opt, i) => {
@@ -398,18 +412,14 @@ export default function QuestionBankTab() {
     if (browseMode !== "subject") return;
     let cancelled = false;
     api
-      .questions({ subject: category, pyqOnly: true, limit: FACET_LIMIT, ecosystem })
-      .then((qs) => {
+      .questionBankFacets(category, ecosystem)
+      .then((f) => {
         if (cancelled) return;
-        const years = new Set<number>();
-        const sources = new Set<string>();
-        const terms = new Set<string>();
-        for (const q of qs) {
-          if (q.year) years.add(q.year);
-          if (q.sourceExam) sources.add(q.sourceExam);
-          if (q.bcsTerm) terms.add(q.bcsTerm);
-        }
-        setFacets({ years: SORTED_YEARS([...years]), sources: [...sources].sort(), terms: SORTED_TERMS([...terms]) });
+        setFacets({
+          years: SORTED_YEARS([...(f?.years ?? [])]),
+          sources: [...(f?.sources ?? [])].sort(),
+          terms: SORTED_TERMS([...(f?.terms ?? [])]),
+        });
       })
       .catch(() => {
         if (!cancelled) setFacets({ years: [], sources: [], terms: [] });
