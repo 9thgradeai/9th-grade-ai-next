@@ -77,6 +77,7 @@ export default function VocabTab() {
   const [stats, setStats] = useState<{ total: number; mastered: number; learning: number; due: number; reviewed: number } | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [examFilter, setExamFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -93,6 +94,9 @@ export default function VocabTab() {
   const [dailyProgress, setDailyProgress] = useState<{ wordsReviewed: number; streak: number } | null>(null);
 
   const [showQuiz, setShowQuiz] = useState(false);
+  const [productionMode, setProductionMode] = useState(false);
+  const [typedAnswer, setTypedAnswer] = useState("");
+  const [productionResult, setProductionResult] = useState<"correct" | "wrong" | null>(null);
 
   // ── Hands-free rotation: advance one word every WORD_ROTATE_MS without
   // any tap. The clock restarts on every word change (manual nav, rating,
@@ -109,13 +113,14 @@ export default function VocabTab() {
     setRemainingMs(WORD_ROTATE_MS);
   }, []);
 
-  const buildParams = useCallback((): { limit: number; search?: string; status?: string; due?: string; kind: "words" } => {
-    const params: { limit: number; search?: string; status?: string; due?: string; kind: "words" } = { limit: 50, kind: "words" };
+  const buildParams = useCallback((): { limit: number; search?: string; status?: string; due?: string; kind: "words"; exam?: string } => {
+    const params: { limit: number; search?: string; status?: string; due?: string; kind: "words"; exam?: string } = { limit: 50, kind: "words" };
     if (searchQuery.trim()) params.search = searchQuery.trim();
     if (statusFilter === "due") params.due = "true";
     else if (statusFilter !== "all") params.status = statusFilter;
+    if (examFilter !== "ALL") params.exam = examFilter;
     return params;
-  }, [searchQuery, statusFilter]);
+  }, [searchQuery, statusFilter, examFilter]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -143,7 +148,7 @@ export default function VocabTab() {
   useEffect(() => {
     setSessionReviewed(0);
     setSessionCorrect(0);
-  }, [statusFilter, searchQuery]);
+  }, [statusFilter, searchQuery, examFilter]);
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -172,6 +177,11 @@ export default function VocabTab() {
   useEffect(() => {
     pokeRotationClock();
   }, [current?.id, autoRotate, section, showQuiz, pokeRotationClock]);
+
+  useEffect(() => {
+    setTypedAnswer("");
+    setProductionResult(null);
+  }, [current?.id]);
 
   // 1s ticker: drives the countdown chip and advances one word when the
   // full period elapses under eligible conditions. Hidden tabs never
@@ -397,6 +407,17 @@ export default function VocabTab() {
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
+            <select
+              value={examFilter}
+              onChange={(e) => { setExamFilter(e.target.value); setIdx(0); setRevealed(false); }}
+              className="px-3 py-1.5 rounded-full min-h-11 text-xs font-mono border border-terminal-border bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)]"
+              aria-label="Exam target"
+            >
+              <option value="ALL">All exams</option>
+              <option value="BCS">BCS</option>
+              <option value="Bank">Bank</option>
+              <option value="9th Grade">9th Grade</option>
+            </select>
             <button
               onClick={() => setShowQuiz(true)}
               className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5"
@@ -507,6 +528,35 @@ export default function VocabTab() {
                       context={current.context}
                       existingMnemonic={current.mnemonic}
                     />
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setProductionMode((p) => !p); setTypedAnswer(""); setProductionResult(null); }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${productionMode ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
+                      >
+                        {productionMode ? "Production: ON" : "Production: OFF"}
+                      </button>
+                    </div>
+                    {productionMode && (
+                      <div className="flex gap-2 items-center">
+                        <input
+                          value={typedAnswer}
+                          onChange={(e) => { setTypedAnswer(e.target.value); setProductionResult(null); }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              const ok = typedAnswer.trim().toLowerCase() === current.word.trim().toLowerCase();
+                              setProductionResult(ok ? "correct" : "wrong");
+                              if (ok) void review("good");
+                            }
+                          }}
+                          placeholder="Type the word…"
+                          className="flex-1 min-h-11 px-3 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm font-mono"
+                          aria-label="Type the word"
+                        />
+                        {productionResult === "correct" && <span className="text-emerald-600 text-sm font-mono">✓</span>}
+                        {productionResult === "wrong" && <span className="text-[var(--danger)] text-sm font-mono">✗ try again</span>}
+                      </div>
+                    )}
                     <div className="flex gap-2 flex-wrap">
                       {(["again", "hard", "good", "easy"] as ReviewRating[]).map((r) => (
                         <button
