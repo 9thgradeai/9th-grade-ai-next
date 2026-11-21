@@ -55,8 +55,11 @@ function speak(word: string) {
   window.speechSynthesis.speak(u);
 }
 
-/** Auto-rotation period: hands-free word tour, one step per 10 minutes. */
+/** Auto-rotation period: hands-free word tour, one step every 2 minutes. */
 export const WORD_ROTATE_MS = 2 * 60 * 1000;
+
+/** Page size for the default stream so every imported word circulates. */
+const VOCAB_STREAM_LIMIT = 5000;
 
 /** "09:42" countdown text for the rotation chip. Clamped, never negative. */
 export function formatRotationCountdown(remainingMs: number): string {
@@ -81,6 +84,11 @@ export default function VocabTab() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [examFilter, setExamFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  // "Show all words" switches the data source to an exhaustive `all=true`
+  // fetch. Keeping it in state (rather than firing a second fetch in the
+  // button handler) makes it the single source of truth so `load()` cannot
+  // race it and overwrite the full list with a stream/page response.
+  const [fetchAll, setFetchAll] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const [sessionReviewed, setSessionReviewed] = useState(0);
@@ -139,10 +147,12 @@ export default function VocabTab() {
     setLoading(true);
     try {
       const st = await api.vocabStats().catch(() => null);
-      const useStream = statusFilter === "all" && !searchQuery.trim();
-      const ws = useStream
-        ? (await api.vocabStream({ mode: "mixed" })).words
-        : (await api.vocabWords(buildParams())).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }));
+      const useStream = !fetchAll && statusFilter === "all" && !searchQuery.trim();
+      const ws = fetchAll
+        ? (await api.vocabWords({ all: true, kind: "words" })).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }))
+        : useStream
+          ? (await api.vocabStream({ mode: "mixed", limit: VOCAB_STREAM_LIMIT })).words
+          : (await api.vocabWords(buildParams())).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }));
       setWords(ws);
       setIdx(0);
       setRevealed(false);
@@ -153,7 +163,7 @@ export default function VocabTab() {
       toast.error(t(lang, "ভোকাব লোড করা যায়নি", "Failed to load vocabulary"));
     }
     setLoading(false);
-  }, [buildParams, lang, toast, statusFilter, searchQuery]);
+  }, [buildParams, fetchAll, lang, toast, statusFilter, searchQuery]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -166,10 +176,17 @@ export default function VocabTab() {
     const flush = async () => {
       try {
         const key = "vocab:pendingReviews";
-        const q = JSON.parse(window.localStorage.getItem(key) || "[]");
-        if (!Array.isArray(q) || q.length === 0) return;
+        const raw = JSON.parse(window.localStorage.getItem(key) || "[]");
+        if (!Array.isArray(raw) || raw.length === 0) return;
+        // Old builds queued the Word of the Day under the pseudo-id -1, which
+        // can never be reviewed server-side. Drop those so the queue drains.
+        const q = (raw as { wordId: number; rating: number }[]).filter(
+          (item) => item && Number.isFinite(item.wordId) && item.wordId > 0,
+        );
+        if (q.length !== raw.length) window.localStorage.setItem(key, JSON.stringify(q));
+        if (q.length === 0) return;
         const remaining: unknown[] = [];
-        for (const item of q as { wordId: number; rating: number }[]) {
+        for (const item of q) {
           try {
             await api.reviewVocab(item.wordId, item.rating);
           } catch {
@@ -214,7 +231,7 @@ export default function VocabTab() {
     idxRef.current = idx;
   }, [idx]);
 
-  // Restart the 10-minute clock whenever the visible word changes for any
+  // Restart the 2-minute clock whenever the visible word changes for any
   // reason, when rotation is (un)paused, or when leaving quiz/idioms.
   useEffect(() => {
     pokeRotationClock();
@@ -285,15 +302,20 @@ export default function VocabTab() {
     if (rating !== "again") setSessionCorrect((p) => p + 1);
     setIdx((i) => (i + 1 < filtered.length ? i + 1 : 0));
     try {
-      const [ws, s] = await Promise.all([api.vocabWords(buildParams()), api.vocabStats().catch(() => null)]);
-      setWords(ws);
+      // In "show all" mode the full list is authoritative; refreshing it with
+      // the 50-word page endpoint would silently shrink the corpus again.
+      const [ws, s] = await Promise.all([
+        fetchAll ? Promise.resolve(null) : api.vocabWords(buildParams()),
+        api.vocabStats().catch(() => null),
+      ]);
+      if (ws) setWords(ws);
       if (s) setStats(s);
       api.vocabDaily().then((d) => setDailyProgress(d)).catch(() => {});
     } catch {
       // non-critical refresh failure; keep the optimistic advance
     }
     void prevIdx;
-  }, [current, idx, filtered.length, buildParams, lang, toast]);
+  }, [current, idx, filtered.length, fetchAll, buildParams, lang, toast]);
 
   const handleSwipe = useCallback((dir: "left" | "right" | "up" | "down") => {
     if (section !== "words" || showQuiz) return;
@@ -536,7 +558,7 @@ export default function VocabTab() {
                 ref={searchRef}
                 type="text"
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setIdx(0); setRevealed(false); }}
+                onChange={(e) => { setFetchAll(false); setSearchQuery(e.target.value); setIdx(0); setRevealed(false); }}
                 placeholder={t(lang, "শব্দ খুঁজুন... ( / )", "Search words... ( / )")}
                 aria-label="Search words"
                 className="w-full pl-9 pr-3 py-2 min-h-11 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm text-[var(--text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none focus:border-[var(--accent)]/50 font-mono"
@@ -545,7 +567,7 @@ export default function VocabTab() {
             {(["all", "new", "learning", "due", "mastered"] as StatusFilter[]).map((s) => (
               <button
                 key={s}
-                onClick={() => setStatusFilter(s)}
+                onClick={() => { setFetchAll(false); setStatusFilter(s); }}
                 className={`px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-colors ${
                   statusFilter === s
                     ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
@@ -557,7 +579,7 @@ export default function VocabTab() {
             ))}
             <select
               value={examFilter}
-              onChange={(e) => { setExamFilter(e.target.value); setIdx(0); setRevealed(false); }}
+              onChange={(e) => { setFetchAll(false); setExamFilter(e.target.value); setIdx(0); setRevealed(false); }}
               className="px-3 py-1.5 rounded-full min-h-11 text-xs font-mono border border-terminal-border bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)]"
               aria-label="Exam target"
             >
@@ -594,17 +616,14 @@ export default function VocabTab() {
               <GameController className="w-3.5 h-3.5" /> {t(lang, "কুইজ", "Quiz")}
             </button>
             <button
-              onClick={async () => {
+              onClick={() => {
+                // One state-driven fetch: `load()` is the only place that
+                // sets `words`, so the stream/page response cannot overwrite it.
+                setFetchAll(true);
                 setStatusFilter("all");
                 setSearchQuery("");
                 setIdx(0);
                 setRevealed(false);
-                setLoading(true);
-                try {
-                  const ws = await api.vocabWords({ all: true, kind: "words" });
-                  setWords(ws.map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" })));
-                } catch { /* keep */ }
-                setLoading(false);
               }}
               className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-all flex items-center gap-1.5"
             >

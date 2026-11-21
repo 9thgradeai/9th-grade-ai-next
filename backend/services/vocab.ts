@@ -350,7 +350,10 @@ export async function getVocabWords(
     });
   }
 
-  const sliced = filtered.slice(0, limit);
+  // `all` is an explicit exhaustive request (the "Show all words" button).
+  // Since the DB query already bounds the set to 5000 rows, skip the per-page
+  // slice so the full imported corpus reaches the client.
+  const sliced = opts?.all ? filtered : filtered.slice(0, limit);
   if (!userId) return sliced.map((w) => toDTO(w));
 
   const userProgresses = await prisma.vocabProgress.findMany({

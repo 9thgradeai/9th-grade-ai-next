@@ -1007,8 +1007,9 @@ export const api = {
     request("/api/ai/vocab", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ action: "mnemonic", word, bengaliMeaning, context }), headers: { "Content-Type": "application/json" } }),
   vocabAiExamples: (word: string, partOfSpeech: string, difficulty?: string): Promise<{ examples: string[]; source: string }> =>
     request("/api/ai/vocab", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ action: "examples", word, partOfSpeech, difficulty }), headers: { "Content-Type": "application/json" } }),
+  // The analytics route returns the DTO directly (not wrapped in `{ analytics }`).
   vocabAnalytics: (): Promise<Server.VocabAnalyticsDTO> =>
-    cachedGet<{ analytics: Server.VocabAnalyticsDTO }>("/api/vocab/analytics").then((d) => d.analytics),
+    cachedGet<Server.VocabAnalyticsDTO>("/api/vocab/analytics"),
   vocabDecks: (): Promise<Server.VocabDeckDTO[]> =>
     cachedGet<{ decks: Server.VocabDeckDTO[] }>("/api/vocab/decks").then((d) => d.decks),
   vocabStream: (params?: { mode?: "due" | "daily" | "mixed" | "all"; cursor?: number; limit?: number }): Promise<Server.VocabStreamResponse> => {
@@ -1017,7 +1018,9 @@ export const api = {
     if (params?.cursor) qs.set("cursor", String(params.cursor));
     if (params?.limit) qs.set("limit", String(params.limit));
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
-    return cachedGet<Server.VocabStreamResponse>(`/api/vocab/stream${suffix}`);
+    // Do not use cachedGet here: a stale 15s page would replay the same small
+    // batch and make the hands-free circulation repeat a fixed set of words.
+    return request<Server.VocabStreamResponse>(`/api/vocab/stream${suffix}`, { ...AUTH_FETCH_INIT });
   },
 
   // ── Daily Current Affairs ───────────────────────────────

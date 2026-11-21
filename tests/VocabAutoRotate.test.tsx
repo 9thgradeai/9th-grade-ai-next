@@ -61,14 +61,14 @@ async function renderReady() {
 
 describe("formatRotationCountdown", () => {
   it("formats mm:ss and clamps negatives", () => {
-    expect(formatRotationCountdown(WORD_ROTATE_MS)).toBe("10:00");
+    expect(formatRotationCountdown(WORD_ROTATE_MS)).toBe("02:00");
     expect(formatRotationCountdown(61_000)).toBe("01:01");
     expect(formatRotationCountdown(900)).toBe("00:01");
     expect(formatRotationCountdown(-5_000)).toBe("00:00");
   });
 
-  it("is a 10-minute period", () => {
-    expect(WORD_ROTATE_MS).toBe(10 * 60 * 1000);
+  it("is a 2-minute period", () => {
+    expect(WORD_ROTATE_MS).toBe(2 * 60 * 1000);
   });
 });
 
@@ -84,7 +84,7 @@ describe("VocabTab auto-rotation", () => {
     vi.useRealTimers();
   });
 
-  it("advances to the next word after 10 minutes without any tap", async () => {
+  it("advances to the next word after 2 minutes without any tap", async () => {
     await renderReady();
     // Countdown is already ticking (load flush consumed ~1s) — assert live
     // mm:ss format rather than an exact value.
@@ -122,7 +122,7 @@ describe("VocabTab auto-rotation", () => {
     expect(screen.getByRole("heading", { name: "Abate" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /চালু করুন|Resume auto-rotation/ }));
-    // Resuming restarts the clock: 9:59 of silence first…
+    // Resuming restarts the clock: 1:59 of silence first…
     await act(async () => {
       await vi.advanceTimersByTimeAsync(WORD_ROTATE_MS - 1000);
     });
@@ -134,7 +134,7 @@ describe("VocabTab auto-rotation", () => {
     expect(screen.getByRole("heading", { name: "Benevolent" })).toBeInTheDocument();
   });
 
-  it("manual navigation restarts the 10-minute clock", async () => {
+  it("manual navigation restarts the 2-minute clock", async () => {
     await renderReady();
     await act(async () => {
       await vi.advanceTimersByTimeAsync(WORD_ROTATE_MS - 2000);

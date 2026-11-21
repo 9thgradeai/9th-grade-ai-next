@@ -113,11 +113,20 @@ export async function getVocabStream(
   opts: { mode?: VocabStreamMode; cursor?: number; limit?: number } = {},
 ): Promise<VocabStreamResponse> {
   const mode = opts.mode ?? "mixed";
-  const limit = Math.min(Math.max(opts.limit ?? 10, 1), 100);
+  // Default to the whole corpus so the client can circulate every imported
+  // word hands-free. Callers may request a smaller page via `limit`/`cursor`.
+  const limit = Math.min(Math.max(opts.limit ?? 5000, 1), 5000);
   const cursor = Math.max(0, Math.floor(opts.cursor ?? 0));
   const slotIndex = getVocabSlotIndex();
   const slot = { slotIndex, rotatesAt: getVocabSlotEnd(slotIndex).toISOString() };
   const wordOfDay = await getWordOfDay(userId, new Date());
+
+  // One bounded read of all regular words powers the "fresh" portion of the
+  // stream. Every entry carries its real DB id so reviews and notes work.
+  const allWords = await prisma.vocabWord.findMany({
+    orderBy: { id: "asc" },
+    where: { partOfSpeech: { notIn: ["Idiom", "Phrase"] } },
+  });
 
   const dueProgresses = await prisma.vocabProgress.findMany({
     where: { userId, nextReview: { lte: new Date() } },
@@ -126,12 +135,13 @@ export async function getVocabStream(
   });
 
   const queue: VocabStreamWord[] = [];
-  const enqueued = new Set<string>();
+  // Dedupe by real database id (ids are always > 0). The old `${source}:${word}`
+  // key let the same word appear twice; an id-based key keeps one entry per word.
+  const enqueued = new Set<number>();
 
   const enqueue = (w: VocabStreamWord) => {
-    const key = `${w.source}:${w.word}`;
-    if (enqueued.has(key)) return;
-    enqueued.add(key);
+    if (enqueued.has(w.id)) return;
+    enqueued.add(w.id);
     queue.push(w);
   };
 
@@ -142,9 +152,13 @@ export async function getVocabStream(
   }
 
   if (mode === "daily" || mode === "mixed") {
-    if (wordOfDay) {
-      const daily = fromWordOfDayToStreamWord(wordOfDay);
-      enqueue(daily);
+    // Resolve the Word of the Day to its actual VocabWord row so it has a
+    // valid id (never the old id:-1 pseudo-word, which broke reviews/notes).
+    const dailyRow =
+      allWords.find((w) => w.word === wordOfDay.word) ??
+      (await prisma.vocabWord.findUnique({ where: { word: wordOfDay.word } }));
+    if (dailyRow) {
+      enqueue(toStreamWord(dailyRow, wordOfDay.isCustom ? "CUSTOM" : "DAILY", "DAILY"));
     }
   }
 
@@ -156,6 +170,17 @@ export async function getVocabStream(
     });
     for (const p of progresses) {
       enqueue(toStreamWord(p.word, p.status, "DUE"));
+    }
+  }
+
+  // Fresh words: every remaining imported word enters the circulation.
+  // Rotate the starting offset by the 10-minute slot so different slots lead
+  // with different words, while the full set is always present in the queue.
+  if (mode === "mixed" || mode === "all" || mode === "daily") {
+    const start = allWords.length > 0 ? slotIndex % allWords.length : 0;
+    for (let i = 0; i < allWords.length; i++) {
+      const w = allWords[(start + i) % allWords.length];
+      enqueue(toStreamWord(w, "NEW", "FRESH"));
     }
   }
 
@@ -171,26 +196,5 @@ export async function getVocabStream(
     slotIndex,
     rotatesAt: slot.rotatesAt,
     wordOfDay: wordOfDay ?? null,
-  };
-}
-
-function fromWordOfDayToStreamWord(wordOfDay: WordOfDayDTO): VocabStreamWord {
-  return {
-    id: -1,
-    word: wordOfDay.word,
-    bengaliMeaning: wordOfDay.bengaliMeaning,
-    partOfSpeech: wordOfDay.partOfSpeech,
-    verbForms: null,
-    synonyms: wordOfDay.synonyms,
-    antonyms: wordOfDay.antonyms,
-    exampleSentence: wordOfDay.exampleSentence,
-    exampleSentenceBn: wordOfDay.exampleSentenceBn,
-    context: "",
-    mnemonic: wordOfDay.mnemonic,
-    examRelevance: wordOfDay.examRelevance,
-    frequency: 0,
-    difficulty: wordOfDay.difficulty,
-    status: wordOfDay.isCustom ? "CUSTOM" : "DAILY",
-    source: "DAILY",
   };
 }

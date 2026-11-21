@@ -41,7 +41,8 @@ export async function GET(request: Request) {
     const stream = await getVocabStream(userId, {
       mode,
       cursor: cursor ? Math.max(0, Math.floor(parseInt(cursor, 10) || 0)) : 0,
-      limit: limit ? Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100) : 10,
+      // Allow the full-corpus circulation page (service caps at 5000).
+      limit: limit ? Math.min(Math.max(parseInt(limit, 10) || 5000, 1), 5000) : undefined,
     });
 
     const res = NextResponse.json(stream);
