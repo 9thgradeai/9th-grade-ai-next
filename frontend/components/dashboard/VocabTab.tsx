@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   BookOpen,
@@ -17,6 +17,8 @@ import {
   SkipForward,
 } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import { blankWordInSentence } from "@/lib/vocab-exercise";
+import { exportVocabNotesDocx, vocabNotesToHtml, vocabNotesToText } from "@/lib/vocab-export";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useSwipeGesture } from "@/lib/hooks/useSwipeGesture";
@@ -31,6 +33,7 @@ import { SkeletonCard } from "@/components/ui/Skeleton";
 type ReviewRating = "again" | "hard" | "good" | "easy";
 type StatusFilter = "all" | "new" | "learning" | "due" | "mastered";
 type Section = "words" | "idioms";
+type ExerciseMode = "none" | "production" | "listening" | "context";
 
 const RATING_CONFIG: Record<ReviewRating, { label: string; color: string; keyHint: string }> = {
   again: { label: "Again", color: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-[var(--danger)]/30", keyHint: "1" },
@@ -110,12 +113,12 @@ export default function VocabTab() {
     if (typeof window === "undefined") return [];
     try { return JSON.parse(window.localStorage.getItem("vocab:notes") || "[]"); } catch { return []; }
   });
+  const [noteTexts, setNoteTexts] = useState<Record<number, string>>({});
   const [newWord, setNewWord] = useState("");
   const [newMeaning, setNewMeaning] = useState("");
   const [addMsg, setAddMsg] = useState("");
-  const [productionMode, setProductionMode] = useState(false);
-  const [listeningMode, setListeningMode] = useState(false);
-  const [contextMode, setContextMode] = useState(false);
+  // A single mode (not three independent toggles) so prompts never overlap.
+  const [exerciseMode, setExerciseMode] = useState<ExerciseMode>("none");
   const [typedAnswer, setTypedAnswer] = useState("");
   const [productionResult, setProductionResult] = useState<"correct" | "wrong" | null>(null);
 
@@ -147,9 +150,13 @@ export default function VocabTab() {
     setLoading(true);
     try {
       const st = await api.vocabStats().catch(() => null);
-      const useStream = !fetchAll && statusFilter === "all" && !searchQuery.trim();
+      // The stream endpoint is exam-agnostic. When a specific exam is selected
+      // (or a search is active) use the paginated words endpoint, which applies
+      // both filters server-side over the full corpus.
+      const exam = examFilter === "ALL" ? undefined : examFilter;
+      const useStream = !fetchAll && statusFilter === "all" && !searchQuery.trim() && !exam;
       const ws = fetchAll
-        ? (await api.vocabWords({ all: true, kind: "words" })).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }))
+        ? (await api.vocabWords({ all: true, kind: "words", exam })).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }))
         : useStream
           ? (await api.vocabStream({ mode: "mixed", limit: VOCAB_STREAM_LIMIT })).words
           : (await api.vocabWords(buildParams())).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }));
@@ -163,9 +170,21 @@ export default function VocabTab() {
       toast.error(t(lang, "ভোকাব লোড করা যায়নি", "Failed to load vocabulary"));
     }
     setLoading(false);
-  }, [buildParams, fetchAll, lang, toast, statusFilter, searchQuery]);
+  }, [buildParams, examFilter, fetchAll, lang, toast, statusFilter, searchQuery]);
 
   useEffect(() => { load(); }, [load]);
+
+  // The server note is authoritative for signed-in users; localStorage remains
+  // a cache/offline fallback when the API is unavailable.
+  useEffect(() => {
+    let cancelled = false;
+    api.vocabNotes().then((notes) => {
+      if (cancelled || !Array.isArray(notes)) return;
+      setNoteWords(notes.map((n) => n.word));
+      setNoteTexts(Object.fromEntries(notes.map((n) => [n.wordId, n.note])));
+    }).catch(() => { /* anonymous or offline — keep the local cache */ });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     try { window.localStorage.setItem("vocab:notes", JSON.stringify(noteWords)); } catch { /* ignore */ }
@@ -209,11 +228,10 @@ export default function VocabTab() {
     setSessionCorrect(0);
   }, [statusFilter, searchQuery, examFilter]);
 
-  const filtered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return words;
-    return words.filter((w) => w.word.toLowerCase().includes(q) || w.bengaliMeaning.toLowerCase().includes(q));
-  }, [words, searchQuery]);
+  // Search/exam/status filtering happens server-side in `load()`. This is kept
+  // as an alias (rather than re-filtering the loaded page) so the cursor and
+  // the auto-rotation always index the exact list the server returned.
+  const filtered = words;
 
   // Clamp the cursor whenever the filtered list shrinks (search/filter/re-fetch).
   useEffect(() => {
@@ -240,8 +258,8 @@ export default function VocabTab() {
   useEffect(() => {
     setTypedAnswer("");
     setProductionResult(null);
-    if (listeningMode) speak(current?.word ?? "");
-  }, [current?.id, listeningMode]);
+    if (exerciseMode === "listening") speak(current?.word ?? "");
+  }, [current?.id, exerciseMode]);
 
   // 1s ticker: drives the countdown chip and advances one word when the
   // full period elapses under eligible conditions. Hidden tabs never
@@ -316,6 +334,12 @@ export default function VocabTab() {
     }
     void prevIdx;
   }, [current, idx, filtered.length, fetchAll, buildParams, lang, toast]);
+
+  const checkExercise = useCallback(() => {
+    if (!current || !typedAnswer.trim()) return;
+    const ok = typedAnswer.trim().toLowerCase() === current.word.trim().toLowerCase();
+    setProductionResult(ok ? "correct" : "wrong");
+  }, [current, typedAnswer]);
 
   const handleSwipe = useCallback((dir: "left" | "right" | "up" | "down") => {
     if (section !== "words" || showQuiz) return;
@@ -393,9 +417,18 @@ export default function VocabTab() {
       {section === "idioms" ? (
         <IdiomsTab />
       ) : showSession ? (
-        <VocabSessionRunner onExit={() => setShowSession(false)} />
+        <VocabSessionRunner
+          words={words}
+          onExit={() => setShowSession(false)}
+          onReviewed={(_wordId, correct) => {
+            setSessionReviewed((p) => p + 1);
+            if (correct) setSessionCorrect((p) => p + 1);
+            void api.vocabStats().then((s) => setStats(s)).catch(() => {});
+            void api.vocabDaily().then((d) => setDailyProgress(d)).catch(() => {});
+          }}
+        />
       ) : showQuiz ? (
-        <QuizMode onExit={() => setShowQuiz(false)} />
+        <QuizMode onExit={() => { setShowQuiz(false); void load(); }} />
       ) : (
         <>
           {/* ─── Compact stats ─── */}
@@ -481,8 +514,11 @@ export default function VocabTab() {
                     if (!newWord.trim() || !newMeaning.trim()) { setAddMsg("Word and meaning required"); return; }
                     try {
                       const res = await api.vocabAdd({ word: newWord.trim(), bengaliMeaning: newMeaning.trim() });
-                      setAddMsg(res.created ? "Added to DB" : "Already exists — linked");
-                      if (res.word) setNoteWords((p) => (p.some((w) => w.id === res.word.id) ? p : [...p, res.word]));
+                      setAddMsg(res.created ? "Added to DB" : "Already exists — linked to your note");
+                      if (res.word) {
+                        setNoteWords((p) => (p.some((w) => w.id === res.word.id) ? p : [...p, res.word]));
+                        void api.vocabNoteSave(res.word.id, noteTexts[res.word.id] ?? "").catch(() => {});
+                      }
                       setNewWord(""); setNewMeaning("");
                     } catch {
                       setAddMsg("Failed to add");
@@ -500,23 +536,43 @@ export default function VocabTab() {
                 {noteWords.length === 0 && <p className="text-xs font-mono text-[var(--dashboard-text-muted)]">No saved words yet.</p>}
                 {noteWords.map((w) => (
                   <div key={w.id} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-[var(--surface)] border border-terminal-border">
-                    <div className="min-w-0">
-                      <span className="font-bold text-sm">{w.word}</span>
-                      <span className="ml-2 text-xs text-[var(--dashboard-text-muted)]">{w.bengaliMeaning}</span>
+                    <div className="min-w-0 flex-1">
+                      <div>
+                        <span className="font-bold text-sm">{w.word}</span>
+                        <span className="ml-2 text-xs text-[var(--dashboard-text-muted)]">{w.bengaliMeaning}</span>
+                      </div>
+                      <input
+                        value={noteTexts[w.id] ?? ""}
+                        onChange={(e) => setNoteTexts((p) => ({ ...p, [w.id]: e.target.value }))}
+                        onBlur={(e) => void api.vocabNoteSave(w.id, e.target.value).catch(() => {})}
+                        placeholder="Your note for this word…"
+                        className="w-full mt-1 px-2 py-1 rounded bg-[var(--surface-raised)] border border-terminal-border text-xs"
+                        aria-label={`Note for ${w.word}`}
+                      />
                     </div>
-                    <button onClick={() => setNoteWords((p) => p.filter((x) => x.id !== w.id))} className="text-xs text-[var(--danger)]">✕</button>
+                    <button
+                      onClick={() => {
+                        setNoteWords((p) => p.filter((x) => x.id !== w.id));
+                        void api.vocabNoteDelete(w.id).catch(() => {});
+                      }}
+                      className="text-xs text-[var(--danger)]"
+                      aria-label={`Remove ${w.word} from note`}
+                    >
+                      ✕
+                    </button>
                   </div>
                 ))}
               </div>
 
-              {/* Export */}
+              {/* Export — every format uses the same complete note data */}
               <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => {
-                    const txt = noteWords.map((w) => `${w.word} — ${w.bengaliMeaning}\n  Synonyms: ${(w.synonyms ?? []).join(", ")}\n  Antonyms: ${(w.antonyms ?? []).join(", ")}\n  Example: ${w.exampleSentence}\n`).join("\n");
-                    const blob = new Blob([txt], { type: "text/plain" });
+                    const blob = new Blob([vocabNotesToText(noteWords, noteTexts)], { type: "text/plain;charset=utf-8" });
                     const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a"); a.href = url; a.download = "vocab-notes.txt"; a.click(); URL.revokeObjectURL(url);
+                    const a = document.createElement("a");
+                    a.href = url; a.download = "vocab-notes.txt"; a.click();
+                    URL.revokeObjectURL(url);
                   }}
                   className="px-3 py-1.5 rounded-lg border border-terminal-border font-mono text-xs"
                 >
@@ -524,25 +580,29 @@ export default function VocabTab() {
                 </button>
                 <button
                   onClick={() => {
-                    const html = `<html><body><h1>Vocab Notes</h1>${noteWords.map((w) => `<h3>${w.word}</h3><p><b>Meaning:</b> ${w.bengaliMeaning}</p><p><b>Synonyms:</b> ${(w.synonyms ?? []).join(", ")}</p><p><b>Antonyms:</b> ${(w.antonyms ?? []).join(", ")}</p><p><b>Example:</b> ${w.exampleSentence}</p>`).join("")}</body></html>`;
-                    const blob = new Blob([html], { type: "application/msword" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a"); a.href = url; a.download = "vocab-notes.doc"; a.click(); URL.revokeObjectURL(url);
+                    void exportVocabNotesDocx(noteWords, noteTexts).catch(() =>
+                      toast.error("Could not create the DOCX file"),
+                    );
                   }}
                   className="px-3 py-1.5 rounded-lg border border-terminal-border font-mono text-xs"
                 >
-                  Export DOC
+                  Export DOCX
                 </button>
                 <button
                   onClick={() => {
                     const w = window.open("", "_blank");
-                    if (!w) return;
-                    w.document.write(`<html><head><title>Vocab Notes</title></head><body><h1>Vocab Notes</h1>${noteWords.map((x) => `<h3>${x.word}</h3><p>${x.bengaliMeaning}</p>`).join("")}<script>window.print();</script></body></html>`);
+                    if (!w) {
+                      toast.error("Popup blocked — allow popups to print the note");
+                      return;
+                    }
+                    w.document.write(vocabNotesToHtml(noteWords, noteTexts));
                     w.document.close();
+                    w.focus();
+                    w.setTimeout(() => w.print(), 100);
                   }}
                   className="px-3 py-1.5 rounded-lg border border-terminal-border font-mono text-xs"
                 >
-                  Export PDF (print)
+                  Print / Save as PDF
                 </button>
               </div>
             </div>
@@ -592,6 +652,7 @@ export default function VocabTab() {
               onClick={() => {
                 if (!current) return;
                 setNoteWords((p) => (p.some((w) => w.id === current.id) ? p : [...p, current]));
+                void api.vocabNoteSave(current.id, noteTexts[current.id] ?? "").catch(() => {});
               }}
               className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--surface-raised)] text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all flex items-center gap-1.5"
             >
@@ -673,7 +734,7 @@ export default function VocabTab() {
                         <SpeakerSimpleHigh className="w-5 h-5" />
                       </button>
                       {current.progress && (
-                        <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono border ${STATUS_COLORS[current.progress.status] ?? STATUS_COLORS.new}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono border ${STATUS_COLORS[(current.progress.status ?? "new").toLowerCase()] ?? STATUS_COLORS.new}`}>
                           {(current.progress.status ?? "new").toUpperCase()}
                         </span>
                       )}
@@ -723,58 +784,51 @@ export default function VocabTab() {
                       existingMnemonic={current.mnemonic}
                     />
                     <div className="flex items-center gap-2 flex-wrap">
-                      <button
-                        type="button"
-                        onClick={() => { setProductionMode((p) => !p); setTypedAnswer(""); setProductionResult(null); }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${productionMode ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
-                      >
-                        {productionMode ? "Production: ON" : "Production: OFF"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setListeningMode((p) => !p); setTypedAnswer(""); setProductionResult(null); if (!listeningMode) speak(current?.word ?? ""); }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${listeningMode ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
-                      >
-                        {listeningMode ? "Listening: ON" : "Listening: OFF"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setContextMode((p) => !p); setTypedAnswer(""); setProductionResult(null); }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${contextMode ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
-                      >
-                        {contextMode ? "Context: ON" : "Context: OFF"}
-                      </button>
+                      {(["production", "listening", "context"] as ExerciseMode[]).map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => {
+                            setExerciseMode((prev) => (prev === m ? "none" : m));
+                            setTypedAnswer("");
+                            setProductionResult(null);
+                          }}
+                          className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${exerciseMode === m ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]" : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border"}`}
+                        >
+                          {m.charAt(0).toUpperCase() + m.slice(1)}: {exerciseMode === m ? "ON" : "OFF"}
+                        </button>
+                      ))}
                     </div>
-                    {(productionMode || listeningMode || contextMode) && (
+                    {exerciseMode !== "none" && (
                       <div className="space-y-2">
-                        {contextMode && (
+                        {exerciseMode === "context" && (
                           <p className="text-sm leading-relaxed text-[var(--dashboard-text-secondary)]">
-                            { (current.exampleSentence || "").replace(new RegExp(current.word.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&"), "i"), "______") }
+                            {blankWordInSentence(current.exampleSentence ?? "", current.word) ?? (
+                              <span className="italic">No example sentence — recall the meaning instead: {current.bengaliMeaning}</span>
+                            )}
                           </p>
                         )}
-                        {listeningMode && (
+                        {exerciseMode === "listening" && (
                           <button type="button" onClick={() => speak(current.word)} className="px-3 py-1.5 rounded-full text-xs font-mono border border-terminal-border bg-[var(--surface-raised)]">
                             🔊 Play word
                           </button>
                         )}
-                        <div className="flex gap-2 items-center">
+                        <div className="flex gap-2 items-center flex-wrap">
                           <input
                             value={typedAnswer}
                             onChange={(e) => { setTypedAnswer(e.target.value); setProductionResult(null); }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                const ok = typedAnswer.trim().toLowerCase() === current.word.trim().toLowerCase();
-                                setProductionResult(ok ? "correct" : "wrong");
-                                if (ok) void review("good");
-                              }
-                            }}
-                            placeholder={listeningMode ? "What did you hear?" : contextMode ? "Fill the blank…" : "Type the word…"}
+                            onKeyDown={(e) => { if (e.key === "Enter") checkExercise(); }}
+                            placeholder={exerciseMode === "listening" ? "What did you hear?" : exerciseMode === "context" ? "Fill the blank…" : "Type the word…"}
                             className="flex-1 min-h-11 px-3 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm font-mono"
                             aria-label="Type the word"
                           />
+                          <button type="button" onClick={checkExercise} className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs">Check</button>
                           {productionResult === "correct" && <span className="text-emerald-600 text-sm font-mono">✓</span>}
                           {productionResult === "wrong" && <span className="text-[var(--danger)] text-sm font-mono">✗ try again</span>}
                         </div>
+                        {productionResult === "correct" && (
+                          <button type="button" onClick={() => void review("good")} className="px-3 py-1.5 rounded-lg border border-emerald-500/30 text-emerald-600 font-mono text-xs">Next word</button>
+                        )}
                       </div>
                     )}
                     <div className="flex gap-2 flex-wrap">

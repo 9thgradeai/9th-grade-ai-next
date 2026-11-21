@@ -218,8 +218,8 @@ export default function VocabStreamView() {
               {current.partOfSpeech} • {current.source === "DUE" ? t(lang, "সঠিকভাবে রিভিউধারণে", "Due Review") : t(lang, "সাধারণ শব্দ", "Vocab")}
             </p>
           </div>
-          <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE[current.difficulty] ?? DIFFICULTY_BADGE.medium}`}>
-            {current.difficulty}
+          <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE[(current.difficulty ?? "").toLowerCase()] ?? DIFFICULTY_BADGE.medium}`}>
+            {(current.difficulty ?? "MEDIUM").toUpperCase()}
           </span>
         </div>
 

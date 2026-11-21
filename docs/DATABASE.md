@@ -928,6 +928,19 @@ Per-user customization of a daily note (TipTap JSON editor content).
 - `updatedAt` DateTime — updatedAt
 - `@@unique([userId, noteId])` — one customization per user per note
 
+#### VocabNote (Integrated Vocab note)
+Per-user, per-word study note created from the integrated Vocab tab. Stored
+server-side (not localStorage) so it follows the signed-in user across devices;
+`POST`/`DELETE /api/vocab/notes` upsert/remove rows.
+- `id` Int — PK (autoincrement)
+- `userId` String — FK to User (cascade); relation `User.vocabNotes`
+- `wordId` Int — FK to VocabWord (cascade); relation `VocabWord.notes`
+- `note` String (`@db.Text`) — default `""`, trimmed and capped at 2000 chars by the route
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt (drives newest-first ordering in `GET /api/vocab/notes`)
+- `@@unique([userId, wordId])` — at most one note per user per word (backing the upsert)
+- `@@index([userId])` — fast lookup of a user's note set
+
 ## Migrations
 
 Migrations are not used. The schema is pushed directly:

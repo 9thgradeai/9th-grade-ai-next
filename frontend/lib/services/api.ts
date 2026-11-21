@@ -984,7 +984,28 @@ export const api = {
   },
 
   vocabAdd: (payload: Record<string, unknown>): Promise<{ created: boolean; word: Server.VocabWordDTO }> =>
-    fetch("/api/vocab/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).then((r) => r.json()),
+    request("/api/vocab/add", {
+      method: "POST",
+      ...AUTH_FETCH_INIT,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  vocabNotes: (): Promise<Server.VocabNoteDTO[]> =>
+    request<{ notes: Server.VocabNoteDTO[] }>("/api/vocab/notes", { ...AUTH_FETCH_INIT }).then((d) => d.notes),
+  vocabNoteSave: (wordId: number, note: string): Promise<Server.VocabNoteDTO> =>
+    request<{ note: Server.VocabNoteDTO }>("/api/vocab/notes", {
+      method: "POST",
+      ...AUTH_FETCH_INIT,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wordId, note }),
+    }).then((d) => d.note),
+  vocabNoteDelete: (wordId: number): Promise<void> =>
+    request<{ ok: true }>("/api/vocab/notes", {
+      method: "DELETE",
+      ...AUTH_FETCH_INIT,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wordId }),
+    }).then(() => undefined),
   vocabStats: (): Promise<{ total: number; mastered: number; learning: number; due: number; reviewed: number }> =>
     cachedGet<{ total: number; mastered: number; learning: number; due: number; reviewed: number }>("/api/vocab/stats").then((d) => d),
   reviewVocab: (wordId: number, rating: number): Promise<VocabReviewResult> =>
@@ -997,7 +1018,8 @@ export const api = {
     if (params?.difficulty) qs.set("difficulty", params.difficulty);
     if (params?.mode) qs.set("mode", params.mode);
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
-    return cachedGet<{ words: Server.VocabQuizWordDTO[] }>(`/api/vocab/quiz${suffix}`).then((d) => d.words);
+    // "Try Again" must get a fresh question set, not the 15s cached page.
+    return request<{ words: Server.VocabQuizWordDTO[] }>(`/api/vocab/quiz${suffix}`, { ...AUTH_FETCH_INIT }).then((d) => d.words);
   },
   vocabWordOfDay: (): Promise<Server.WordOfDayDTO> =>
     cachedGet<{ word: Server.WordOfDayDTO }>("/api/vocab/word-of-the-day").then((d) => d.word),

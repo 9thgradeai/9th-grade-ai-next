@@ -267,6 +267,7 @@ model User {
   agentRuns               AgentRun[]
   learningEvents          LearningEvent[]
   vocabProgress           VocabProgress[]
+  vocabNotes              VocabNote[]
   vocabDecks              UserVocabDeck[]
   createdDecks            VocabDeck[]
   currentAffairsNotes     UserCustomizedNote[]
@@ -1245,6 +1246,7 @@ model VocabWord {
   confusables       Json?
   createdAt         DateTime        @default(now())
   progress          VocabProgress[]
+  notes             VocabNote[]
   vocabDeckWords    VocabDeckWord[]
 
   @@index([difficulty])
@@ -1273,6 +1275,21 @@ model VocabProgress {
   @@unique([userId, wordId])
   @@index([userId, status])
   @@index([userId, nextReview])
+}
+
+// ── Integrated Vocab note (one note per user per word) ───────
+model VocabNote {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordId    Int
+  word      VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  note      String    @default("") @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, wordId])
+  @@index([userId])
 }
 
 // ── Vocab Decks ───────────────────────────────────────

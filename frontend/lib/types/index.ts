@@ -1168,6 +1168,12 @@ export namespace Server {
     } | null;
   };
 
+  export type VocabNoteDTO = {
+    wordId: number;
+    note: string;
+    word: VocabWordDTO;
+  };
+
   export type VocabQuizWordDTO = {
     id: number;
     word: string;

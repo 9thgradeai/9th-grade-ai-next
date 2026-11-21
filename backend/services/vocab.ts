@@ -4,6 +4,7 @@
 import "server-only";
 
 import { prisma } from "~backend/db";
+import { ValidationError, NotFoundError } from "~backend/errors";
 import { VOCAB_SEED_DATA } from "~backend/../database/data/vocab-seed";
 import { VOCAB_PDF_200_DATA } from "~backend/../database/data/vocab-pdf-200";
 
@@ -285,19 +286,25 @@ export async function getVocabWords(
     where.partOfSpeech = { notIn: ["Idiom", "Phrase"] };
   }
 
+  // Exam + search filter in memory over the JSON column, so an exhaustive
+  // request is needed to see matches outside the top-frequency page. Fetch
+  // the whole corpus whenever either filter is active.
+  const exhaustive = Boolean(opts?.all || opts?.exam || opts?.search?.trim());
   const words = await prisma.vocabWord.findMany({
     orderBy: [{ frequency: "desc" }, { word: "asc" }],
-    take: opts?.all ? 5000 : 200,
+    take: exhaustive ? 5000 : 200,
     where,
   });
 
   let filtered = words;
 
-  // In-memory exam filter (JSON column)
+  // In-memory exam filter (JSON column). A specific exam must actually match:
+  // untagged words used to leak into every exam selection.
   if (opts?.exam && opts.exam.toUpperCase() !== "ALL") {
+    const exam = opts.exam;
     filtered = filtered.filter((w) => {
       const rel = w.examRelevance as string[] | null;
-      return !rel || rel.includes(opts.exam!);
+      return Array.isArray(rel) && rel.includes(exam);
     });
   }
 
@@ -584,6 +591,77 @@ export async function addVocabWord(input: {
   return { created: true, word: created };
 }
 
+// ── Integrated Vocab note (per-user, per-word) ────────────────
+
+export type VocabNoteDTO = {
+  wordId: number;
+  note: string;
+  word: VocabWordDTO;
+};
+
+export async function getVocabNotes(userId: string): Promise<VocabNoteDTO[]> {
+  const notes = await prisma.vocabNote.findMany({
+    where: { userId },
+    include: { word: true },
+    orderBy: { updatedAt: "desc" },
+  });
+  const progresses = await prisma.vocabProgress.findMany({
+    where: { userId, wordId: { in: notes.map((n) => n.wordId) } },
+  });
+  const progMap = new Map(progresses.map((p) => [p.wordId, p]));
+  return notes.map((n) => ({
+    wordId: n.wordId,
+    note: n.note,
+    word: toDTO(n.word, progMap.get(n.wordId)),
+  }));
+}
+
+export async function saveVocabNote(
+  userId: string,
+  wordId: number,
+  note: string,
+): Promise<VocabNoteDTO> {
+  if (!Number.isInteger(wordId) || wordId <= 0) throw new ValidationError("Invalid word");
+  const word = await prisma.vocabWord.findUnique({ where: { id: wordId } });
+  if (!word) throw new NotFoundError("Word not found");
+  const text = (note ?? "").trim().slice(0, 2000);
+  const saved = await prisma.vocabNote.upsert({
+    where: { userId_wordId: { userId, wordId } },
+    create: { userId, wordId, note: text },
+    update: { note: text },
+  });
+  return { wordId, note: saved.note, word: toDTO(word) };
+}
+
+export async function deleteVocabNote(userId: string, wordId: number): Promise<void> {
+  if (!Number.isInteger(wordId) || wordId <= 0) throw new ValidationError("Invalid word");
+  await prisma.vocabNote.deleteMany({ where: { userId, wordId } });
+}
+
+/** Blank the headword (or a common inflected form) in an example sentence. */
+function blankWordInSentence(sentence: string, word: string): string | null {
+  if (!sentence?.trim() || !word.trim()) return null;
+  const escaped = word.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`\\b${escaped}(?:s|es|d|ed|ing)?\\b`, "i");
+  const out = sentence.replace(re, "______");
+  return out === sentence ? null : out;
+}
+
+/** Read a usable partner phrase from the optional `collocations` JSON. */
+function firstCollocation(value: unknown): string | null {
+  if (Array.isArray(value)) {
+    const first = value[0];
+    if (typeof first === "string" && first.trim()) return first.trim();
+    if (first && typeof first === "object") {
+      const o = first as Record<string, unknown>;
+      const partner = o.partner ?? o.collocation ?? o.phrase;
+      if (typeof partner === "string" && partner.trim()) return partner.trim();
+    }
+  }
+  if (typeof value === "string" && value.trim()) return value.trim();
+  return null;
+}
+
 export async function getVocabQuizWords(
   userId: string,
   opts?: { count?: number; difficulty?: string; mode?: VocabQuizMode },
@@ -653,15 +731,21 @@ export async function getVocabQuizWords(
         recallPrompt: w.bengaliMeaning,
       });
     } else if (mode === "context") {
-      const cloze = (w.exampleSentence || w.word).replace(new RegExp(`\\b${w.word}\\b`, "i"), "______");
+      const cloze = blankWordInSentence(w.exampleSentence, w.word);
       result.push({
         ...base,
-        clozeSentence: cloze,
+        // No honest blank when the headword is absent/inflected — the UI
+        // falls back to a recall prompt instead of a blankless "fill-in".
+        ...(cloze ? { clozeSentence: cloze } : { recallPrompt: w.bengaliMeaning }),
       });
     } else if (mode === "collocation") {
+      const partner = firstCollocation(w.collocations);
       result.push({
         ...base,
-        collocation: { word: w.word, partner: "", meaning: w.bengaliMeaning },
+        // Never emit a placeholder collocation with an empty partner.
+        ...(partner
+          ? { collocation: { word: w.word, partner, meaning: w.bengaliMeaning } }
+          : { recallPrompt: w.bengaliMeaning }),
       });
     }
   }

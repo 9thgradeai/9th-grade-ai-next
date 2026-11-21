@@ -142,7 +142,7 @@ export default function VocabAlphabeticalView() {
     if (!currentWord) return null;
 
     const isWordOfDay = currentWord.partOfSpeech && currentIndex === 0;
-    const difficultyClass = DIFFICULTY_BADGE[currentWord.difficulty] ?? DIFFICULTY_BADGE.medium;
+    const difficultyClass = DIFFICULTY_BADGE[(currentWord.difficulty ?? "").toLowerCase()] ?? DIFFICULTY_BADGE.medium;
 
     return (
       <motion.div

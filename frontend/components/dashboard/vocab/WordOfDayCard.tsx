@@ -228,9 +228,9 @@ export default function WordOfDayCard() {
       {/* Difficulty badge + exam tags (always visible) */}
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
         <span
-          className={`text-[11px] font-mono px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE[word.difficulty] ?? DIFFICULTY_BADGE.medium}`}
+          className={`text-[11px] font-mono px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE[(word.difficulty ?? "").toLowerCase()] ?? DIFFICULTY_BADGE.medium}`}
         >
-          {word.difficulty}
+          {(word.difficulty ?? "MEDIUM").toUpperCase()}
         </span>
         {word.examRelevance.slice(0, 3).map((tag) => (
           <span

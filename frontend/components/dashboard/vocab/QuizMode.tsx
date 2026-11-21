@@ -20,10 +20,13 @@ import type { Server } from "@/lib/types";
 
 type QuizWord = Server.VocabQuizWordDTO;
 type Answer = { wordId: number; correct: boolean };
+type Option = { id: number; label: string };
 
 type QuizState = {
   phase: "loading" | "playing" | "results" | "error" | "empty";
   questions: QuizWord[];
+  /** Shuffled once per question so keyboard numbers match the rendered grid. */
+  options: Option[][];
   currentIndex: number;
   score: { correct: number; total: number; answers: Answer[] };
   selected: number | null;
@@ -39,17 +42,14 @@ const SHUFFLE_ARRAY = <T,>(arr: T[]): T[] => {
   return copy;
 };
 
-function shuffleOptions(word: QuizWord, mode: QuizWord["mode"] = "recognize") {
+function shuffleOptions(word: QuizWord, mode: QuizWord["mode"] = "recognize"): Option[] {
   const isRecognize = (mode ?? "recognize") === "recognize";
   const distractors = word.distractors.map((d) => ({
     id: d.id,
-    bengliMeaning: isRecognize ? d.bengaliMeaning : d.word,
+    label: isRecognize ? d.bengaliMeaning : d.word,
   }));
   const targetLabel = isRecognize ? word.bengaliMeaning : word.word;
-  return SHUFFLE_ARRAY([
-    { id: word.id, bengliMeaning: targetLabel },
-    ...distractors,
-  ]);
+  return SHUFFLE_ARRAY([{ id: word.id, label: targetLabel }, ...distractors]);
 }
 
 export default function QuizMode({
@@ -68,6 +68,7 @@ export default function QuizMode({
   const [state, setState] = useState<QuizState>({
     phase: "loading",
     questions: [],
+    options: [],
     currentIndex: 0,
     score: { correct: 0, total: 0, answers: [] },
     selected: null,
@@ -84,6 +85,7 @@ export default function QuizMode({
         setState({
           phase: "playing",
           questions: words,
+          options: words.map((w) => shuffleOptions(w, w.mode ?? mode)),
           currentIndex: 0,
           score: { correct: 0, total: 0, answers: [] },
           selected: null,
@@ -115,20 +117,26 @@ export default function QuizMode({
 
   const handleSelect = useCallback(
     (optionId: number) => {
-      setState((s) => {
-        if (s.answered || s.phase !== "playing") return s;
-        const word = s.questions[s.currentIndex];
-        const correct = optionId === word.id;
-        const newScore = {
+      if (state.answered || state.phase !== "playing") return;
+      const word = state.questions[state.currentIndex];
+      if (!word) return;
+      const correct = optionId === word.id;
+      setState((s) => ({
+        ...s,
+        selected: optionId,
+        answered: true,
+        score: {
           correct: s.score.correct + (correct ? 1 : 0),
           total: s.score.total + 1,
           answers: [...s.score.answers, { wordId: word.id, correct }],
-        };
-        return { ...s, selected: optionId, answered: true, score: newScore };
-      });
+        },
+      }));
+      // Feed every answer into SRS: wrong words now enter the due/weak queue
+      // instead of being display-only on the results screen.
+      void api.reviewVocab(word.id, correct ? 3 : 1).catch(() => {});
       advanceTimer.current = setTimeout(advance, 1500);
     },
-    [advance],
+    [advance, state],
   );
 
   useEffect(() => {
@@ -141,10 +149,9 @@ export default function QuizMode({
         return;
       }
       const idx = Number(e.key) - 1;
-      const word = state.questions[state.currentIndex];
-      const opts = shuffleOptions(word, word.mode ?? "recognize");
-      // Bounds against the actual option count — a shorter set used to crash
-      // on opts[idx].id when idx reached into 3 but only 2 options existed.
+      // Use the SAME order rendered in the grid (shuffled once at fetch time).
+      // Re-shuffling here made number keys select the wrong option.
+      const opts = state.options[state.currentIndex] ?? [];
       if (Number.isInteger(idx) && idx >= 0 && idx < opts.length) {
         handleSelect(opts[idx].id);
       }
@@ -152,7 +159,7 @@ export default function QuizMode({
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [state.phase, state.answered, state.currentIndex, state.questions, handleSelect, onExit]);
+  }, [state.phase, state.answered, state.currentIndex, state.options, handleSelect, onExit]);
 
   useEffect(() => {
     if (state.phase !== "playing" || !state.answered) return;
@@ -257,10 +264,15 @@ export default function QuizMode({
                 {incorrectWords.map((w) => (
                   <div
                     key={w.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-danger)]/20"
+                    className="p-3 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-danger)]/20"
                   >
-                    <span className="font-medium text-[var(--text-primary)]">{w.word}</span>
-                    <span className="text-sm text-[var(--text-muted)]">{w.bengaliMeaning}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-[var(--text-primary)]">{w.word}</span>
+                      <span className="text-sm text-[var(--text-muted)]">{w.bengaliMeaning}</span>
+                    </div>
+                    {w.exampleSentence && (
+                      <p className="mt-1 text-xs italic text-[var(--text-muted)]">{w.exampleSentence}</p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -283,7 +295,7 @@ export default function QuizMode({
   }
 
   const word = state.questions[state.currentIndex];
-  const opts = shuffleOptions(word, word.mode ?? "recognize");
+  const opts = state.options[state.currentIndex] ?? [];
   const progress = ((state.currentIndex + (state.answered ? 1 : 0)) / state.questions.length) * 100;
 
   return (
@@ -343,7 +355,14 @@ export default function QuizMode({
           <div className="text-center mb-8">
             {word.mode === "context" && word.clozeSentence ? (
               <p className="text-xl font-mono text-[var(--text-primary)] mb-3 leading-relaxed">&ldquo;{word.clozeSentence}&rdquo;</p>
-            ) : word.mode === "recall" ? (
+            ) : word.mode === "collocation" && word.collocation?.partner ? (
+              <div className="mb-2">
+                <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-1">
+                  {t(lang, "সঠিক শব্দ বাছুন:", "Pick the partner for")} &ldquo;{word.collocation.partner}&rdquo;
+                </h2>
+                <p className="text-sm text-[var(--text-muted)]">{word.collocation.meaning}</p>
+              </div>
+            ) : word.mode === "recall" || (word.mode === "context" && !word.clozeSentence) ? (
               <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">{word.recallPrompt ?? word.bengaliMeaning}</h2>
             ) : (
               <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">{word.word}</h2>
@@ -379,7 +398,7 @@ export default function QuizMode({
                   <span className="absolute top-2 left-3 font-mono text-[11px] text-[var(--text-muted)]">
                     {i + 1}
                   </span>
-                  <span className="ml-4">{opt.bengliMeaning}</span>
+                  <span className="ml-4">{opt.label}</span>
                   {showResult && isCorrect && (
                     <CheckCircle className="absolute top-2 right-3 w-4 h-4 text-emerald-500" />
                   )}
@@ -390,6 +409,13 @@ export default function QuizMode({
               );
             })}
           </div>
+
+          {state.answered && (
+            <p className="mt-4 text-center text-xs italic text-[var(--text-muted)]">
+              {t(lang, "ব্যাখ্যা", "Why")}:{" "}
+              {word.exampleSentence || `${word.word} — ${word.bengaliMeaning}`}
+            </p>
+          )}
         </motion.div>
       </AnimatePresence>
 
