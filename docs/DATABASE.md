@@ -84,6 +84,15 @@ ever rebuilt outside migrations:
 > avoid. Nothing in `database/prisma/schema.prisma` changed. Paper-assembly
 > immutability reuses the existing per-attempt question-set hash on the exam
 > attempt, so no content-snapshot table was added either.
+>
+> **ADR-075 (2026-11-22) supersedes the "no new tables" scope for the adaptive
+> exam pipeline only.** Twelve additive tables were introduced for Adaptive Exam
+> V2.0 (profiles, verified historical corpus, blueprints, candidate-safe papers,
+> a separate answer key, sessions, reports and audit). The syllabus-driven config
+> and paper-assembly path above is unchanged: still code-based, still no config
+> table, still no `Question`/`ExamAttempt` migration. All adaptive tables start
+> empty; no historical data is claimed or seeded by the schema change. See
+> `docs/adaptive-exam/03-PERSISTENCE.md` and ADR-075 in `DECISIONS.md`.
 
 ### Enums
 
@@ -942,6 +951,97 @@ server-side (not localStorage) so it follows the signed-in user across devices;
 - `@@unique([userId, wordId])` — at most one note per user per word (backing the upsert)
 - `@@index([userId])` — fast lookup of a user's note set
 
+### Adaptive Exam V2.0 models (ADR-075)
+
+Additive, initially empty. Status/shape columns are `String` validated against the
+unions in `backend/services/adaptive-exam/contracts.ts` — the app layer, not the DB,
+is the single validation authority (same pattern as `VocabImportBatch.status`).
+All snapshot tables are immutable in application code: a change creates a new row.
+
+#### AdaptiveExamProfile
+Versioned post-level profile snapshot seeded from the code registry.
+- `id` String (cuid) — PK; `profileId` + `version` — `@@unique`, one snapshot per version
+- `family`, `ecosystemCode`, `organization`, `recruitmentPost`, `stage`, `labelBn`, `labelEn`
+- `subjects` Json — `SubjectAllocationSpec[]`; `scoring` Json — `ScoringPolicy` (authoritative at submit)
+- `totalQuestions`, `totalMarks`, `durationMin` Int; `difficultyDistribution` Json (sums to 100)
+- `languagePolicy` String; `historicalDataEligible` Boolean; `pyqPolicy`, `allowedOverrides`, `source` Json
+- `verificationStatus` String — `draft|reviewed|approved|rejected`; only `approved` enables official simulation
+- `effectiveFrom`/`effectiveTo` DateTime?; `revisionHistory`, `notes` Json
+- `contentHash` String — SHA-256 of the canonical snapshot; `createdAt` DateTime
+- Indexes: `[family, verificationStatus]`, `[ecosystemCode]`, `[contentHash]`
+
+#### HistoricalImportBatch / HistoricalImportIssue
+One ingestion run plus its preserved exceptions. `sourceRef`, `fileHash?`, `family`,
+`status` (`PREVIEW|APPROVED|IMPORTED|ROLLED_BACK|REJECTED`), `actorId?`, `totals` Json,
+`report` Json (`ImportReport`), `startedAt`/`finishedAt`/`createdAt`. Issues carry
+`recordRef`, `stage`, `severity`, `reason`, `preservedRef` (pointer to untouched source text).
+Indexes: batch `[status]`, `[family, createdAt]`, `[fileHash]`, `[actorId]`; issue `[batchId]`.
+
+#### HistoricalQuestion
+Verified historical corpus, deliberately separate from `Question` (no live rows are
+written or overwritten). `claimedAnswer` (source assertion) and `verifiedAnswer`
+(independent check) are distinct nullable columns; neither can silently replace the other.
+- Identity: `family`, `organization`, `recruitmentPost`, `examinationName`, `examYear?`,
+  `examDate?`, `stage`, `paperSet?`, `subjectId`, `subjectName`, `topicPath`, `subtopicPath?`
+- Content: `questionText`, `originalSourceText` (@db.Text, verbatim), `normalizedText`
+  (@db.Text, derived), `options` Json (exactly A–D), `originalLanguage`
+- Answers: `claimedAnswer?`, `verifiedAnswer?`, `explanation?` (@db.Text), `verification`
+  (`UNVERIFIED|SOURCE_CLAIMED|CROSS_CHECKED|HUMAN_VERIFIED|DISPUTED`), `explanationOrigin`
+- `provenance` Json (file/page/url/date/batch), `classification` Json, `duplicateGroupId?`,
+  `eligibleForPyq` Boolean, `importBatchId?` (SetNull), `contentHash`, timestamps
+- Indexes: `[family, organization, recruitmentPost, examYear]`, `[subjectId, topicPath]`,
+  `[verification, eligibleForPyq]`, `[duplicateGroupId]`, `[importBatchId]`, `[contentHash]`
+
+#### HistoricalAnalyticsSnapshot
+Content-hashed cached `HistoricalAnalyticsReport` + `coverage`. Frequencies are
+observations with explicit `insufficientEvidence` / `gaps`, never predictions.
+Indexes: `[profileId, createdAt]`, `[contentHash]`.
+
+#### AdaptiveBlueprint
+Immutable, hashed pre-paper plan pinning one `AdaptiveExamProfile` snapshot
+(`profileSnapshotId`, `Restrict`). Carries `mode`, counts, `durationSec`, `scoring`,
+`languageBySubject`, `allocations`, difficulty/source allocations, `candidateAdaptation`
+(with `snapshotHash`), `duplicateExclusions`, `dataSufficiency`, `warnings`, `status`
+(`draft|committed|superseded`), `contentHash`. Indexes: `[profileId, profileVersion]`,
+`[status, createdAt]`, `[contentHash]`, `[profileSnapshotId]`.
+
+#### AdaptivePaperSnapshot
+Candidate-safe paper generated from a committed blueprint (`Restrict`).
+`questions` Json holds `CandidatePaperQuestion[]` — **no correct option or
+explanation column exists on this table by design**. `contentHash` binds the exact
+ordered paper; `validation` is `PASS|PASS_WITH_WARNING|REPAIR_REQUIRED|REJECTED`.
+Indexes: `[blueprintId]`, `[contentHash]`.
+
+#### AdaptiveAnswerKey
+Server-only key, one-to-one with a paper (`paperId @unique`, `Restrict`). `contentHash`
+must equal the paper's; `entries` Json holds `SecureAnswerKeyEntry[]`. Reachable only
+via `AnswerKeyStore.getForScoring()` / authorized `releaseForReview()`. Index: `[contentHash]`.
+
+#### CandidatePerformanceSnapshot
+Windowed, hashed `CandidateSnapshot` per `(userId, profileId, contentHash)`.
+`sufficientEvidence: false` on a topic means thin data, never established weakness.
+Indexes: unique `[userId, profileId, contentHash]`, `[userId, createdAt]`.
+
+#### AdaptiveExamSession
+Server-owned lifecycle: `expiresAt` (from the blueprint, never the client), `status`
+(`ExamLifecycleStatus` union), `answers` Json keyed by position, `flags` Json,
+`version` (optimistic concurrency), `idempotencyKey`, `legacyAttemptId Int?` (soft link
+to `ExamAttempt.id`, no FK), timestamps. Unique `[userId, idempotencyKey]`;
+indexes `[userId, status]`, `[userId, createdAt]`, `[paperId]`, `[blueprintId]`,
+`[expiresAt]`, `[legacyAttemptId]`. FKs to paper/blueprint use `Restrict`.
+
+#### AdaptiveScoreReport
+One immutable `ScoreReport` + `PerformanceReport` per session (`attemptId @unique`,
+`Restrict`), plus `paperId`, profile version, `scoring`, `score` Json, `report` Json,
+`contentHash`, `candidateSnapshotHash?`. Indexes: `[profileId, createdAt]`, `[contentHash]`.
+
+#### AdaptiveAuditEvent
+Append-only decision trail: `name`, `occurredAt`, `requestId`, `correlationId?`,
+`actorId?`, `entityType`, `entityId`, `metadata` Json (redacted at write time by
+`sanitizeAdaptiveMetadata()` — never answers/explanations/secrets). Indexes:
+`[entityType, entityId, occurredAt]`, `[name, occurredAt]`, `[requestId]`,
+`[actorId, occurredAt]`.
+
 ## Migrations
 
 Migrations are not used. The schema is pushed directly:
@@ -1046,6 +1146,7 @@ explicit `@@index`. Current explicit indexes:
 - `FlashcardUserState.[userId, nextReview]`, `StudyTaskCompletion.userId`
 - `AIConversation.[userId, updatedAt]`, `[userId, kind, updatedAt]`; `AIMessage.[conversationId, createdAt]`; `AIMemory.[userId, type]`; `AIUsage.[userId, createdAt]`, `[userId, task, createdAt]`, `[task, createdAt]`, `[model, createdAt]`; `AIFeedback.[userId, createdAt]`, `messageId`
 - `AppNotification.[timestamp, id]`
+- Adaptive V2 (ADR-075): `AdaptiveExamProfile.[family, verificationStatus]`, `[ecosystemCode]`, `[contentHash]`; `HistoricalImportBatch.[status]`, `[family, createdAt]`, `[fileHash]`, `[actorId]`; `HistoricalImportIssue.[batchId]`; `HistoricalQuestion.[family, organization, recruitmentPost, examYear]`, `[subjectId, topicPath]`, `[verification, eligibleForPyq]`, `[duplicateGroupId]`, `[importBatchId]`, `[contentHash]`; `HistoricalAnalyticsSnapshot.[profileId, createdAt]`, `[contentHash]`; `AdaptiveBlueprint.[profileId, profileVersion]`, `[status, createdAt]`, `[contentHash]`, `[profileSnapshotId]`; `AdaptivePaperSnapshot.[blueprintId]`, `[contentHash]`; `AdaptiveAnswerKey.[contentHash]`; `CandidatePerformanceSnapshot.[userId, createdAt]` (+ unique `[userId, profileId, contentHash]`); `AdaptiveExamSession.[userId, status]`, `[userId, createdAt]`, `[paperId]`, `[blueprintId]`, `[expiresAt]`, `[legacyAttemptId]` (+ unique `[userId, idempotencyKey]`); `AdaptiveScoreReport.[profileId, createdAt]`, `[contentHash]`; `AdaptiveAuditEvent.[entityType, entityId, occurredAt]`, `[name, occurredAt]`, `[requestId]`, `[actorId, occurredAt]`
 
 Redundant indexes were removed in the launch audit: `User.email` / `User.handle`
 (duplicated their unique constraints) and `DailyQuiz.date` / `Question.[subjectId, topic]`

@@ -1209,3 +1209,50 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   empty-explanation, correctly removed)). Follow-up work: stage-2 cleanup must resolve the remaining
   4,458 STRUCTURAL_BROKEN ANSWER_MISMATCH rows (letter-prefixed answers such as `"d. 3"`) before re-running
   the post-clean invariant.
+
+## ADR-075: Adaptive Exam V2.0 persistence — additive snapshots, separate verified corpus, no answer column on papers
+
+- **Date**: 2026-11-22
+- **Status**: Accepted
+- **Context**: ADR-064 deliberately kept the syllabus-driven exam pipeline table-free, reusing the
+  per-attempt question-set hash for immutability and explicitly leaving "a DB-backed
+  versioning/content-snapshot table ... as a future option if multi-version history or auditable
+  config edits are required". Adaptive Exam V2.0 is exactly that case: it needs versioned post-level
+  profiles, immutable blueprints and candidate papers, a pre-submission answer key with entitlement,
+  a verified historical corpus whose source claims stay distinct from independently checked answers,
+  and an append-only decision trail. The existing seam cannot express these: `ExamAttempt` has no
+  config version, profile snapshot or per-answer FK; `Question` has one `correctAnswer` and no
+  provenance/verification/duplicate-group fields; paper detail and export already expose answer keys
+  without entitlement. No historical answer, source, year or statistic may be fabricated, so none
+  may be seeded by this change.
+- **Decision**: Add twelve **new, additive** Prisma models — `AdaptiveExamProfile`,
+  `HistoricalImportBatch`, `HistoricalImportIssue`, `HistoricalQuestion`,
+  `HistoricalAnalyticsSnapshot`, `AdaptiveBlueprint`, `AdaptivePaperSnapshot`,
+  `AdaptiveAnswerKey`, `CandidatePerformanceSnapshot`, `AdaptiveExamSession`,
+  `AdaptiveScoreReport`, `AdaptiveAuditEvent` — plus two back-relation fields on `User`. No existing
+  table changes semantics; no migration files (the repo pushes schema directly); no data backfill;
+  no writes to `Question` or `ExamAttempt` from the historical pipeline. Profile and blueprint
+  snapshots are content-hashed and immutable. `AdaptivePaperSnapshot` has **no answer column** —
+  answers live only in `AdaptiveAnswerKey`, referenced one-to-one by `paperId`. Status/shape fields
+  are `String`, validated against the unions in `backend/services/adaptive-exam/contracts.ts`
+  (mirroring `VocabImportBatch.status` and `AuditLog.action`), keeping the app layer the single
+  validation authority. `AdaptiveExamSession.legacyAttemptId` is a soft `Int?` link to
+  `ExamAttempt.id`, not an FK, so the canonical submission writer stays untouched. Every new FK has
+  an explicit index.
+- **Rationale**: Additive-only DDL is safe under ADR-065's schema-before-code deploy ordering — the
+  old deployment keeps working against the new empty tables. Keeping the code registry as the seed
+  source preserves ADR-064's reviewability and unit-testability while making the DB snapshot
+  authoritative **for a committed attempt only**, so a later profile edit cannot rewrite history.
+  Separating the answer key structurally (not just by convention) turns the no-leak rule into a
+  schema property: no paper read path can select a correct option. Preserving `claimedAnswer` and
+  `verifiedAnswer` as distinct columns prevents a source claim from being silently promoted to a
+  verified answer. String status fields avoid a second, drifting source of truth next to the
+  TypeScript unions and avoid enum-value migrations.
+- **Consequences**: `npx prisma validate` passes; `npm run db:push` must run before the code that
+  uses these tables (already enforced by the production workflow in ADR-065). All twelve tables
+  start **empty** — this ADR claims no historical data, counts or years. ADR-064's "no new DB
+  tables" scope is superseded **only for the adaptive pipeline**; the syllabus-driven config and
+  paper-assembly path is unchanged and still code-based. App-layer enforcement remains mandatory:
+  profile `verificationStatus`, answer-key entitlement and metadata redaction are not DB-enforced.
+  No API route, service implementation or UI ships in this ADR; retention for `AdaptiveAuditEvent`
+  and `HistoricalQuestion` exceptions will be defined with the ingestion phase.

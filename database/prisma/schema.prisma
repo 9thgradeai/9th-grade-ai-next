@@ -274,6 +274,8 @@ model User {
   vocabDecks              UserVocabDeck[]
   createdDecks            VocabDeck[]
   currentAffairsNotes     UserCustomizedNote[]
+  adaptiveExamSessions    AdaptiveExamSession[]
+  candidateSnapshots      CandidatePerformanceSnapshot[]
 
   storageConnection StorageConnection?
   storageFiles      StorageFile[]
@@ -1576,4 +1578,319 @@ model AuditLog {
 
   @@index([userId, createdAt])
   @@index([action, createdAt])
+}
+
+// ── Adaptive Exam V2.0 (ADR-075) ────────────────────────────────────────
+// Additive-only tables for the adaptive exam pipeline. NOTHING in the
+// syllabus-driven exam pipeline (ExamConfig registry, Question, ExamAttempt,
+// exam-paper assembly) is changed or migrated here.
+//
+// Rules encoded in this section:
+//   • Profile / blueprint / paper / score rows are immutable snapshots.
+//   • The candidate paper table has NO answer column. Answers live only in
+//     AdaptiveAnswerKey, reachable solely through the scoring service.
+//   • Status/shape fields are Strings validated against the unions in
+//     backend/services/adaptive-exam/contracts.ts, mirroring VocabImportBatch
+//     and AuditLog. This keeps app-layer validation the single authority.
+//   • Every FK carries an explicit index (Postgres does not auto-index FKs).
+
+/// One immutable, content-hashed version of an adaptive exam profile.
+/// The code registry seeds these; a committed blueprint pins one version so a
+/// later profile edit can never rewrite a historical paper or result.
+model AdaptiveExamProfile {
+  id                    String   @id @default(cuid())
+  profileId             String // AdaptiveExamProfileId union in contracts.ts
+  version               Int
+  family                String // BCS | BANK
+  ecosystemCode         String // existing ExamEcosystemCode values only
+  organization          String
+  recruitmentPost       String
+  stage                 String
+  labelBn               String
+  labelEn               String
+  subjects              Json // SubjectAllocationSpec[]
+  totalQuestions        Int
+  totalMarks            Int
+  durationMin           Int
+  scoring               Json // ScoringPolicy — authoritative at submit
+  difficultyDistribution Json // Record<DifficultyBand, number>, sums to 100
+  languagePolicy        String
+  historicalDataEligible Boolean @default(false)
+  pyqPolicy             Json // allowSourceClaimed / allowUnverified / minVerifiedShare
+  allowedOverrides      Json // ProfileOverrideKey[]
+  source                Json // ProfileSource — official | user-provided | curated
+  verificationStatus    String   @default("draft") // draft|reviewed|approved|rejected
+  effectiveFrom         DateTime?
+  effectiveTo           DateTime?
+  revisionHistory       Json     @default("[]")
+  notes                 Json     @default("[]")
+  contentHash           String // SHA-256 over the canonical snapshot
+  createdAt             DateTime @default(now())
+
+  blueprints AdaptiveBlueprint[]
+
+  @@unique([profileId, version])
+  @@index([family, verificationStatus])
+  @@index([ecosystemCode])
+  @@index([contentHash])
+}
+
+/// A historical import run. Originals are preserved; nothing is written to
+/// the live Question table by this pipeline (ADR-075).
+model HistoricalImportBatch {
+  id          String                   @id @default(cuid())
+  sourceRef   String // file name or origin identifier
+  fileHash    String? // sha256 of the source file, for re-run dedupe
+  family      String // BCS | BANK
+  status      String                   @default("PREVIEW") // PREVIEW|APPROVED|IMPORTED|ROLLED_BACK|REJECTED
+  actorId     String? // admin/service id; kept even if the User row is gone
+  totals      Json                     @default("{}")
+  report      Json                     @default("{}") // ImportReport
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  createdAt   DateTime                 @default(now())
+  issues      HistoricalImportIssue[]
+  questions   HistoricalQuestion[]
+
+  @@index([status])
+  @@index([family, createdAt])
+  @@index([fileHash])
+  @@index([actorId])
+}
+
+/// A preserved exception from an ingestion stage. `preservedRef` points at the
+/// untouched source text so a rejected record can be reviewed, never invented.
+model HistoricalImportIssue {
+  id           String               @id @default(cuid())
+  batchId      String
+  batch        HistoricalImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  recordRef    String
+  stage        String // IngestionStage union
+  severity     String // info | warning | error | critical
+  reason       String
+  preservedRef String
+  createdAt    DateTime             @default(now())
+
+  @@index([batchId])
+}
+
+/// A verified historical question, kept SEPARATE from the live Question table.
+/// The source's answer claim and the independent verification result never
+/// overwrite each other.
+model HistoricalQuestion {
+  id                 String                 @id @default(cuid())
+  family             String // BCS | BANK
+  organization       String
+  recruitmentPost    String
+  examinationName    String
+  examYear           Int?
+  examDate           DateTime?
+  stage              String
+  paperSet           String?
+  subjectId          String
+  subjectName        String
+  topicPath          String
+  subtopicPath       String?
+  originalLanguage   String // bn | en
+  questionText       String                 @db.Text
+  options            Json // Readonly<Record<"A"|"B"|"C"|"D", string>>
+  claimedAnswer      String? // A|B|C|D — source assertion, never silently overwritten
+  verifiedAnswer     String? // A|B|C|D — independent check, distinct from the claim
+  explanation        String?                @db.Text
+  verification       String                 @default("UNVERIFIED") // UNVERIFIED|SOURCE_CLAIMED|CROSS_CHECKED|HUMAN_VERIFIED|DISPUTED
+  explanationOrigin  String                 @default("none") // historical|ai-generated|human-reviewed|none
+  provenance         Json // QuestionProvenance — file/page/url/date/batch
+  classification     Json // status, difficulty, difficultyConfidence
+  duplicateGroupId   String?
+  originalSourceText String                 @db.Text // verbatim, never rewritten
+  normalizedText     String                 @db.Text // derived search/dedupe form
+  eligibleForPyq     Boolean                @default(false)
+  importBatchId      String?
+  importBatch        HistoricalImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  contentHash        String
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@index([family, organization, recruitmentPost, examYear])
+  @@index([subjectId, topicPath])
+  @@index([verification, eligibleForPyq])
+  @@index([duplicateGroupId])
+  @@index([importBatchId])
+  @@index([contentHash])
+}
+
+/// A cached, content-hashed historical analysis. Frequencies are observations
+/// with explicit coverage — never a prediction of future questions.
+model HistoricalAnalyticsSnapshot {
+  id          String   @id @default(cuid())
+  profileId   String?
+  filter      Json
+  report      Json // HistoricalAnalyticsReport
+  coverage    Json // sampleSize, yearsCovered, verifiedShare, gaps, insufficientEvidence
+  contentHash String
+  createdAt   DateTime @default(now())
+
+  @@index([profileId, createdAt])
+  @@index([contentHash])
+}
+
+/// An immutable, hashed adaptation plan. Committed once; later changes create
+/// a new row rather than editing this one.
+model AdaptiveBlueprint {
+  id                     String                   @id @default(cuid())
+  profileSnapshotId      String
+  profileSnapshot        AdaptiveExamProfile      @relation(fields: [profileSnapshotId], references: [id], onDelete: Restrict)
+  profileId              String
+  profileVersion         Int
+  family                 String
+  mode                   String // BlueprintMode union
+  requestedQuestionCount Int
+  totalQuestionCount     Int
+  totalMarks             Int
+  durationSec            Int
+  scoring                Json
+  languageBySubject      Json
+  allocations            Json // SubjectBlueprintAllocation[]
+  difficultyAllocation   Json
+  sourceAllocation       Json
+  historicalYearRange    Json?
+  candidateAdaptation    Json // enabled, weights, snapshotHash
+  duplicateExclusions    Json     @default("[]")
+  dataSufficiency        Json
+  warnings               Json     @default("[]")
+  status                 String   @default("draft") // draft|committed|superseded
+  contentHash            String
+  createdAt              DateTime @default(now())
+
+  papers   AdaptivePaperSnapshot[]
+  sessions AdaptiveExamSession[]
+
+  @@index([profileId, profileVersion])
+  @@index([status, createdAt])
+  @@index([contentHash])
+  @@index([profileSnapshotId])
+}
+
+/// The candidate-safe paper. NO answer column by design — the answer key is a
+/// separate table so no paper read path can accidentally leak it.
+model AdaptivePaperSnapshot {
+  id           String                 @id @default(cuid())
+  blueprintId  String
+  blueprint    AdaptiveBlueprint      @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  version      Int                    @default(1)
+  questions    Json // CandidatePaperQuestion[] — no correctOption / explanation
+  contentHash  String
+  validation   String // PASS|PASS_WITH_WARNING|REPAIR_REQUIRED|REJECTED
+  createdAt    DateTime               @default(now())
+  answerKey    AdaptiveAnswerKey?
+  sessions     AdaptiveExamSession[]
+  scoreReports AdaptiveScoreReport[]
+
+  @@index([blueprintId])
+  @@index([contentHash])
+}
+
+/// Server-only answer key. Access goes through AnswerKeyStore.getForScoring()
+/// or the authorized releaseForReview() path — never through a paper endpoint.
+model AdaptiveAnswerKey {
+  id          String               @id @default(cuid())
+  paperId     String               @unique
+  paper       AdaptivePaperSnapshot @relation(fields: [paperId], references: [id], onDelete: Restrict)
+  contentHash String // must equal AdaptivePaperSnapshot.contentHash
+  entries     Json // SecureAnswerKeyEntry[] — position, correctOption, explanation
+  createdAt   DateTime             @default(now())
+
+  @@index([contentHash])
+}
+
+/// A windowed, hashed view of candidate performance. Thin data is labelled
+/// `sufficientEvidence: false` per topic instead of being read as weakness.
+model CandidatePerformanceSnapshot {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId   String
+  windowFrom  DateTime
+  windowTo    DateTime
+  snapshot    Json // CandidateSnapshot
+  contentHash String
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, profileId, contentHash])
+  @@index([userId, createdAt])
+}
+
+/// Server-owned exam lifecycle: timer, optimistic version, idempotency.
+/// `legacyAttemptId` is a soft link to ExamAttempt (no FK) so the canonical
+/// attempt writer stays untouched while the two ids can be reconciled.
+model AdaptiveExamSession {
+  id              String                 @id @default(cuid())
+  userId          String
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paperId         String
+  paper           AdaptivePaperSnapshot  @relation(fields: [paperId], references: [id], onDelete: Restrict)
+  blueprintId     String
+  blueprint       AdaptiveBlueprint      @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  profileId       String
+  profileVersion  Int
+  status          String                 @default("NOT_STARTED") // ExamLifecycleStatus union
+  startsAt        DateTime               @default(now())
+  expiresAt       DateTime
+  submittedAt     DateTime?
+  answers         Json                   @default("{}") // Record<position, OptionKey>
+  flags           Json                   @default("[]")
+  lastSavedAt     DateTime?
+  version         Int                    @default(1) // optimistic concurrency
+  idempotencyKey  String
+  legacyAttemptId Int? // soft link to ExamAttempt.id; no FK/back-relation
+  scoreReport     AdaptiveScoreReport?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@index([paperId])
+  @@index([blueprintId])
+  @@index([expiresAt])
+  @@index([legacyAttemptId])
+}
+
+/// Immutable score + post-submit performance report. One row per attempt.
+model AdaptiveScoreReport {
+  id                   String             @id @default(cuid())
+  attemptId            String             @unique
+  attempt              AdaptiveExamSession @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  paperId              String
+  paper                AdaptivePaperSnapshot @relation(fields: [paperId], references: [id], onDelete: Restrict)
+  profileId            String
+  profileVersion       Int
+  scoring              Json
+  score                Json // ScoreReport — immutable true
+  report               Json // PerformanceReport with explicit limitations
+  contentHash          String
+  candidateSnapshotHash String?
+  createdAt            DateTime           @default(now())
+
+  @@index([profileId, createdAt])
+  @@index([contentHash])
+}
+
+/// Append-only decision trail. Metadata is redacted at write time by
+/// sanitizeAdaptiveMetadata() — no answers, explanations or secrets.
+model AdaptiveAuditEvent {
+  id            String   @id @default(cuid())
+  name          String // AdaptiveAuditEventName union
+  occurredAt    DateTime @default(now())
+  requestId     String
+  correlationId String?
+  actorId       String?
+  entityType    String
+  entityId      String
+  metadata      Json     @default("{}")
+
+  @@index([entityType, entityId, occurredAt])
+  @@index([name, occurredAt])
+  @@index([requestId])
+  @@index([actorId, occurredAt])
 }
