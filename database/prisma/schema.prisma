@@ -230,6 +230,9 @@ model User {
   studyHoursPerDay Int?
   goal             String?
   onboarded        Boolean   @default(false)
+  // Per-user Vocab daily-word target. Null = derive an adaptive goal from
+  // the due count and exam date on the server (see getVocabDailyProgress).
+  vocabDailyGoal   Int?
 
   // ── Email verification (raw token is emailed; only the SHA-256 hash is stored) ──
   emailVerifyToken   String?   @unique

@@ -11,7 +11,7 @@ import { GET as wordsGET } from "~app/api/vocab/words/route";
 import { GET as statsGET } from "~app/api/vocab/stats/route";
 import { GET as wotdGET } from "~app/api/vocab/word-of-the-day/route";
 import { POST as reviewPOST } from "~app/api/vocab/review/route";
-import { GET as dailyGET } from "~app/api/vocab/daily/route";
+import { GET as dailyGET, PATCH as dailyPATCH } from "~app/api/vocab/daily/route";
 import { GET as quizGET } from "~app/api/vocab/quiz/route";
 import { GET as decksGET } from "~app/api/vocab/decks/route";
 import { POST as decksPOST } from "~app/api/vocab/decks/route";
@@ -319,6 +319,88 @@ describe("GET /api/vocab/daily", () => {
     expect(body).toHaveProperty("wordsReviewed");
     expect(body).toHaveProperty("streak");
     expect(body.wordsReviewed).toBe(1);
+  });
+});
+
+// ── PATCH /api/vocab/daily ────────────────────────────────
+
+describe("PATCH /api/vocab/daily", () => {
+  function patchRequest(
+    body: unknown,
+    headers: Record<string, string> = {},
+  ): Request {
+    return new Request(`${BASE}/api/vocab/daily`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json", ...headers },
+      body: JSON.stringify(body),
+    });
+  }
+
+  it("requires a session (401)", async () => {
+    const res = await dailyPATCH(patchRequest({ goal: 30 }));
+    expect(res.status).toBe(401);
+  });
+
+  it("saves a valid custom goal for the authenticated user", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.mocked(prisma.user.update).mockResolvedValue(
+      mockUser({ vocabDailyGoal: 30 }) as never,
+    );
+
+    const res = await dailyPATCH(patchRequest({ goal: 30 }, { cookie }));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ goal: 30, goalSource: "custom" });
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "usr_123" },
+        data: { vocabDailyGoal: 30 },
+      }),
+    );
+  });
+
+  it("clears the override when goal is null", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.mocked(prisma.user.update).mockResolvedValue(
+      mockUser({ vocabDailyGoal: null }) as never,
+    );
+
+    const res = await dailyPATCH(patchRequest({ goal: null }, { cookie }));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ goal: null, goalSource: "adaptive" });
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { vocabDailyGoal: null } }),
+    );
+  });
+
+  it("rejects non-numeric goals (400)", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+
+    const res = await dailyPATCH(patchRequest({ goal: "30" }, { cookie }));
+    expect(res.status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects out-of-range goals (400)", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+
+    expect((await dailyPATCH(patchRequest({ goal: 999 }, { cookie }))).status).toBe(400);
+    expect((await dailyPATCH(patchRequest({ goal: 2 }, { cookie }))).status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects a cross-origin request (403)", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    const res = await dailyPATCH(patchRequest(
+      { goal: 30 },
+      { cookie, origin: "https://evil.example.net" },
+    ));
+    expect(res.status).toBe(403);
+    expect((await res.json()).code).toMatch(/^CSRF_ORIGIN_/);
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
 });
 

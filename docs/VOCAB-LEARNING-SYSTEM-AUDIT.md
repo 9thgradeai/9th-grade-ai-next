@@ -12,6 +12,23 @@
 
 ---
 
+## Delivery status
+
+- **P0 — shipped** (`7690b67`): full-corpus circulation, real word IDs,
+  2-minute rotation; review rollback + session-counter resets.
+- **P1 — shipped** (`0750b3a`): real exercises, per-user notes, honest exports,
+  quiz/filter fixes, schedule + leech badges.
+- **P2 — shipped**: single rotation ticker with pause/resume + hidden-tab and
+  revealed-answer pauses; server-owned adaptive daily goal (`vocabDailyGoal`)
+  with `PATCH /api/vocab/daily`; same-source review refresh with cursor restore;
+  deduped offline review queue; one-query streak + one corpus read; IPA/audio/
+  register/collocations/word-family/confusables rendered via `VocabEnrichment`.
+
+The pitfall list below is the original audit snapshot. Items marked shipped above
+are resolved in the current code even though the historical defect text remains.
+
+---
+
 ## 1. What the Vocab tab does today (honest inventory)
 
 - **Card-based flashcard review** of one word at a time (word → reveal meaning,

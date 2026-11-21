@@ -6,7 +6,7 @@ import { BookOpen, Play, Pause, SkipForward, CaretLeft, CaretRight } from "@phos
 import { api } from "@/lib/services/api";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
-import WordOfDayCard from "./WordOfDayCard";
+import VocabEnrichment from "./VocabEnrichment";
 import { formatRotationCountdown, WORD_ROTATE_MS } from "@/components/dashboard/VocabTab";
 import type { Server } from "@/lib/types";
 
@@ -38,6 +38,12 @@ export default function VocabStreamView() {
   const [remainingMs, setRemainingMs] = useState(WORD_ROTATE_MS);
   const [autoAnnounce, setAutoAnnounce] = useState("");
   const rotationStartRef = useRef<number>(0);
+  const revealedRef = useRef(revealed);
+  const idxRef = useRef(idx);
+  const streamRef = useRef(stream);
+  useEffect(() => { revealedRef.current = revealed; }, [revealed]);
+  useEffect(() => { idxRef.current = idx; }, [idx]);
+  useEffect(() => { streamRef.current = stream; }, [stream]);
   const pokeRotationClock = useCallback(() => {
     rotationStartRef.current = Date.now();
     setRemainingMs(WORD_ROTATE_MS);
@@ -81,6 +87,12 @@ export default function VocabStreamView() {
         examRelevance: currentWord.examRelevance,
         frequency: currentWord.frequency,
         difficulty: currentWord.difficulty,
+        ipa: currentWord.ipa,
+        audioUrl: currentWord.audioUrl,
+        register: currentWord.register,
+        collocations: currentWord.collocations,
+        wordFamily: currentWord.wordFamily,
+        confusables: currentWord.confusables,
         status: currentWord.status,
         source: currentWord.source,
         progress: null,
@@ -103,33 +115,45 @@ export default function VocabStreamView() {
     pokeRotationClock();
   }, [stream, pokeRotationClock]);
 
-  // 1s ticker drives countdown + auto-advance from the server slot.
+  // A single 1s ticker owns both the countdown and the auto-advance. The old
+  // second setTimeout raced it and advanced twice per period.
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") pokeRotationClock();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     const id = window.setInterval(() => {
       const remaining = Math.max(0, WORD_ROTATE_MS - (Date.now() - rotationStartRef.current));
       setRemainingMs(remaining);
-      if (!autoRotate || !stream) return;
-      if (remaining > 0) return;
-      setAutoAnnounce(`পরের শব্দ: ${stream.words[idx]?.word ?? ""}, ${stream.words[idx]?.bengaliMeaning ?? ""}`);
-      nextWord();
+      // Pause while the learner is actively recalling a revealed answer, when
+      // paused explicitly, or while the tab is hidden (no idle catch-up).
+      if (!autoRotate || revealedRef.current) return;
+      if (document.visibilityState === "hidden") return;
+      const s = streamRef.current;
+      if (!s || s.words.length <= 1 || remaining > 0) return;
+      const nextIdx = (idxRef.current + 1) % s.words.length;
+      const next = s.words[nextIdx];
+      if (!next) return;
+      setAutoAnnounce(`পরের শব্দ: ${next.word}, ${next.bengaliMeaning}`);
+      setIdx(nextIdx);
       rotationStartRef.current = Date.now();
+      setRemainingMs(WORD_ROTATE_MS);
     }, 1000);
-    return () => window.clearInterval(id);
-  }, [autoRotate, stream, idx, nextWord]);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [autoRotate, pokeRotationClock]);
 
   useEffect(() => {
     pokeRotationClock();
   }, [current?.word, autoRotate, pokeRotationClock]);
 
+  // Closing a revealed answer gives the learner a full fresh period again.
   useEffect(() => {
-    if (!stream) return;
-    const t = setTimeout(() => {
-      if (!autoRotate) return;
-      nextWord();
-    }, WORD_ROTATE_MS);
-    return () => clearTimeout(t);
-  }, [stream, autoRotate, nextWord]);
+    if (!revealed) pokeRotationClock();
+  }, [revealed, pokeRotationClock]);
 
   if (loading) {
     return (
@@ -187,6 +211,15 @@ export default function VocabStreamView() {
               </p>
             )}
           </div>
+          <VocabEnrichment
+            word={wod.word}
+            ipa={wod.ipa}
+            audioUrl={wod.audioUrl}
+            register={wod.register}
+            collocations={wod.collocations}
+            wordFamily={wod.wordFamily}
+            confusables={wod.confusables}
+          />
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setRevealed((r) => !r)}
@@ -279,6 +312,16 @@ export default function VocabStreamView() {
             )}
           </div>
 
+          <VocabEnrichment
+            word={current.word}
+            ipa={current.ipa}
+            audioUrl={current.audioUrl}
+            register={current.register}
+            collocations={current.collocations}
+            wordFamily={current.wordFamily}
+            confusables={current.confusables}
+          />
+
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setRevealed((r) => !r)}
@@ -309,9 +352,26 @@ export default function VocabStreamView() {
               {t(lang, "সার্ভ-ড্রাইভেন বাক্য", "Server-Driven Stream")}
             </span>
           </div>
-          <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">
-            {stream ? `${stream.mode} • slot ${stream.slotIndex}` : ""}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">
+              {stream ? `${stream.mode} • slot ${stream.slotIndex}` : ""}
+            </span>
+            {/* WCAG 2.2.2: hands-free rotation can always be paused. */}
+            <div className="flex items-center gap-1.5 rounded-full border border-terminal-border bg-[var(--surface-raised)] pl-1 pr-2 py-1" role="group" aria-label={t(lang, "স্বয়ংক্রিয় ঘূর্ণন", "Auto-rotation")}>
+              <button
+                type="button"
+                onClick={() => setAutoRotate((v) => !v)}
+                aria-pressed={autoRotate}
+                aria-label={autoRotate ? t(lang, "স্বয়ংক্রিয় ঘূর্ণন বিরতি দিন", "Pause auto-rotation") : t(lang, "স্বয়ংক্রিয় ঘূর্ণন চালু করুন", "Resume auto-rotation")}
+                className="w-11 h-11 min-w-11 rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+              >
+                {autoRotate ? <Pause className="w-4 h-4" weight="fill" /> : <Play className="w-4 h-4" weight="fill" />}
+              </button>
+              <span className="text-[11px] font-mono tabular-nums text-[var(--dashboard-text-secondary)]" role="timer" aria-label={t(lang, "পরের শব্দ আসতে বাকি", "Next word in")}>
+                {autoRotate ? formatRotationCountdown(remainingMs) : t(lang, "বিরতি", "Paused")}
+              </span>
+            </div>
+          </div>
         </div>
 
         {renderWordContent()}

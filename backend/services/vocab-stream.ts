@@ -33,6 +33,12 @@ export type VocabStreamWord = {
   examRelevance: string[] | null;
   frequency: number;
   difficulty: string;
+  ipa: string | null;
+  audioUrl: string | null;
+  register: string | null;
+  collocations: string[] | null;
+  wordFamily: string[] | null;
+  confusables: string[] | null;
   status: string;
   source: "DUE" | "DAILY" | "FRESH";
 };
@@ -74,6 +80,12 @@ function toStreamWord(
     examRelevance: unknown;
     frequency: number;
     difficulty: string;
+    ipa?: string | null;
+    audioUrl?: string | null;
+    register?: string | null;
+    collocations?: unknown;
+    wordFamily?: unknown;
+    confusables?: unknown;
   },
   status: string,
   source: "DUE" | "DAILY" | "FRESH",
@@ -93,6 +105,12 @@ function toStreamWord(
     examRelevance: Array.isArray(w.examRelevance) ? (w.examRelevance as string[]) : null,
     frequency: w.frequency,
     difficulty: w.difficulty,
+    ipa: w.ipa ?? null,
+    audioUrl: w.audioUrl ?? null,
+    register: w.register ?? null,
+    collocations: Array.isArray(w.collocations) ? (w.collocations as string[]) : null,
+    wordFamily: Array.isArray(w.wordFamily) ? (w.wordFamily as string[]) : null,
+    confusables: Array.isArray(w.confusables) ? (w.confusables as string[]) : null,
     status,
     source,
   };
@@ -119,14 +137,14 @@ export async function getVocabStream(
   const cursor = Math.max(0, Math.floor(opts.cursor ?? 0));
   const slotIndex = getVocabSlotIndex();
   const slot = { slotIndex, rotatesAt: getVocabSlotEnd(slotIndex).toISOString() };
-  const wordOfDay = await getWordOfDay(userId, new Date());
-
-  // One bounded read of all regular words powers the "fresh" portion of the
-  // stream. Every entry carries its real DB id so reviews and notes work.
+  // A single bounded corpus read powers both the Word of the Day picker and
+  // the "fresh" portion of the stream. Every entry carries its real DB id so
+  // reviews and notes work. Idioms/phrases stay out of the word stream.
   const allWords = await prisma.vocabWord.findMany({
     orderBy: { id: "asc" },
-    where: { partOfSpeech: { notIn: ["Idiom", "Phrase"] } },
   });
+  const wordOfDay = await getWordOfDay(userId, new Date(), allWords);
+  const freshWords = allWords.filter((w) => !["Idiom", "Phrase"].includes(w.partOfSpeech));
 
   const dueProgresses = await prisma.vocabProgress.findMany({
     where: { userId, nextReview: { lte: new Date() } },
@@ -177,9 +195,9 @@ export async function getVocabStream(
   // Rotate the starting offset by the 10-minute slot so different slots lead
   // with different words, while the full set is always present in the queue.
   if (mode === "mixed" || mode === "all" || mode === "daily") {
-    const start = allWords.length > 0 ? slotIndex % allWords.length : 0;
-    for (let i = 0; i < allWords.length; i++) {
-      const w = allWords[(start + i) % allWords.length];
+    const start = freshWords.length > 0 ? slotIndex % freshWords.length : 0;
+    for (let i = 0; i < freshWords.length; i++) {
+      const w = freshWords[(start + i) % freshWords.length];
       enqueue(toStreamWord(w, "NEW", "FRESH"));
     }
   }

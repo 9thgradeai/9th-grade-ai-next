@@ -12,6 +12,12 @@ export type WordOfDayDTO = {
   antonyms: string[];
   difficulty: string;
   examRelevance: string[];
+  ipa: string | null;
+  audioUrl: string | null;
+  register: string | null;
+  collocations: string[] | null;
+  wordFamily: string[] | null;
+  confusables: string[] | null;
   isCustom: boolean;
   /** 10-minute rotation slot this word was picked for. */
   slotIndex: number;
@@ -52,6 +58,12 @@ function toDTO(
     antonyms: unknown;
     difficulty: string;
     examRelevance: unknown;
+    ipa?: string | null;
+    audioUrl?: string | null;
+    register?: string | null;
+    collocations?: unknown;
+    wordFamily?: unknown;
+    confusables?: unknown;
   },
   slot: { slotIndex: number; rotatesAt: string },
 ): WordOfDayDTO {
@@ -66,6 +78,12 @@ function toDTO(
     antonyms: Array.isArray(word.antonyms) ? (word.antonyms as string[]) : [],
     difficulty: word.difficulty,
     examRelevance: Array.isArray(word.examRelevance) ? (word.examRelevance as string[]) : [],
+    ipa: word.ipa ?? null,
+    audioUrl: word.audioUrl ?? null,
+    register: word.register ?? null,
+    collocations: Array.isArray(word.collocations) ? (word.collocations as string[]) : null,
+    wordFamily: Array.isArray(word.wordFamily) ? (word.wordFamily as string[]) : null,
+    confusables: Array.isArray(word.confusables) ? (word.confusables as string[]) : null,
     isCustom: false,
     slotIndex: slot.slotIndex,
     rotatesAt: slot.rotatesAt,
@@ -114,11 +132,17 @@ function pickWordForDay(
   return sorted[0];
 }
 
-export async function getWordOfDay(userId?: string, now: Date = new Date()): Promise<WordOfDayDTO> {
+export async function getWordOfDay(
+  userId?: string,
+  now: Date = new Date(),
+  preloadedWords?: Awaited<ReturnType<typeof prisma.vocabWord.findMany>>,
+): Promise<WordOfDayDTO> {
   const slotIndex = getSlotIndex(now);
   const slot = { slotIndex, rotatesAt: getSlotEnd(slotIndex).toISOString() };
 
-  const allWords = await prisma.vocabWord.findMany({
+  // The unified stream already reads the same corpus; let it pass that read in
+  // instead of issuing an identical second query on every request.
+  const allWords = preloadedWords ?? await prisma.vocabWord.findMany({
     orderBy: { id: "asc" },
   });
 

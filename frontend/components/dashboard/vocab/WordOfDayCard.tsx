@@ -16,6 +16,7 @@ import { api } from "@/lib/services/api";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import type { Server } from "@/lib/types";
+import VocabEnrichment, { speakVocab } from "./VocabEnrichment";
 
 type WordOfDay = Server.WordOfDayDTO;
 
@@ -25,13 +26,6 @@ const DIFFICULTY_BADGE: Record<string, string> = {
   hard: "text-red-600 bg-red-500/10 border-red-500/20",
 };
 
-function speakWord(word: string) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(word);
-  u.lang = "en-US";
-  u.rate = 0.85;
-  window.speechSynthesis.speak(u);
-}
 
 export default function WordOfDayCard() {
   const { lang } = useLanguage();
@@ -187,12 +181,21 @@ export default function WordOfDayCard() {
 
       {/* Pronunciation button */}
       <button
-        onClick={() => speakWord(word.word)}
+        onClick={() => speakVocab(word.word, word.audioUrl)}
         className="flex items-center gap-1.5 min-h-11 text-xs text-[var(--dashboard-primary)] hover:underline mb-4"
       >
         <SpeakerSimpleHigh size={14} />
         <span className="font-mono">{t(lang, "উচ্চারণ", "Pronounce")}</span>
       </button>
+        <VocabEnrichment
+          word={word.word}
+          ipa={word.ipa}
+          audioUrl={word.audioUrl}
+          register={word.register}
+          collocations={word.collocations}
+          wordFamily={word.wordFamily}
+          confusables={word.confusables}
+        />
         </motion.div>
       </AnimatePresence>
 

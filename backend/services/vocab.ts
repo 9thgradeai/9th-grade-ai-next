@@ -492,34 +492,114 @@ export async function getVocabStats(userId: string) {
   return { total, mastered, learning, due, reviewed: progresses.length };
 }
 
+export const VOCAB_DAILY_GOAL_MIN = 5;
+export const VOCAB_DAILY_GOAL_MAX = 200;
+
+/**
+ * Adaptive daily target when the learner has not chosen one: a small base for
+ * habit-keeping, plus every currently due word, plus an exam-week boost.
+ * Derived server-side so every device sees the same goal and the number moves
+ * as the SRS queue changes.
+ */
+export function computeAdaptiveDailyGoal(
+  due: number,
+  examDate: Date | null,
+  now: Date = new Date(),
+): number {
+  const daysToExam = examDate
+    ? Math.ceil((examDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
+    : null;
+  const examBoost =
+    daysToExam !== null && daysToExam >= 0 && daysToExam <= 30
+      ? Math.ceil((30 - daysToExam) / 3)
+      : 0;
+  return Math.max(10, Math.min(100, 10 + Math.max(0, due) + examBoost));
+}
+
 export async function getVocabDailyProgress(userId: string) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const todayReviews = await prisma.vocabProgress.findMany({
-    where: { userId, lastReviewedAt: { gte: today } },
-    select: { wordId: true, correctCount: true, totalReviews: true },
-  });
+  // One query per concern; the streak no longer issues a query per day.
+  const [todayReviews, due, user] = await Promise.all([
+    prisma.vocabProgress.findMany({
+      where: { userId, lastReviewedAt: { gte: today } },
+      select: { wordId: true, correctCount: true, totalReviews: true },
+    }),
+    prisma.vocabProgress.count({ where: { userId, nextReview: { lte: new Date() } } }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { vocabDailyGoal: true, examDate: true },
+    }),
+  ]);
   const wordsReviewed = todayReviews.length;
   const totalReviewsToday = todayReviews.reduce((sum, p) => sum + p.totalReviews, 0);
   const correctToday = todayReviews.reduce((sum, p) => sum + p.correctCount, 0);
   const streak = await computeStreak(userId);
-  return { wordsReviewed, totalReviewsToday, correctToday, streak };
+
+  const custom = user?.vocabDailyGoal;
+  const hasCustom =
+    typeof custom === "number" &&
+    Number.isInteger(custom) &&
+    custom >= VOCAB_DAILY_GOAL_MIN &&
+    custom <= VOCAB_DAILY_GOAL_MAX;
+  const goal = hasCustom
+    ? (custom as number)
+    : computeAdaptiveDailyGoal(due, user?.examDate ?? null);
+
+  return {
+    wordsReviewed,
+    totalReviewsToday,
+    correctToday,
+    streak,
+    due,
+    goal,
+    goalSource: hasCustom ? ("custom" as const) : ("adaptive" as const),
+  };
+}
+
+/** Persist a learner's manual daily-goal override (scoped to their account). */
+export async function setVocabDailyGoal(userId: string, goal: number | null) {
+  if (
+    goal !== null &&
+    (!Number.isInteger(goal) || goal < VOCAB_DAILY_GOAL_MIN || goal > VOCAB_DAILY_GOAL_MAX)
+  ) {
+    throw new ValidationError("Daily goal must be between 5 and 200");
+  }
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: { vocabDailyGoal: goal },
+    select: { vocabDailyGoal: true },
+  });
+  return {
+    goal: updated.vocabDailyGoal,
+    goalSource: (goal === null ? "adaptive" : "custom") as "adaptive" | "custom",
+  };
+}
+
+function localDayKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
 async function computeStreak(userId: string) {
-  let streak = 0;
+  const since = new Date();
+  since.setHours(0, 0, 0, 0);
+  since.setDate(since.getDate() - 364);
+  // A single bounded read replaces up to 365 sequential COUNT queries.
+  const reviewed = await prisma.vocabProgress.findMany({
+    where: { userId, lastReviewedAt: { gte: since } },
+    select: { lastReviewedAt: true },
+  });
+  const days = new Set(
+    reviewed
+      .map((p) => (p.lastReviewedAt ? localDayKey(new Date(p.lastReviewedAt)) : ""))
+      .filter(Boolean),
+  );
   const d = new Date();
   d.setHours(0, 0, 0, 0);
-  for (let i = 0; i < 365; i++) {
-    const dayStart = new Date(d);
-    dayStart.setDate(dayStart.getDate() - i);
-    const dayEnd = new Date(dayStart);
-    dayEnd.setDate(dayEnd.getDate() + 1);
-    const count = await prisma.vocabProgress.count({
-      where: { userId, lastReviewedAt: { gte: dayStart, lt: dayEnd } },
-    });
-    if (count === 0) break;
+  let streak = 0;
+  while (streak < 365 && days.has(localDayKey(d))) {
     streak++;
+    d.setDate(d.getDate() - 1);
   }
   return streak;
 }

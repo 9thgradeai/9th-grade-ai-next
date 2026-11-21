@@ -45,6 +45,8 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/vocab/notes` | **Auth required** — The caller's integrated Vocab note, one entry per saved word, newest-updated first. Response: `{ notes: [{ wordId, note, word: VocabWord }] }` |
 | POST | `/api/vocab/notes` | **Auth required** — Save or update the note attached to a word. Body: `{ wordId: number, note: string }` (note trimmed, max 2000 chars; word must exist). Upserts on `(userId, wordId)` so each user has at most one note per word. Response: `{ note: { wordId, note, word } }`. Errors: `401`, `400` (invalid `wordId`), `404` (unknown word) |
 | DELETE | `/api/vocab/notes` | **Auth required** — Remove a word from the caller's Vocab note. Body: `{ wordId: number }` (or `?wordId=`). Response: `{ ok: true }`. Errors: `401`, `400` (invalid `wordId`) |
+| GET | `/api/vocab/daily` | **Auth required** — Today's Vocab progress and the server-owned daily goal. Response: `{ wordsReviewed, totalReviewsToday, correctToday, streak, due, goal, goalSource }`. `goalSource` is `"adaptive"` (derived from the due count + days-to-exam, 10–100) unless the learner set an override, in which case it is `"custom"` (5–200). |
+| PATCH | `/api/vocab/daily` | **Auth required**, same-origin — Save the caller's daily-word target. Body: `{ goal: number \| null }`; `null` clears the override and returns the adaptive goal. Response: `{ goal, goalSource }`. Errors: `401`, `400` (out-of-range or non-numeric goal) |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |

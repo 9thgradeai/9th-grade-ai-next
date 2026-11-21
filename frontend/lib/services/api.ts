@@ -280,6 +280,17 @@ export type FlashcardReviewState = {
   lapses: number;
 };
 
+/** GET /api/vocab/daily — today's counts plus the server-owned goal. */
+export type VocabDailyProgressDTO = {
+  wordsReviewed: number;
+  totalReviewsToday: number;
+  correctToday: number;
+  streak: number;
+  due: number;
+  goal: number;
+  goalSource: "adaptive" | "custom";
+};
+
 /** Result of POST /api/vocab/review (mirrors reviewVocabWord: SM-2 progress
  * plus the reviewed word). */
 export type VocabReviewResult = {
@@ -1010,8 +1021,15 @@ export const api = {
     cachedGet<{ total: number; mastered: number; learning: number; due: number; reviewed: number }>("/api/vocab/stats").then((d) => d),
   reviewVocab: (wordId: number, rating: number): Promise<VocabReviewResult> =>
     request<VocabReviewResult>("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, rating }), headers: { "Content-Type": "application/json" } }),
-  vocabDaily: (): Promise<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }> =>
-    cachedGet<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }>("/api/vocab/daily").then((d) => d),
+  vocabDaily: (): Promise<VocabDailyProgressDTO> =>
+    cachedGet<VocabDailyProgressDTO>("/api/vocab/daily").then((d) => d),
+  vocabDailySetGoal: (goal: number | null): Promise<{ goal: number | null; goalSource: "adaptive" | "custom" }> =>
+    request("/api/vocab/daily", {
+      method: "PATCH",
+      ...AUTH_FETCH_INIT,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goal }),
+    }),
   vocabQuiz: (params?: { count?: number; difficulty?: string; mode?: "recognize" | "recall" | "context" | "collocation" }): Promise<Server.VocabQuizWordDTO[]> => {
     const qs = new URLSearchParams();
     if (params?.count) qs.set("count", String(params.count));

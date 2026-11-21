@@ -15,6 +15,10 @@ vi.mock("~backend/db", () => ({
       update: vi.fn(),
       count: vi.fn(),
     },
+    user: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
   },
 }));
 
@@ -44,6 +48,8 @@ import {
   reviewVocabWord,
   getVocabStats,
   getVocabDailyProgress,
+  computeAdaptiveDailyGoal,
+  setVocabDailyGoal,
   seedVocabWords,
   type VocabWordDTO,
 } from "~backend/services/vocab";
@@ -433,28 +439,74 @@ describe("getVocabStats", () => {
 // ── getVocabDailyProgress ─────────────────────────────────
 
 describe("getVocabDailyProgress", () => {
-  it("returns daily stats with streak", async () => {
+  it("returns daily stats with streak and an adaptive goal from the due count", async () => {
     vi.mocked(prisma.vocabProgress.findMany).mockResolvedValue([
       mockProgress({ totalReviews: 5, correctCount: 4 }),
       mockProgress({ id: 2, totalReviews: 3, correctCount: 2 }),
     ] as never);
     vi.mocked(prisma.vocabProgress.count).mockResolvedValue(2);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ vocabDailyGoal: null, examDate: null } as never);
 
     const result = await getVocabDailyProgress("usr_123");
     expect(result.wordsReviewed).toBe(2);
     expect(result.totalReviewsToday).toBe(8);
     expect(result.correctToday).toBe(6);
     expect(result.streak).toBeGreaterThanOrEqual(0);
+    expect(result).toMatchObject({ due: 2, goal: 12, goalSource: "adaptive" });
+    // The streak is now one bounded read, not one COUNT query per day.
+    expect(prisma.vocabProgress.count).toHaveBeenCalledTimes(1);
   });
 
   it("returns zeros when no reviews today", async () => {
     vi.mocked(prisma.vocabProgress.findMany).mockResolvedValue([] as never);
     vi.mocked(prisma.vocabProgress.count).mockResolvedValue(0);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ vocabDailyGoal: null, examDate: null } as never);
 
     const result = await getVocabDailyProgress("usr_123");
     expect(result.wordsReviewed).toBe(0);
     expect(result.totalReviewsToday).toBe(0);
     expect(result.correctToday).toBe(0);
     expect(result.streak).toBe(0);
+    expect(result.goal).toBe(10);
+  });
+
+  it("uses a persisted custom goal when the learner set one", async () => {
+    vi.mocked(prisma.vocabProgress.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.vocabProgress.count).mockResolvedValue(30);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ vocabDailyGoal: 40, examDate: null } as never);
+
+    const result = await getVocabDailyProgress("usr_123");
+    expect(result).toMatchObject({ goal: 40, goalSource: "custom" });
+  });
+});
+
+describe("vocab daily goal writes", () => {
+  const now = new Date("2026-11-21T12:00:00Z");
+
+  it("keeps a habit floor, scales with due words, and adds an exam-week boost", () => {
+    expect(computeAdaptiveDailyGoal(0, null, now)).toBe(10);
+    expect(computeAdaptiveDailyGoal(25, null, now)).toBe(35);
+    const soon = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    expect(computeAdaptiveDailyGoal(25, soon, now)).toBe(44);
+    const far = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+    expect(computeAdaptiveDailyGoal(25, far, now)).toBe(35);
+    expect(computeAdaptiveDailyGoal(500, null, now)).toBe(100);
+  });
+
+  it("persists a valid override and can clear it", async () => {
+    vi.mocked(prisma.user.update).mockResolvedValue({ vocabDailyGoal: 35 } as never);
+    await expect(setVocabDailyGoal("usr_123", 35)).resolves.toEqual({ goal: 35, goalSource: "custom" });
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { vocabDailyGoal: 35 } }),
+    );
+
+    vi.mocked(prisma.user.update).mockResolvedValue({ vocabDailyGoal: null } as never);
+    await expect(setVocabDailyGoal("usr_123", null)).resolves.toEqual({ goal: null, goalSource: "adaptive" });
+  });
+
+  it("rejects out-of-range and non-integer goals", async () => {
+    await expect(setVocabDailyGoal("usr_123", 0)).rejects.toThrow(/between 5 and 200/);
+    await expect(setVocabDailyGoal("usr_123", 201)).rejects.toThrow(/between 5 and 200/);
+    await expect(setVocabDailyGoal("usr_123", 12.5)).rejects.toThrow(/between 5 and 200/);
   });
 });

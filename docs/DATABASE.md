@@ -235,6 +235,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
  - `studyHoursPerDay` Int? — onboarding: self-reported daily study hours (0–24)
  - `goal` String? — onboarding: free-text goal (≤ 280 chars)
  - `onboarded` Boolean — default `false`; set `true` after `/api/onboarding` is completed
+ - `vocabDailyGoal` Int? — optional per-user Vocab daily-word target (5–200). `null` means the server derives an adaptive goal from the SRS due count and `examDate`; `PATCH /api/vocab/daily` writes this field.
  - `emailVerifyToken` String? — SHA-256 hash of the email-verification token (raw token is emailed)
  - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
  - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)

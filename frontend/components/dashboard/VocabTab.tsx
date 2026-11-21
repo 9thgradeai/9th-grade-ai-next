@@ -16,8 +16,9 @@ import {
   Play,
   SkipForward,
 } from "@phosphor-icons/react";
-import { api } from "@/lib/services/api";
+import { api, invalidateCache, type VocabDailyProgressDTO } from "@/lib/services/api";
 import { blankWordInSentence } from "@/lib/vocab-exercise";
+import { enqueueReview, readReviewQueue, writeReviewQueue, type QueuedReview } from "@/lib/vocab-review-queue";
 import { exportVocabNotesDocx, vocabNotesToHtml, vocabNotesToText } from "@/lib/vocab-export";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
@@ -25,6 +26,7 @@ import { useSwipeGesture } from "@/lib/hooks/useSwipeGesture";
 import QuizMode from "./vocab/QuizMode";
 import VocabSessionRunner from "./vocab/VocabSessionRunner";
 import WordOfDayCard from "./vocab/WordOfDayCard";
+import VocabEnrichment, { speakVocab } from "./vocab/VocabEnrichment";
 import IdiomsTab from "./vocab/IdiomsTab";
 import AIMnemonicButton from "./vocab/AIMnemonicButton";
 import type { Server } from "@/lib/types";
@@ -50,12 +52,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function speak(word: string) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(word);
-  u.lang = "en-US";
-  u.rate = 0.85;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
+  speakVocab(word);
 }
 
 /** Auto-rotation period: hands-free word tour, one step every 2 minutes. */
@@ -96,15 +93,12 @@ export default function VocabTab() {
 
   const [sessionReviewed, setSessionReviewed] = useState(0);
   const [sessionCorrect, setSessionCorrect] = useState(0);
-  const [dailyGoal, setDailyGoal] = useState<number>(() => {
-    if (typeof window === "undefined") return 20;
-    const v = Number(window.localStorage.getItem("vocab:dailyGoal"));
-    return Number.isFinite(v) && v > 0 && v <= 200 ? v : 20;
-  });
-  useEffect(() => {
-    if (typeof window !== "undefined") window.localStorage.setItem("vocab:dailyGoal", String(dailyGoal));
-  }, [dailyGoal]);
-  const [dailyProgress, setDailyProgress] = useState<{ wordsReviewed: number; streak: number } | null>(null);
+  // The goal is server-owned (adaptive from due count + exam date, or a
+  // persisted user override). localStorage is no longer authoritative.
+  const [dailyGoal, setDailyGoal] = useState<number>(20);
+  const [goalSource, setGoalSource] = useState<"adaptive" | "custom">("adaptive");
+  const [goalSaving, setGoalSaving] = useState(false);
+  const [dailyProgress, setDailyProgress] = useState<VocabDailyProgressDTO | null>(null);
 
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSession, setShowSession] = useState(false);
@@ -146,6 +140,25 @@ export default function VocabTab() {
     return params;
   }, [searchQuery, statusFilter, examFilter]);
 
+  // Which endpoint produced the current list. A post-review refresh must use
+  // the same source: replacing the full stream with a 50-word page silently
+  // shrinks the corpus and breaks the rotation.
+  const dataSourceRef = useRef<"stream" | "all" | "words">("stream");
+
+  /** Re-read server counters after a review (bypassing the short GET cache). */
+  const refreshCounts = useCallback(() => {
+    invalidateCache("/api/vocab/stats");
+    invalidateCache("/api/vocab/daily");
+    invalidateCache("/api/vocab/analytics");
+    void api.vocabStats().then((s) => setStats(s)).catch(() => {});
+    void api.vocabDaily().then((d) => {
+      setDailyProgress(d);
+      setDailyGoal(d.goal);
+      setGoalSource(d.goalSource);
+    }).catch(() => {});
+    void api.vocabAnalytics().then((a) => setAnalytics(a)).catch(() => {});
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -155,6 +168,7 @@ export default function VocabTab() {
       // both filters server-side over the full corpus.
       const exam = examFilter === "ALL" ? undefined : examFilter;
       const useStream = !fetchAll && statusFilter === "all" && !searchQuery.trim() && !exam;
+      dataSourceRef.current = fetchAll ? "all" : useStream ? "stream" : "words";
       const ws = fetchAll
         ? (await api.vocabWords({ all: true, kind: "words", exam })).map((w) => ({ ...w, source: "FRESH" as const, status: w.progress?.status ?? "NEW" }))
         : useStream
@@ -164,7 +178,11 @@ export default function VocabTab() {
       setIdx(0);
       setRevealed(false);
       if (st) setStats(st);
-      api.vocabDaily().then((d) => setDailyProgress(d)).catch(() => {});
+      api.vocabDaily().then((d) => {
+        setDailyProgress(d);
+        setDailyGoal(d.goal);
+        setGoalSource(d.goalSource);
+      }).catch(() => {});
       api.vocabAnalytics().then((a) => setAnalytics(a)).catch(() => {});
     } catch {
       toast.error(t(lang, "ভোকাব লোড করা যায়নি", "Failed to load vocabulary"));
@@ -190,36 +208,66 @@ export default function VocabTab() {
     try { window.localStorage.setItem("vocab:notes", JSON.stringify(noteWords)); } catch { /* ignore */ }
   }, [noteWords]);
 
-  // Flush queued offline reviews when connectivity returns.
+  // Persist the goal on the server so it follows the learner across devices.
+  // null restores the adaptive target derived from their SRS due queue.
+  const changeDailyGoal = useCallback(async (goal: number | null) => {
+    if (goal !== null && (goal < 5 || goal > 200)) return;
+    const prevGoal = dailyGoal;
+    const prevSource = goalSource;
+    setGoalSaving(true);
+    if (goal !== null) {
+      setDailyGoal(goal);
+      setGoalSource("custom");
+    }
+    try {
+      await api.vocabDailySetGoal(goal);
+      invalidateCache("/api/vocab/daily");
+      const fresh = await api.vocabDaily();
+      setDailyProgress(fresh);
+      setDailyGoal(fresh.goal);
+      setGoalSource(fresh.goalSource);
+    } catch {
+      setDailyGoal(prevGoal);
+      setGoalSource(prevSource);
+      toast.error(t(lang, "লক্ষ্য সংরক্ষণ করা যায়নি", "Could not save daily goal"));
+    } finally {
+      setGoalSaving(false);
+    }
+  }, [dailyGoal, goalSource, lang, toast]);
+
+  // Flush queued offline reviews when connectivity returns. A guard keeps a
+  // mount flush and an "online" event from replaying the same rating twice.
+  // Invalid/pseudo-id entries are dropped by readReviewQueue; only ratings the
+  // server accepted are removed from the queue.
+  const reviewFlushRef = useRef(false);
   useEffect(() => {
     const flush = async () => {
+      if (reviewFlushRef.current || typeof window === "undefined") return;
+      const queued = readReviewQueue();
+      if (queued.length === 0) return;
+      reviewFlushRef.current = true;
+      const remaining: QueuedReview[] = [];
+      let synced = 0;
       try {
-        const key = "vocab:pendingReviews";
-        const raw = JSON.parse(window.localStorage.getItem(key) || "[]");
-        if (!Array.isArray(raw) || raw.length === 0) return;
-        // Old builds queued the Word of the Day under the pseudo-id -1, which
-        // can never be reviewed server-side. Drop those so the queue drains.
-        const q = (raw as { wordId: number; rating: number }[]).filter(
-          (item) => item && Number.isFinite(item.wordId) && item.wordId > 0,
-        );
-        if (q.length !== raw.length) window.localStorage.setItem(key, JSON.stringify(q));
-        if (q.length === 0) return;
-        const remaining: unknown[] = [];
-        for (const item of q) {
+        for (const item of queued) {
           try {
             await api.reviewVocab(item.wordId, item.rating);
+            synced++;
           } catch {
             remaining.push(item);
           }
         }
-        window.localStorage.setItem(key, JSON.stringify(remaining));
-        if (remaining.length === 0) void load();
-      } catch { /* ignore */ }
+      } finally {
+        writeReviewQueue(remaining);
+        reviewFlushRef.current = false;
+      }
+      if (synced > 0) refreshCounts();
     };
-    flush();
-    window.addEventListener("online", flush);
-    return () => window.removeEventListener("online", flush);
-  }, [load]);
+    const onOnline = () => { void flush(); };
+    void flush();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [refreshCounts]);
 
   // Reset per-session counters whenever the working set changes (filter/search),
   // so "Session: x/y correct" stays meaningful.
@@ -298,42 +346,51 @@ export default function VocabTab() {
   const review = useCallback(async (rating: ReviewRating) => {
     if (!current) return;
     const ratingNum = { again: 1, hard: 2, good: 3, easy: 4 }[rating];
-    // Optimistic: remember where we are so we can roll back on failure.
-    const prevIdx = idx;
     try {
       await api.reviewVocab(current.id, ratingNum);
     } catch {
       toast.error(t(lang, "রিভিউ সংরক্ষণ করা যায়নি", "Failed to save review"));
-      // Offline queue: persist for retry when connectivity returns.
-      try {
-        const key = "vocab:pendingReviews";
-        const q = JSON.parse(window.localStorage.getItem(key) || "[]");
-        q.push({ wordId: current.id, rating: ratingNum, at: Date.now() });
-        window.localStorage.setItem(key, JSON.stringify(q));
-      } catch { /* ignore */ }
-      // Roll back: do not advance, do not count.
+      // Offline queue: deduped by word, replayed on reconnect. Roll back the
+      // optimistic advance — only saved reviews count toward the session.
+      enqueueReview(current.id, ratingNum);
       setRevealed(false);
       return;
     }
     setRevealed(false);
     setSessionReviewed((p) => p + 1);
     if (rating !== "again") setSessionCorrect((p) => p + 1);
-    setIdx((i) => (i + 1 < filtered.length ? i + 1 : 0));
+
+    // Advance against the current list, then restore the cursor by word id
+    // after refresh — a re-fetch can reorder or drop words.
+    const list = filteredRef.current;
+    const nextIdx = list.length > 1 ? (idxRef.current + 1) % list.length : 0;
+    const nextWordId = list[nextIdx]?.id ?? null;
+    setIdx(nextIdx);
+    refreshCounts();
+
     try {
-      // In "show all" mode the full list is authoritative; refreshing it with
-      // the 50-word page endpoint would silently shrink the corpus again.
-      const [ws, s] = await Promise.all([
-        fetchAll ? Promise.resolve(null) : api.vocabWords(buildParams()),
-        api.vocabStats().catch(() => null),
-      ]);
-      if (ws) setWords(ws);
-      if (s) setStats(s);
-      api.vocabDaily().then((d) => setDailyProgress(d)).catch(() => {});
+      // Re-fetch from the SAME source that produced the list. Switching from
+      // the full stream to a 50-word page here silently shrank the corpus.
+      const source = dataSourceRef.current;
+      let ws: Server.VocabWordDTO[] | null = null;
+      if (source === "stream") {
+        ws = (await api.vocabStream({ mode: "mixed", limit: VOCAB_STREAM_LIMIT })).words;
+      } else if (source === "words") {
+        ws = (await api.vocabWords(buildParams())).map((w) => ({
+          ...w,
+          source: "FRESH" as const,
+          status: w.progress?.status ?? "NEW",
+        }));
+      }
+      if (ws) {
+        const restored = nextWordId === null ? -1 : ws.findIndex((w) => w.id === nextWordId);
+        setWords(ws);
+        if (restored >= 0) setIdx(restored);
+      }
     } catch {
       // non-critical refresh failure; keep the optimistic advance
     }
-    void prevIdx;
-  }, [current, idx, filtered.length, fetchAll, buildParams, lang, toast]);
+  }, [current, buildParams, lang, toast, refreshCounts]);
 
   const checkExercise = useCallback(() => {
     if (!current || !typedAnswer.trim()) return;
@@ -459,6 +516,7 @@ export default function VocabTab() {
                   </span>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min={5}
                     max={200}
                     value={dailyGoal}
@@ -466,9 +524,30 @@ export default function VocabTab() {
                       const v = Number(e.target.value);
                       if (Number.isFinite(v) && v > 0) setDailyGoal(Math.min(200, Math.max(5, Math.round(v))));
                     }}
-                    className="w-14 h-7 px-1 rounded border border-terminal-border bg-[var(--surface-raised)] text-xs font-mono text-center"
+                    onBlur={() => {
+                      if (dailyGoal !== dailyProgress?.goal) void changeDailyGoal(dailyGoal);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                    }}
+                    disabled={goalSaving}
+                    className="w-14 h-7 px-1 rounded border border-terminal-border bg-[var(--surface-raised)] text-xs font-mono text-center disabled:opacity-50"
                     aria-label="Daily goal"
                   />
+                  <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]" title={t(lang, "লক্ষ্য সার্ভারে সংরক্ষিত", "Goal is saved on the server")}>
+                    {goalSource === "adaptive"
+                      ? t(lang, "অ্যাডাপটিভ", "Adaptive")
+                      : t(lang, "কাস্টম", "Custom")}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void changeDailyGoal(null)}
+                    disabled={goalSaving || goalSource === "adaptive"}
+                    className="text-[11px] font-mono px-1.5 py-0.5 rounded border border-terminal-border text-[var(--dashboard-text-muted)] disabled:opacity-30 hover:text-[var(--accent)]"
+                    aria-label={t(lang, "অ্যাডাপটিভ লক্ষ্যে ফিরুন", "Reset to adaptive goal")}
+                  >
+                    {t(lang, "অটো", "Auto")}
+                  </button>
                   {dailyProgress.streak > 1 && (
                     <span className="flex items-center gap-1 text-amber-500 font-mono">
                       <Lightning className="w-3 h-3" /> {dailyProgress.streak}d
@@ -510,19 +589,21 @@ export default function VocabTab() {
                 <input value={newWord} onChange={(e) => setNewWord(e.target.value)} placeholder="New word" className="flex-1 min-w-[120px] min-h-9 px-3 rounded-lg bg-[var(--surface)] border border-terminal-border text-sm font-mono" />
                 <input value={newMeaning} onChange={(e) => setNewMeaning(e.target.value)} placeholder="Meaning (Bengali)" className="flex-1 min-w-[120px] min-h-9 px-3 rounded-lg bg-[var(--surface)] border border-terminal-border text-sm font-mono" />
                 <button
-                  onClick={async () => {
+                  onClick={() => {
                     if (!newWord.trim() || !newMeaning.trim()) { setAddMsg("Word and meaning required"); return; }
-                    try {
-                      const res = await api.vocabAdd({ word: newWord.trim(), bengaliMeaning: newMeaning.trim() });
-                      setAddMsg(res.created ? "Added to DB" : "Already exists — linked to your note");
-                      if (res.word) {
-                        setNoteWords((p) => (p.some((w) => w.id === res.word.id) ? p : [...p, res.word]));
-                        void api.vocabNoteSave(res.word.id, noteTexts[res.word.id] ?? "").catch(() => {});
+                    void (async () => {
+                      try {
+                        const res = await api.vocabAdd({ word: newWord.trim(), bengaliMeaning: newMeaning.trim() });
+                        setAddMsg(res.created ? "Added to DB" : "Already exists — linked to your note");
+                        if (res.word) {
+                          setNoteWords((p) => (p.some((w) => w.id === res.word.id) ? p : [...p, res.word]));
+                          void api.vocabNoteSave(res.word.id, noteTexts[res.word.id] ?? "").catch(() => {});
+                        }
+                        setNewWord(""); setNewMeaning("");
+                      } catch {
+                        setAddMsg("Failed to add");
                       }
-                      setNewWord(""); setNewMeaning("");
-                    } catch {
-                      setAddMsg("Failed to add");
-                    }
+                    })();
                   }}
                   className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs"
                 >
@@ -727,7 +808,7 @@ export default function VocabTab() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="text-2xl sm:text-3xl font-bold text-[var(--dashboard-primary)] tracking-tight break-words">{current.word}</h3>
                       <button
-                        onClick={() => speak(current.word)}
+                        onClick={() => speakVocab(current.word, current.audioUrl)}
                         className="min-w-11 min-h-11 flex items-center justify-center p-1.5 rounded-lg hover:bg-[var(--surface-raised)] transition-colors text-[var(--dashboard-text-muted)] hover:text-[var(--accent)]"
                         aria-label={`Pronounce ${current.word}`}
                       >
@@ -769,6 +850,16 @@ export default function VocabTab() {
                     </div>
                   </div>
                 ) : null}
+
+                <VocabEnrichment
+                  word={current.word}
+                  ipa={current.ipa}
+                  audioUrl={current.audioUrl}
+                  register={current.register}
+                  collocations={current.collocations}
+                  wordFamily={current.wordFamily}
+                  confusables={current.confusables}
+                />
 
                 <div className="rounded-xl bg-[var(--surface-raised)] border border-terminal-border p-3.5">
                   <p className="text-sm leading-relaxed text-[var(--dashboard-text-primary)]">“{current.exampleSentence}”</p>

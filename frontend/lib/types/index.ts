@@ -1158,6 +1158,13 @@ export namespace Server {
     examRelevance: string[] | null;
     frequency: number;
     difficulty: string;
+    /** Enrichment fields — all optional at runtime (older words may lack them). */
+    ipa?: string | null;
+    audioUrl?: string | null;
+    register?: string | null;
+    collocations?: string[] | null;
+    wordFamily?: string[] | null;
+    confusables?: string[] | null;
     progress?: {
       status: string;
       nextReview: string | null;
@@ -1165,6 +1172,8 @@ export namespace Server {
       repetitions: number;
       totalReviews: number;
       correctCount: number;
+      consecutiveCorrect?: number;
+      isLeech?: boolean;
     } | null;
   };
 
@@ -1201,6 +1210,12 @@ export namespace Server {
     antonyms: string[];
     difficulty: string;
     examRelevance: string[];
+    ipa?: string | null;
+    audioUrl?: string | null;
+    register?: string | null;
+    collocations?: string[] | null;
+    wordFamily?: string[] | null;
+    confusables?: string[] | null;
     isCustom: boolean;
     /** 10-minute rotation slot this word was picked for. */
     slotIndex: number;
@@ -1254,6 +1269,12 @@ export namespace Server {
     examRelevance: string[] | null;
     frequency: number;
     difficulty: string;
+    ipa?: string | null;
+    audioUrl?: string | null;
+    register?: string | null;
+    collocations?: string[] | null;
+    wordFamily?: string[] | null;
+    confusables?: string[] | null;
     status: string;
     source: "DUE" | "DAILY" | "FRESH";
   };
