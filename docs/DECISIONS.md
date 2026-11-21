@@ -1256,3 +1256,39 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   profile `verificationStatus`, answer-key entitlement and metadata redaction are not DB-enforced.
   No API route, service implementation or UI ships in this ADR; retention for `AdaptiveAuditEvent`
   and `HistoricalQuestion` exceptions will be defined with the ingestion phase.
+
+## ADR-076: Historical ingestion — source claims stay ineligible, preview rows are hidden until import
+
+- **Date**: 2026-11-22
+- **Status**: Accepted
+- **Context**: ADR-075 created the historical tables but deferred ingestion semantics and
+  retention. The repository contains raw BCS Uttoron JSON and six Bangladesh Bank Senior
+  Officer (General) text files. Their answer letters are source claims; several rows carry
+  explicit mismatch/no-answer caveats, there is no independent verified answer key, and no
+  source supplies difficulty bands. Existing importers synthesise `MEDIUM` difficulty, which
+  would fabricate a fact the adaptive pipeline must not claim. There is no staging table
+  distinct from `HistoricalQuestion`.
+- **Decision**: Implement Phase 05 with an explicit source catalogue and a strict ingestion
+  pipeline. Only catalogue ids are resolvable; free-form paths/URLs are refused. BCS Uttoron
+  is `DISCOVERY_ONLY` in this phase. Parsers preserve source-claimed answers separately,
+  mark explicit caveats `DISPUTED`, leave difficulty `unclassified`, and always set
+  `eligibleForPyq = false`. Automated verification can produce only `SOURCE_CLAIMED`,
+  `DISPUTED` or `UNVERIFIED`; `CROSS_CHECKED`/`HUMAN_VERIFIED` require a separate human
+  verification process. Preview writes rows under a `PREVIEW` batch, but repository reads
+  filter on `importBatch.status = IMPORTED`, so preview rows cannot enter analytics or paper
+  selection. Approval requires an authenticated actor; import and rollback are explicit,
+  audited state transitions. Analytics thresholds and the decay parameter are disclosed
+  governance/configuration values, never historical facts; `recurrenceRate` is observed
+  frequency over comparable years, explicitly not a future-appearance probability.
+- **Rationale**: This uses the ADR-075 schema without another migration while keeping the
+  answer boundary one-way. Source claims remain preserved for audit, but the strict
+  repository gate means a candidate paper can only ever draw from imported rows that were
+  independently verified and explicitly flagged eligible. Refusing synthesised difficulty
+  and question types avoids converting absent data into statistics.
+- **Consequences**: No historical row is eligible after this phase; official simulation also
+  remains disabled because both profiles are still `reviewed`. `HistoricalQuestion.contentHash`
+  is used as the normalised-text fingerprint because no dedicated column exists; that
+  overload is documented and must be revisited if exact record hashing is needed.
+  `questionTypeDistribution` is always empty and near-duplicate counts remain zero with an
+  explicit gap until the corpus records those facts. No new API route or UI ships here.
+

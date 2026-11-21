@@ -992,6 +992,14 @@ written or overwritten). `claimedAnswer` (source assertion) and `verifiedAnswer`
 - Indexes: `[family, organization, recruitmentPost, examYear]`, `[subjectId, topicPath]`,
   `[verification, eligibleForPyq]`, `[duplicateGroupId]`, `[importBatchId]`, `[contentHash]`
 
+Phase 05 read rule (ADR-076): preview batches write staging rows with
+`importBatch.status = PREVIEW`. Every `HistoricalQuestionRepository` read path
+filters on `importBatch.status = IMPORTED`, so preview rows are auditable but
+invisible to selection and analytics. `contentHash` currently binds the
+normalised question text + language (the duplicate fingerprint); the schema has
+no separate fingerprint column, and this overload is documented in
+`docs/adaptive-exam/05-HISTORICAL-INGESTION.md`.
+
 #### HistoricalAnalyticsSnapshot
 Content-hashed cached `HistoricalAnalyticsReport` + `coverage`. Frequencies are
 observations with explicit `insufficientEvidence` / `gaps`, never predictions.
