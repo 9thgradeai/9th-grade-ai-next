@@ -5,37 +5,40 @@ import { test, expect } from '@playwright/test';
 import { registerViaApi } from './auth-helpers';
 
 test.describe('Landing reskin (public)', () => {
-  test('hero speaks with one billboard voice + stats strip', async ({ page }) => {
+  test('hero speaks with one billboard voice + proof strip', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('#hero-heading')).toContainText('Stop guessing');
-    await expect(page.locator('#hero-heading')).toContainText('Start passing');
-    // Glass status pill + proof strip render above the fold.
-    await expect(page.locator('.hero-copy .hero-eyebrow').first()).toBeVisible();
-    await expect(page.locator('.hero-stats')).toBeVisible();
-    // Bricolage display voice actually applied (font-hero utility).
-    const family = await page.locator('#hero-heading').evaluate((el) =>
+    await expect(page.locator('#om-hero-title')).toContainText('Your syllabus.');
+    await expect(page.locator('#om-hero-title')).toContainText('master it.');
+    // Live proof chip + product facts render above the fold.
+    await expect(page.locator('.om-proof-chip')).toBeVisible();
+    await expect(page.locator('.om-meta-chips')).toBeVisible();
+    // Display type is actually applied (--font-hero resolves to Bricolage).
+    const family = await page.locator('#om-hero-title').evaluate((el) =>
       getComputedStyle(el).fontFamily,
     );
     expect(family.toLowerCase()).toContain('bricolage');
   });
 
-  test('five narrative arcs lazy-mount on scroll', async ({ page }) => {
+  test('narrative sections render down the page', async ({ page }) => {
     await page.goto('/');
-    for (const id of ['#arc-problem', '#arc-intelligence', '#arc-tutor', '#arc-proof', '#arc-cta']) {
+    for (const id of [
+      '#om-gallery-title',
+      '#om-how-title',
+      '#om-agents-title',
+      '#om-studio-title',
+      '#om-cta-title',
+    ]) {
       await page.locator(id).scrollIntoViewIfNeeded();
       await expect(page.locator(id)).toBeVisible({ timeout: 15000 });
     }
   });
 
-  test('navbar compacts after scroll', async ({ page }) => {
+  test('header compacts after scroll', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    const header = page.locator('header').first();
+    const header = page.locator('[data-om-header]');
+    await expect(header).not.toHaveClass(/is-scrolled/);
     await page.evaluate(() => window.scrollTo(0, 400));
-    await expect.poll(async () =>
-      header.evaluate((el) =>
-        getComputedStyle(el).getPropertyValue('--nav-h').trim(),
-      ),
-    ).toBe('3.25rem');
+    await expect(header).toHaveClass(/is-scrolled/);
   });
 });
 

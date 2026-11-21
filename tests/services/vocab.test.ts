@@ -89,6 +89,7 @@ function mockProgress(overrides: Record<string, unknown> = {}) {
     lastReviewedAt: new Date(),
     totalReviews: 3,
     correctCount: 2,
+    consecutiveCorrect: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -338,13 +339,13 @@ describe("reviewVocabWord", () => {
 
   it("sets status to MASTERED when interval >= 21", async () => {
     vi.mocked(prisma.vocabProgress.findUnique).mockResolvedValue(
-      mockProgress({ status: "REVIEW", repetitions: 3, interval: 18, ease: 2.5 }) as never,
+      mockProgress({ status: "REVIEW", repetitions: 3, interval: 18, ease: 2.5, consecutiveCorrect: 2 }) as never,
     );
     vi.mocked(prisma.vocabProgress.update).mockResolvedValue(mockProgress() as never);
 
     await reviewVocabWord(userId, wordId, 4); // Easy rating pushes interval past 21
     const updateCall = vi.mocked(prisma.vocabProgress.update).mock.calls[0][0];
-    // interval = round(18 * 2.5) = 45, status should be MASTERED
+    // interval = round(18 * 2.5) = 45 and 3 consecutive successes → MASTERED
     expect(updateCall.data.status).toBe("MASTERED");
   });
 

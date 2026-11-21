@@ -531,7 +531,7 @@ export default function VocabTab() {
                       if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                     }}
                     disabled={goalSaving}
-                    className="w-14 h-7 px-1 rounded border border-terminal-border bg-[var(--surface-raised)] text-xs font-mono text-center disabled:opacity-50"
+                    className="w-14 h-11 px-1 rounded border border-terminal-border bg-[var(--surface-raised)] text-xs font-mono text-center disabled:opacity-50"
                     aria-label="Daily goal"
                   />
                   <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]" title={t(lang, "লক্ষ্য সার্ভারে সংরক্ষিত", "Goal is saved on the server")}>
@@ -543,7 +543,7 @@ export default function VocabTab() {
                     type="button"
                     onClick={() => void changeDailyGoal(null)}
                     disabled={goalSaving || goalSource === "adaptive"}
-                    className="text-[11px] font-mono px-1.5 py-0.5 rounded border border-terminal-border text-[var(--dashboard-text-muted)] disabled:opacity-30 hover:text-[var(--accent)]"
+                    className="min-h-11 min-w-11 text-[11px] font-mono px-1.5 py-0.5 rounded border border-terminal-border text-[var(--dashboard-text-muted)] disabled:opacity-30 hover:text-[var(--accent)]"
                     aria-label={t(lang, "অ্যাডাপটিভ লক্ষ্যে ফিরুন", "Reset to adaptive goal")}
                   >
                     {t(lang, "অটো", "Auto")}

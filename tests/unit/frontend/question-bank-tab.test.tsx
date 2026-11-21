@@ -13,6 +13,7 @@ configure({ testIdAttribute: "data-cy" });
 vi.mock("@/lib/services/api", () => ({
   api: {
     questionBankCategories: vi.fn(),
+    questionBankFacets: vi.fn(),
     questions: vi.fn(),
     bookmarks: vi.fn(),
     toggleBookmark: vi.fn(),
@@ -102,6 +103,11 @@ beforeEach(() => {
   localStorage.clear();
   mockQuestions();
   vi.mocked(api.questionBankCategories).mockResolvedValue(CATS as never);
+  vi.mocked(api.questionBankFacets).mockResolvedValue({
+    years: [2024, 2023],
+    terms: ["49th"],
+    sources: ["৫০তম বিসিএস"],
+  } as never);
   vi.mocked(api.bookmarks).mockResolvedValue([] as never);
   vi.mocked(api.toggleBookmark).mockResolvedValue({ bookmarked: true } as never);
   render(<ResetStoreProbe />);
@@ -119,12 +125,14 @@ describe("QuestionBankTab (simplified redesign)", () => {
     expect(screen.getByText("প্রশ্ন নং 2?")).toBeInTheDocument();
     // Live result count (Bengali label, not the old mixed-language "results").
     expect(await screen.findByText("2 ফলাফল")).toBeInTheDocument();
-    // Display fetch is PYQ-only page 1; facet fetch is the unfiltered pool.
+    // Display fetch is PYQ-only page 1; facets come from the aggregated
+    // endpoint so options stay complete for 5k+ rows.
     expect(api.questions).toHaveBeenCalledWith(
       expect.objectContaining({ subject: "বাংলা ভাষা ও সাহিত্য", pyqOnly: true, limit: 50, page: 1 }),
     );
-    expect(api.questions).toHaveBeenCalledWith(
-      expect.objectContaining({ subject: "বাংলা ভাষা ও সাহিত্য", pyqOnly: true, limit: 200 }),
+    expect(api.questionBankFacets).toHaveBeenCalledWith(
+      "বাংলা ভাষা ও সাহিত্য",
+      expect.any(String),
     );
   });
 
@@ -165,14 +173,14 @@ describe("QuestionBankTab (simplified redesign)", () => {
     fireEvent.click(screen.getByRole("button", { name: /^ফিল্টার/ }));
     expect(await screen.findByRole("button", { name: "2024", pressed: false })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "2023", pressed: false })).toBeInTheDocument();
-    const facetFetchesBefore = vi.mocked(api.questions).mock.calls.filter((c) => (c[0] as { limit?: number })?.limit === 200).length;
+    const facetFetchesBefore = vi.mocked(api.questionBankFacets).mock.calls.length;
     // Apply the 2024 facet → display list narrows…
     fireEvent.click(screen.getByRole("button", { name: "2024", pressed: false }));
     await waitFor(() =>
       expect(api.questions).toHaveBeenCalledWith(expect.objectContaining({ year: 2024 })),
     );
-    // …but the facet option list must NOT collapse (still unfiltered).
-    const facetFetchesAfter = vi.mocked(api.questions).mock.calls.filter((c) => (c[0] as { limit?: number })?.limit === 200).length;
+    // …but the facet option list must NOT collapse (no second facets fetch).
+    const facetFetchesAfter = vi.mocked(api.questionBankFacets).mock.calls.length;
     expect(facetFetchesAfter).toBe(facetFetchesBefore);
     expect(screen.getByRole("button", { name: "2024", pressed: true })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "2023", pressed: false })).toBeInTheDocument();

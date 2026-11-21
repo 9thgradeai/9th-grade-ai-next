@@ -643,7 +643,7 @@ export default function CustomExamTab() {
                     type="button"
                     onClick={() => setExamDifficulty(d)}
                     aria-pressed={examDifficulty === d}
-                    className={`min-h-[44px] px-3.5 rounded-xl border font-mono text-xs transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                    className={`min-h-[44px] min-w-[44px] px-3.5 rounded-xl border font-mono text-xs transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                       examDifficulty === d
                         ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
                         : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--accent)]/40"
