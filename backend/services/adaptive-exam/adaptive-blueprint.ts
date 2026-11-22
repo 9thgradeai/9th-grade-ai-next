@@ -225,7 +225,7 @@ export function createAdaptiveBlueprintService(
           ? roundToInt(topicCountForSubject * pyqShare)
           : 0;
         const generatedCount = topicCountForSubject - pyqCount;
-        const sources: Record<string, number> = { PYQ: pyqCount, GENERATED: generatedCount };
+        const sources: Record<string, number> = { PYQ: pyqCount, ORIGINAL: generatedCount };
 
         const language = (command.languageOverride && command.languageOverride[subject.subjectId])
           || subject.language;
