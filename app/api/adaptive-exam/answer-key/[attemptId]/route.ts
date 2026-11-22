@@ -3,9 +3,10 @@ import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../../_middleware";
 
-export async function GET(request: Request, { params }: { params: { attemptId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
+  const { attemptId } = await params;
   try {
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
