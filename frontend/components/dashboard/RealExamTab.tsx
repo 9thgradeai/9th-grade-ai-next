@@ -97,6 +97,14 @@ export default function RealExamTab() {
   const [customDurationMin, setCustomDurationMin] = useState(60);
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
+
+  // Adaptive mode (V2.0) — pre-paper blueprint preparation.
+  const [adaptiveLoading, setAdaptiveLoading] = useState(false);
+  const [adaptiveError, setAdaptiveError] = useState<string | null>(null);
+  const [adaptiveSummary, setAdaptiveSummary] = useState<{
+    totalQuestionCount: number;
+    warnings: string[];
+  } | null>(null);
   const [generatedMeta, setGeneratedMeta] = useState<{
     title: string;
     examName: string;
@@ -267,6 +275,39 @@ export default function RealExamTab() {
       setBuildLoading(false);
     }
   }, [selectedSubjects, selection, totalCount, customDurationMin, ecosystem]);
+
+  const adaptivePrepare = useCallback(async () => {
+    try {
+      setAdaptiveLoading(true);
+      setAdaptiveError(null);
+      setAdaptiveSummary(null);
+      const res = await fetch("/api/adaptive-exam/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: "me",
+          family: "BCS",
+          profileId: "BCS_PRELIMINARY",
+          subjects: [],
+          requestedQuestionCount: totalCount > 0 ? totalCount : 20,
+          mode: "BALANCED",
+          adaptationEnabled: false,
+          idempotencyKey: `adaptive-${Date.now()}`,
+        }),
+      });
+      if (!res.ok) throw new Error("prepare failed");
+      const data = await res.json();
+      const prepared = data?.prepared;
+      setAdaptiveSummary({
+        totalQuestionCount: prepared?.blueprint?.totalQuestionCount ?? 0,
+        warnings: prepared?.warnings ?? [],
+      });
+    } catch {
+      setAdaptiveError("অ্যাডাপ্টিভ প্রস্তুতি ব্যর্থ হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
+      setAdaptiveLoading(false);
+    }
+  }, [totalCount]);
 
   const openPaper = useCallback(async (paper: PaperMeta) => {
     try {
@@ -712,6 +753,37 @@ export default function RealExamTab() {
                   <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{customDurationMin} মিনিট</p>
                 </div>
               </div>
+            </motion.div>
+
+            {/* Adaptive mode (V2.0) — pre-paper blueprint preparation */}
+            <motion.div layout className="command-card rounded-2xl border border-[var(--accent)]/30 p-4 mt-4">
+              <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">অ্যাডাপ্টিভ মোড (V2.0)</p>
+              <p className="text-xs text-[var(--dashboard-text-muted)] mb-3">
+                প্রোফাইল, ক্যান্ডিডেট ও ইতিহাসের ভিত্তিতে প্রশ্নপত্র ব্লুপ্রিন্ট তৈরি করে।
+              </p>
+              <button
+                onClick={() => void adaptivePrepare()}
+                disabled={adaptiveLoading}
+                className="w-full py-2 bg-[var(--accent)]/10 text-[var(--accent)] font-mono text-sm rounded-xl hover:bg-[var(--accent)]/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {adaptiveLoading ? <Spinner className="w-4 h-4 animate-spin" /> : null}
+                {adaptiveLoading ? "প্রস্তুত হচ্ছে..." : "অ্যাডাপ্টিভ প্রস্তুতি"}
+              </button>
+              {adaptiveError && (
+                <p className="text-xs text-[var(--dashboard-danger)] mt-2">{adaptiveError}</p>
+              )}
+              {adaptiveSummary && (
+                <div className="mt-3 text-xs text-[var(--dashboard-text-muted)]">
+                  <p>প্রশ্ন: <span className="font-mono">{adaptiveSummary.totalQuestionCount}</span></p>
+                  {adaptiveSummary.warnings.length > 0 && (
+                    <ul className="mt-1 list-disc list-inside">
+                      {adaptiveSummary.warnings.slice(0, 5).map((w, i) => (
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
             </motion.div>
 
             <button
