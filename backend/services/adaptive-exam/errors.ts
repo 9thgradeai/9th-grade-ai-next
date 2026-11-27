@@ -47,6 +47,7 @@ export const ADAPTIVE_ERROR_HTTP_STATUS: Record<AdaptiveExamErrorCode, number> =
   ADAPTIVE_IDEMPOTENCY_CONFLICT: 409,
   ADAPTIVE_IMPORT_CONFLICT: 409,
   ADAPTIVE_RATE_LIMITED: 429,
+  ADAPTIVE_VALIDATION_FAILED: 422,
 
   // 5xx — non-operational; `toHttpResponse` logs the cause server-side and
   // returns a generic message so Prisma/LLM internals never reach the client.
@@ -173,6 +174,7 @@ export function clientFacingMessage(code: AdaptiveExamErrorCode): string {
     case "ADAPTIVE_QUESTION_INVALID":
     case "ADAPTIVE_PAPER_INVALID":
     case "ADAPTIVE_BLUEPRINT_INVALID":
+    case "ADAPTIVE_VALIDATION_FAILED":
       return "This exam could not be prepared with reliable questions.";
     case "ADAPTIVE_SESSION_INVALID_STATE":
     case "ADAPTIVE_SESSION_CONFLICT":

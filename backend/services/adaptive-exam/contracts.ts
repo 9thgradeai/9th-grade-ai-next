@@ -31,7 +31,8 @@ export type OptionKey = "A" | "B" | "C" | "D";
 /** Exactly four options — a 3-option or 5-option question cannot be typed. */
 export type QuestionOptions = Readonly<Record<OptionKey, string>>;
 
-export type ExamFamily = "BCS" | "BANK";
+/** Extensible exam families; "OTHERS" covers catalog-registered organisations. */
+export type ExamFamily = "BCS" | "BANK" | "OTHERS";
 export type BlueprintMode =
   | "HISTORICAL_PATTERN"
   | "BALANCED"
@@ -102,6 +103,7 @@ export type AdaptiveExamErrorCode =
   | "ADAPTIVE_ANSWER_KEY_CORRUPT"
   | "ADAPTIVE_PERSISTENCE_ERROR"
   | "ADAPTIVE_AUDIT_ERROR"
+  | "ADAPTIVE_VALIDATION_FAILED"
   | "ADAPTIVE_INTERNAL_ERROR";
 
 /** Pipeline stage carried with every adaptive error for structured logging. */
@@ -125,13 +127,56 @@ export type AdaptiveExamStage =
 // Profile registry
 // ─────────────────────────────────────────────────────────────
 
-export type AdaptiveExamProfileId =
-  | "BCS_PRELIMINARY"
-  | "BB_SENIOR_OFFICER_GENERAL"
-  | "BB_ASSISTANT_DIRECTOR_GENERAL"
-  | "BANK_OFFICER_GENERAL"
-  | "BANK_OFFICER_CASH"
-  | "BANK_OFFICER_IT";
+/**
+ * Profile identifiers are open strings: catalog rows (and future "Others"
+ * organisations) can introduce new profiles without a TypeScript release.
+ * Known IDs are exported as constants for type-safe internal call sites.
+ */
+export type AdaptiveExamProfileId = string;
+
+export const KNOWN_ADAPTIVE_PROFILE_IDS = Object.freeze({
+  BCS_GENERAL: "BCS_PRELIMINARY",
+  BCS_SPECIAL: "BCS_SPECIAL",
+  BB_SENIOR_OFFICER_GENERAL: "BB_SENIOR_OFFICER_GENERAL",
+  BB_ASSISTANT_DIRECTOR_GENERAL: "BB_ASSISTANT_DIRECTOR_GENERAL",
+  BB_OFFICER_GENERAL: "BB_OFFICER_GENERAL",
+  BB_OFFICER_IT: "BB_OFFICER_IT",
+  BB_OFFICER_CASH: "BB_OFFICER_CASH",
+  BB_ASSISTANT_MANAGER: "BB_ASSISTANT_MANAGER",
+} as const);
+
+export type ExamCatalogNode = {
+  id: string;
+  code: string;
+  nameBn: string;
+  nameEn: string;
+  active: boolean;
+};
+
+export type ExamCatalog = {
+  families: Array<"BCS" | "BANK" | "OTHERS">;
+  organizations: Array<ExamCatalogNode & { family: "BCS" | "BANK" | "OTHERS" }>;
+  posts: Array<ExamCatalogNode & { organizationId: string }>;
+  types: Array<ExamCatalogNode & { postId: string; profileId?: string }>;
+};
+
+export type ProfileSummary = {
+  id: AdaptiveExamProfileId;
+  version: number;
+  family: ExamFamily;
+  organization: string;
+  recruitmentPost: string;
+  stage: string;
+  labelBn: string;
+  labelEn: string;
+  totalQuestions: number;
+  totalMarks: number;
+  durationMin: number;
+  verificationStatus: ProfileVerificationStatus;
+  provisional: boolean;
+  historicalDataEligible: boolean;
+  subjects: Array<{ subjectId: string; nameBn: string; nameEn: string; count: number; language: LanguageCode }>;
+};
 
 export type ProfileVerificationStatus =
   | "draft"
@@ -214,6 +259,8 @@ export type ExamProfile = {
   allowedOverrides: ProfileOverrideKey[];
   source: ProfileSource;
   verificationStatus: ProfileVerificationStatus;
+  /** Provisional profiles use project-supplied baselines, not verified official notices. */
+  provisional: boolean;
   effectiveFrom?: IsoTimestamp;
   effectiveTo?: IsoTimestamp;
   revisionHistory: ProfileRevision[];
@@ -250,6 +297,14 @@ export type AnswerVerificationStatus =
   | "HUMAN_VERIFIED"
   | "DISPUTED";
 
+/** Actual metered usage reported by the provider, plus wall-clock latency. */
+export type GenerationUsage = {
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  durationMs: number;
+};
+
 export type QuestionProvenance = {
   sourceType: QuestionSourceType;
   sourceFile?: string;
@@ -264,7 +319,13 @@ export type QuestionProvenance = {
     model: string;
     promptVersion: string;
     repairAttempts: number;
+    /** True when the labelled mock provider produced the item. */
+    mock?: boolean;
+    /** Real provider usage for this batch; never a fabricated estimate. */
+    usage?: GenerationUsage;
   };
+  /** Preserves authoritative book Unicode from the live bank. */
+  rawMath?: boolean;
 };
 
 export type HistoricalQuestionRecord = {
@@ -420,6 +481,7 @@ export type CandidateSnapshot = {
   overall: { attempts: number; accuracy: number; confidence: number };
   warnings: string[];
   hash: string;
+  attemptedQuestionIds?: readonly EntityId[];
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -439,6 +501,8 @@ export type DataSufficiency = {
 export type TopicBlueprintAllocation = {
   topicId: string;
   paths: string[];
+  /** Leaf paths underneath this topic, preserved for topic→subtopic selection. */
+  subtopicPaths?: string[];
   count: number;
   difficulty: Record<DifficultyBand, number>;
   sources: Record<QuestionSourceType, number>;
@@ -563,6 +627,8 @@ export type ExamSession = {
   flags: number[];
   lastSavedAt?: IsoTimestamp;
   version: number;
+  /** Client-supplied key, accepted once per (userId, idempotencyKey). */
+  idempotencyKey: string;
 };
 
 export type PerformanceSlice = {
@@ -743,6 +809,8 @@ export type AdaptiveGenerationRequest = {
   instructions: string;
   evidence?: Array<{ url: string; publishedAt?: IsoTimestamp; snippet?: string }>;
   requestId: string;
+  /** Server-owned user id for the shared AI usage ledger. */
+  userId: string;
 };
 
 export type AdaptiveGenerationResult = {
@@ -759,7 +827,8 @@ export type AdaptiveGenerationResult = {
   provider: string;
   model: string;
   promptVersion: string;
-  usage?: { inputTokens: number; outputTokens: number; costUsd: number };
+  durationMs: number;
+  usage: GenerationUsage;
 };
 
 export interface AiGenerationPort {
@@ -809,6 +878,7 @@ export type AdaptiveExecutionContext = {
   requestId: string;
   correlationId?: string;
   ports: AdaptiveExamPorts;
+  secureAnswerKey?: SecureAnswerKey;
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -819,9 +889,26 @@ export type AdaptiveExecutionContext = {
 export interface AdaptiveExamOrchestrator {
   prepare(ctx: AdaptiveExecutionContext, command: PrepareAdaptiveExamCommand): Promise<PreparedExam>;
   generatePaper(ctx: AdaptiveExecutionContext, blueprintId: EntityId): Promise<PaperSnapshot>;
+  getPaper(paperId: EntityId): Promise<PaperSnapshot | null>;
   startSession(ctx: AdaptiveExecutionContext, command: StartAdaptiveExamCommand): Promise<ExamSession>;
+  getSession(userId: string, attemptId: EntityId): Promise<ExamSession | null>;
+  recordAnswer(
+    userId: string,
+    attemptId: EntityId,
+    position: number,
+    option: OptionKey,
+    expectedVersion?: number,
+  ): Promise<ExamSession>;
+  setFlag(
+    userId: string,
+    attemptId: EntityId,
+    position: number,
+    flagged: boolean,
+    expectedVersion?: number,
+  ): Promise<ExamSession>;
   submit(ctx: AdaptiveExecutionContext, command: SubmitAdaptiveExamCommand): Promise<ScoreReport>;
   report(ctx: AdaptiveExecutionContext, attemptId: EntityId): Promise<PerformanceReport>;
+  releaseAnswerKey(ctx: AdaptiveExecutionContext, attemptId: EntityId): Promise<SecureAnswerKey | null>;
 }
 
 export interface ExamProfileRegistry {
@@ -880,6 +967,8 @@ export interface AdaptiveBlueprintService {
   validate(draft: BlueprintDraft): AdaptiveValidationResult;
   /** Persists an immutable, hashed, versioned snapshot. */
   commit(draft: BlueprintDraft, ctx: AdaptiveExecutionContext): Promise<ExamBlueprint>;
+  /** Retrieves a committed blueprint by ID. */
+  getById(blueprintId: EntityId): Promise<ExamBlueprint | null>;
 }
 
 export type SelectionSpec = {
@@ -922,6 +1011,16 @@ export interface QuestionGenerationService {
     specialists: SubjectSpecialistService,
     ctx: AdaptiveExecutionContext,
   ): Promise<CandidatePaperQuestion[]>;
+  generateWithKeys(
+    selected: SelectedQuestion[],
+    profile: ExamProfile,
+    specialists: SubjectSpecialistService,
+    ctx: AdaptiveExecutionContext,
+  ): Promise<{
+    candidateQuestions: CandidatePaperQuestion[];
+    answerKeyEntries: SecureAnswerKeyEntry[];
+    telemetry: GenerationTelemetry[];
+  }>;
   /** Bounded; never an unbounded regeneration loop. */
   maxRepairAttempts(): number;
 }
@@ -945,8 +1044,20 @@ export interface QuestionValidationService {
 export interface ExamSessionService {
   create(ctx: AdaptiveExecutionContext, command: StartAdaptiveExamCommand): Promise<ExamSession>;
   get(userId: string, attemptId: EntityId): Promise<ExamSession | null>;
-  recordAnswer(userId: string, attemptId: EntityId, position: number, option: OptionKey): Promise<ExamSession>;
-  setFlag(userId: string, attemptId: EntityId, position: number, flagged: boolean): Promise<ExamSession>;
+  recordAnswer(
+    userId: string,
+    attemptId: EntityId,
+    position: number,
+    option: OptionKey,
+    expectedVersion?: number,
+  ): Promise<ExamSession>;
+  setFlag(
+    userId: string,
+    attemptId: EntityId,
+    position: number,
+    flagged: boolean,
+    expectedVersion?: number,
+  ): Promise<ExamSession>;
   expire(attemptId: EntityId): Promise<ExamSession>;
   submit(ctx: AdaptiveExecutionContext, command: SubmitAdaptiveExamCommand): Promise<ExamSession>;
 }
@@ -965,4 +1076,272 @@ export interface AdaptiveRecommendationService {
 export interface ExamAuditService {
   record(event: AuditEvent): Promise<void>;
   query(filter: { entityId?: EntityId; name?: AdaptiveAuditEventName; from?: IsoTimestamp }): Promise<AuditEvent[]>;
+}
+
+/** Write-once candidate-safe paper storage. A second write is a conflict. */
+export interface PaperStore {
+  put(paper: PaperSnapshot): Promise<PaperSnapshot>;
+  get(paperId: EntityId): Promise<PaperSnapshot | null>;
+}
+
+/** Write-once immutable report storage; one performance report per attempt. */
+export interface ScoreReportStore {
+  put(input: {
+    score: ScoreReport;
+    report: PerformanceReport;
+    candidateSnapshotHash?: string;
+  }): Promise<void>;
+  getScore(attemptId: EntityId): Promise<ScoreReport | null>;
+  getReport(attemptId: EntityId): Promise<PerformanceReport | null>;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Global integrity, publication and durable generation (Phase 1/3/6)
+// ─────────────────────────────────────────────────────────────
+
+export type DuplicateLevel = "EXACT" | "NEAR" | "TEMPLATE" | "CONCEPT" | "REVISION" | "NONE";
+
+export type DuplicateDecision = {
+  level: DuplicateLevel;
+  accepted: boolean;
+  reason: string;
+  matchedExposureId?: EntityId;
+};
+
+export type QuestionFingerprint = {
+  fingerprint: string;
+  exactHash: string;
+  nearHash: string;
+  templateHash: string;
+};
+
+export interface QuestionIdentityService {
+  fingerprint(questionText: string, options: QuestionOptions): QuestionFingerprint;
+}
+
+export type QuestionExposure = QuestionFingerprint & {
+  id: EntityId;
+  profileId: AdaptiveExamProfileId;
+  subjectId: string;
+  topicPath: string;
+  source: "PYQ" | "IMPORTED_BANK" | "GENERATED";
+  visibility: "PUBLIC" | "PRIVATE" | "UPCOMING";
+  paperId?: EntityId;
+  ownerId?: string;
+  firstSeenAt: IsoTimestamp;
+};
+
+/** Internal-only duplicate index; exposure rows never contain question text. */
+export interface QuestionExposureStore {
+  findByExactHash(exactHash: string): Promise<QuestionExposure | null>;
+  findByNearHash(nearHash: string): Promise<QuestionExposure | null>;
+  findByTemplateHash(templateHash: string): Promise<QuestionExposure | null>;
+  countConcept(subjectId: string, topicPath: string, since?: IsoTimestamp): Promise<number>;
+  insert(exposure: QuestionExposure): Promise<QuestionExposure>;
+}
+
+export interface GlobalDuplicateService {
+  check(input: {
+    questionText: string;
+    options: QuestionOptions;
+    profileId: AdaptiveExamProfileId;
+    subjectId: string;
+    topicPath: string;
+    /** Revision mode deliberately permits authentic PYQ repetition. */
+    revisionMode: boolean;
+    currentPaperFingerprints: ReadonlySet<string>;
+    /** Coarse concept key for the per-paper overlap cap. */
+    conceptKey?: string;
+    /** Multiset of concepts already used in the current paper (repeats count). */
+    currentPaperConcepts?: ReadonlyArray<string>;
+    maxConceptOverlapPerTopic?: number;
+  }): Promise<DuplicateDecision>;
+  record(input: {
+    fingerprint: QuestionFingerprint;
+    profileId: AdaptiveExamProfileId;
+    subjectId: string;
+    topicPath: string;
+    source: "PYQ" | "IMPORTED_BANK" | "GENERATED";
+    visibility: "PUBLIC" | "PRIVATE" | "UPCOMING";
+    paperId?: EntityId;
+    ownerId?: string;
+  }): Promise<void>;
+}
+
+export type AnswerVerificationDecision = {
+  accepted: boolean;
+  correctOption?: OptionKey;
+  reason: string;
+  method: "independent-solver" | "deterministic" | "human" | "unverified";
+  confidence: number;
+};
+
+export type IndependentSolverResult = {
+  answer: OptionKey;
+  explanation: string;
+  provider: string;
+  model: string;
+  confidence: number;
+};
+
+export interface IndependentSolverPort {
+  solve(input: {
+    questionText: string;
+    options: QuestionOptions;
+    language: LanguageCode;
+    subjectId: string;
+    topicPath: string;
+    profileId: AdaptiveExamProfileId;
+    requestId: string;
+  }): Promise<IndependentSolverResult>;
+}
+
+export interface AnswerVerificationPort {
+  verify(input: {
+    questionText: string;
+    options: QuestionOptions;
+    claimedOption?: OptionKey;
+    language: LanguageCode;
+    subjectId: string;
+    topicPath: string;
+    profileId: AdaptiveExamProfileId;
+    evidence?: Array<{ url: string; publishedAt?: IsoTimestamp; snippet?: string }>;
+  }): Promise<AnswerVerificationDecision>;
+}
+
+export type GenerationJobStage =
+  | "prepare"
+  | "select"
+  | "generate"
+  | "verify"
+  | "dedupe"
+  | "assemble"
+  | "persist"
+  | "done"
+  | "failed";
+
+/** One provider batch, recorded without question text or answers. */
+export type GenerationTelemetry = {
+  provider: string;
+  model: string;
+  promptVersion: string;
+  mock: boolean;
+  batches: number;
+  questions: number;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  durationMs: number;
+};
+
+/** Job-level rollup derived only from persisted paper provenance. */
+export type GenerationTelemetrySummary = {
+  providers: string[];
+  models: string[];
+  promptVersions: string[];
+  mock: boolean;
+  batches: number;
+  questions: number;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  durationMs: number;
+};
+
+/** Appends each real batch to the shared AIUsage ledger. */
+export type AdaptiveGenerationTelemetryRecorder = (
+  records: GenerationTelemetry[],
+  ctx: AdaptiveExecutionContext,
+) => Promise<void>;
+
+export type GenerationJob = {
+  id: EntityId;
+  userId: string;
+  blueprintId: EntityId;
+  idempotencyKey: string;
+  status: "QUEUED" | "RUNNING" | "PARTIAL" | "FAILED" | "COMPLETED";
+  stage: GenerationJobStage;
+  progress: number;
+  total: number;
+  paperId?: EntityId;
+  attempts: number;
+  error?: Record<string, unknown>;
+  telemetry?: GenerationTelemetrySummary;
+  createdAt: IsoTimestamp;
+  updatedAt: IsoTimestamp;
+};
+
+export interface GenerationJobStore {
+  put(job: GenerationJob): Promise<GenerationJob>;
+  get(jobId: EntityId): Promise<GenerationJob | null>;
+  findByIdempotencyKey(userId: string, key: string): Promise<GenerationJob | null>;
+}
+
+export interface GenerationJobService {
+  enqueue(input: {
+    userId: string;
+    blueprintId: EntityId;
+    idempotencyKey: string;
+  }): Promise<GenerationJob>;
+  get(jobId: EntityId, userId: string): Promise<GenerationJob | null>;
+  run(jobId: EntityId, ctx: AdaptiveExecutionContext): Promise<GenerationJob>;
+}
+
+export type PublicationStatus = "DRAFT" | "UPCOMING" | "PUBLISHED" | "ARCHIVED";
+
+export type MockPublication = {
+  id: EntityId;
+  paperId: EntityId;
+  status: PublicationStatus;
+  titleBn: string;
+  titleEn: string;
+  availableFrom?: IsoTimestamp;
+  availableTo?: IsoTimestamp;
+  visibility: "PUBLIC" | "PRIVATE";
+  contentHash: string;
+  immutable: true;
+  createdBy: string;
+  createdAt: IsoTimestamp;
+};
+
+export interface MockPublicationStore {
+  put(publication: MockPublication): Promise<MockPublication>;
+  get(paperId: EntityId): Promise<MockPublication | null>;
+  getById(id: EntityId): Promise<MockPublication | null>;
+  list(statuses?: PublicationStatus[]): Promise<MockPublication[]>;
+  /** Only lifecycle status/window fields may change; contentHash never does. */
+  updateStatus(
+    id: EntityId,
+    patch: { status: PublicationStatus; availableFrom?: IsoTimestamp; availableTo?: IsoTimestamp },
+  ): Promise<MockPublication>;
+}
+
+export interface AdaptiveCatalogStore {
+  organizations(): Promise<ExamCatalog["organizations"]>;
+  posts(): Promise<ExamCatalog["posts"]>;
+  types(): Promise<ExamCatalog["types"]>;
+}
+
+export interface AdaptiveCatalogService {
+  catalog(): Promise<ExamCatalog>;
+  profiles(filter?: { family?: ExamFamily; profileId?: AdaptiveExamProfileId }): Promise<ProfileSummary[]>;
+}
+
+export interface AdaptiveLibraryService {
+  list(filter?: {
+    family?: ExamFamily;
+    profileId?: AdaptiveExamProfileId;
+    subjectId?: string;
+    status?: PublicationStatus;
+  }): Promise<Array<MockPublication & { paper?: PaperSnapshot }>>;
+  get(paperId: EntityId, viewerId: string): Promise<(MockPublication & { paper?: PaperSnapshot }) | null>;
+  publish(input: {
+    paperId: EntityId;
+    status: PublicationStatus;
+    titleBn: string;
+    titleEn: string;
+    availableFrom?: IsoTimestamp;
+    availableTo?: IsoTimestamp;
+    actorId: string;
+  }): Promise<MockPublication>;
 }

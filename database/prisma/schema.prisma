@@ -244,7 +244,7 @@ model User {
 
   // ── Session tracking (for concurrency limits) ──
   // Active sessions live in the Session table (indexed, expiring rows).
-  userSessions      Session[]
+  userSessions Session[]
 
   progress                UserProgress?
   bookmarks               Bookmark[]
@@ -742,12 +742,12 @@ model Recommendation {
 }
 
 model Badge {
-  id           Int         @id @default(autoincrement())
-  name         String      @unique
-  description  String
-  icon         String      @default("🏅")
-  rarity       BadgeRarity @default(COMMON)
-  userBadges   UserBadge[]
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String
+  icon        String      @default("🏅")
+  rarity      BadgeRarity @default(COMMON)
+  userBadges  UserBadge[]
 }
 
 // Per-user badge unlock. Catalog state (Badge) stays shared; this is earned state.
@@ -764,19 +764,19 @@ model UserBadge {
 }
 
 model AppNotification {
-  id        Int                @id @default(autoincrement())
+  id        Int                  @id @default(autoincrement())
   userId    String?
-  user      User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   title     String
   message   String
-  type      NotificationType   @default(INFO)
-  timestamp DateTime           @default(now())
-  read      Boolean            @default(false)
+  type      NotificationType     @default(INFO)
+  timestamp DateTime             @default(now())
+  read      Boolean              @default(false)
   reads     NotificationRead[]
   hiddens   NotificationHidden[]
   // Seed identity: md5(title|message) — NotificationRead rows reference this
   // row, so ids must survive reseeds.
-  sourceKey String             @unique @default("")
+  sourceKey String               @unique @default("")
 
   @@index([userId])
   // Keyset pagination orders by (timestamp desc, id desc).
@@ -997,12 +997,12 @@ model NotificationHidden {
 
 // Per-user notification type preferences. Absent row = all types enabled.
 model NotificationPreference {
-  userId    String  @id
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  info      Boolean @default(true)
-  success   Boolean @default(true)
-  warning   Boolean @default(true)
-  reminder  Boolean @default(true)
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  info      Boolean  @default(true)
+  success   Boolean  @default(true)
+  warning   Boolean  @default(true)
+  reminder  Boolean  @default(true)
   updatedAt DateTime @updatedAt
 }
 
@@ -1245,7 +1245,7 @@ model VocabWord {
   // ── Enrichment (optional; backfilled progressively) ──
   ipa               String?
   audioUrl          String?
-  register          String?         // formal | neutral | informal
+  register          String? // formal | neutral | informal
   collocations      Json?
   wordFamily        Json?
   confusables       Json?
@@ -1259,23 +1259,23 @@ model VocabWord {
 }
 
 model VocabProgress {
-  id             Int       @id @default(autoincrement())
-  userId         String
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  wordId         Int
-  word           VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
-  status         String    @default("NEW") // NEW | LEARNING | REVIEW | MASTERED
-  ease           Float     @default(2.5)
-  interval       Int       @default(0)
-  repetitions    Int       @default(0)
-  nextReview     DateTime?
-  lastReviewedAt DateTime?
-  totalReviews   Int       @default(0)
-  correctCount   Int       @default(0)
-  consecutiveCorrect Int   @default(0)
-  isLeech        Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id                 Int       @id @default(autoincrement())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordId             Int
+  word               VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  status             String    @default("NEW") // NEW | LEARNING | REVIEW | MASTERED
+  ease               Float     @default(2.5)
+  interval           Int       @default(0)
+  repetitions        Int       @default(0)
+  nextReview         DateTime?
+  lastReviewedAt     DateTime?
+  totalReviews       Int       @default(0)
+  correctCount       Int       @default(0)
+  consecutiveCorrect Int       @default(0)
+  isLeech            Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@unique([userId, wordId])
   @@index([userId, status])
@@ -1352,13 +1352,13 @@ model UserVocabDeck {
 /// which words have already been upserted so the same file can be re-run
 /// without duplicating rows.
 model VocabImportBatch {
-  id            Int             @id @default(autoincrement())
-  userId        Json?           // optional: who triggered it
-  source        String          // filename or origin identifier
-  fileHash      String?         // sha256 of the uploaded file, for dedupe
-  status        String          // PENDING | IN_PROGRESS | COMPLETED | FAILED
-  importedCount Int             @default(0)
-  rejectedCount Int             @default(0)
+  id            Int       @id @default(autoincrement())
+  userId        Json? // optional: who triggered it
+  source        String // filename or origin identifier
+  fileHash      String? // sha256 of the uploaded file, for dedupe
+  status        String // PENDING | IN_PROGRESS | COMPLETED | FAILED
+  importedCount Int       @default(0)
+  rejectedCount Int       @default(0)
   startedAt     DateTime? @default(now())
   completedAt   DateTime?
   errorMessage  String?
@@ -1598,34 +1598,42 @@ model AuditLog {
 /// The code registry seeds these; a committed blueprint pins one version so a
 /// later profile edit can never rewrite a historical paper or result.
 model AdaptiveExamProfile {
-  id                    String   @id @default(cuid())
-  profileId             String // AdaptiveExamProfileId union in contracts.ts
-  version               Int
-  family                String // BCS | BANK
-  ecosystemCode         String // existing ExamEcosystemCode values only
-  organization          String
-  recruitmentPost       String
-  stage                 String
-  labelBn               String
-  labelEn               String
-  subjects              Json // SubjectAllocationSpec[]
-  totalQuestions        Int
-  totalMarks            Int
-  durationMin           Int
-  scoring               Json // ScoringPolicy — authoritative at submit
+  id                     String            @id @default(cuid())
+  profileId              String // AdaptiveExamProfileId union in contracts.ts
+  version                Int
+  family                 String // BCS | BANK
+  ecosystemCode          String // existing ExamEcosystemCode values only
+  organization           String
+  recruitmentPost        String
+  stage                  String
+  labelBn                String
+  labelEn                String
+  subjects               Json // SubjectAllocationSpec[]
+  totalQuestions         Int
+  totalMarks             Int
+  durationMin            Int
+  scoring                Json // ScoringPolicy — authoritative at submit
   difficultyDistribution Json // Record<DifficultyBand, number>, sums to 100
-  languagePolicy        String
-  historicalDataEligible Boolean @default(false)
-  pyqPolicy             Json // allowSourceClaimed / allowUnverified / minVerifiedShare
-  allowedOverrides      Json // ProfileOverrideKey[]
-  source                Json // ProfileSource — official | user-provided | curated
-  verificationStatus    String   @default("draft") // draft|reviewed|approved|rejected
-  effectiveFrom         DateTime?
-  effectiveTo           DateTime?
-  revisionHistory       Json     @default("[]")
-  notes                 Json     @default("[]")
-  contentHash           String // SHA-256 over the canonical snapshot
-  createdAt             DateTime @default(now())
+  languagePolicy         String
+  historicalDataEligible Boolean           @default(false)
+  pyqPolicy              Json // allowSourceClaimed / allowUnverified / minVerifiedShare
+  allowedOverrides       Json // ProfileOverrideKey[]
+  source                 Json // ProfileSource — official | user-provided | curated
+  verificationStatus     String            @default("draft") // draft|reviewed|approved|rejected
+  provisional            Boolean           @default(false) // project-supplied baseline, not official proof
+  effectiveFrom          DateTime?
+  effectiveTo            DateTime?
+  revisionHistory        Json              @default("[]")
+  postId                 String?
+  post                   AdaptiveExamPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
+  hierarchyPath          String?
+  sourceEvidence         Json              @default("[]")
+  reviewedBy             String?
+  approvedBy             String?
+  approvedAt             DateTime?
+  notes                  Json              @default("[]")
+  contentHash            String // SHA-256 over the canonical snapshot
+  createdAt              DateTime          @default(now())
 
   blueprints AdaptiveBlueprint[]
 
@@ -1638,19 +1646,19 @@ model AdaptiveExamProfile {
 /// A historical import run. Originals are preserved; nothing is written to
 /// the live Question table by this pipeline (ADR-075).
 model HistoricalImportBatch {
-  id          String                   @id @default(cuid())
-  sourceRef   String // file name or origin identifier
-  fileHash    String? // sha256 of the source file, for re-run dedupe
-  family      String // BCS | BANK
-  status      String                   @default("PREVIEW") // PREVIEW|APPROVED|IMPORTED|ROLLED_BACK|REJECTED
-  actorId     String? // admin/service id; kept even if the User row is gone
-  totals      Json                     @default("{}")
-  report      Json                     @default("{}") // ImportReport
-  startedAt   DateTime?
-  finishedAt  DateTime?
-  createdAt   DateTime                 @default(now())
-  issues      HistoricalImportIssue[]
-  questions   HistoricalQuestion[]
+  id         String                  @id @default(cuid())
+  sourceRef  String // file name or origin identifier
+  fileHash   String? // sha256 of the source file, for re-run dedupe
+  family     String // BCS | BANK
+  status     String                  @default("PREVIEW") // PREVIEW|APPROVED|IMPORTED|ROLLED_BACK|REJECTED
+  actorId    String? // admin/service id; kept even if the User row is gone
+  totals     Json                    @default("{}")
+  report     Json                    @default("{}") // ImportReport
+  startedAt  DateTime?
+  finishedAt DateTime?
+  createdAt  DateTime                @default(now())
+  issues     HistoricalImportIssue[]
+  questions  HistoricalQuestion[]
 
   @@index([status])
   @@index([family, createdAt])
@@ -1661,7 +1669,7 @@ model HistoricalImportBatch {
 /// A preserved exception from an ingestion stage. `preservedRef` points at the
 /// untouched source text so a rejected record can be reviewed, never invented.
 model HistoricalImportIssue {
-  id           String               @id @default(cuid())
+  id           String                @id @default(cuid())
   batchId      String
   batch        HistoricalImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
   recordRef    String
@@ -1669,7 +1677,7 @@ model HistoricalImportIssue {
   severity     String // info | warning | error | critical
   reason       String
   preservedRef String
-  createdAt    DateTime             @default(now())
+  createdAt    DateTime              @default(now())
 
   @@index([batchId])
 }
@@ -1737,9 +1745,9 @@ model HistoricalAnalyticsSnapshot {
 /// An immutable, hashed adaptation plan. Committed once; later changes create
 /// a new row rather than editing this one.
 model AdaptiveBlueprint {
-  id                     String                   @id @default(cuid())
+  id                     String              @id @default(cuid())
   profileSnapshotId      String
-  profileSnapshot        AdaptiveExamProfile      @relation(fields: [profileSnapshotId], references: [id], onDelete: Restrict)
+  profileSnapshot        AdaptiveExamProfile @relation(fields: [profileSnapshotId], references: [id], onDelete: Restrict)
   profileId              String
   profileVersion         Int
   family                 String
@@ -1755,12 +1763,12 @@ model AdaptiveBlueprint {
   sourceAllocation       Json
   historicalYearRange    Json?
   candidateAdaptation    Json // enabled, weights, snapshotHash
-  duplicateExclusions    Json     @default("[]")
+  duplicateExclusions    Json                @default("[]")
   dataSufficiency        Json
-  warnings               Json     @default("[]")
-  status                 String   @default("draft") // draft|committed|superseded
+  warnings               Json                @default("[]")
+  status                 String              @default("draft") // draft|committed|superseded
   contentHash            String
-  createdAt              DateTime @default(now())
+  createdAt              DateTime            @default(now())
 
   papers   AdaptivePaperSnapshot[]
   sessions AdaptiveExamSession[]
@@ -1774,14 +1782,14 @@ model AdaptiveBlueprint {
 /// The candidate-safe paper. NO answer column by design — the answer key is a
 /// separate table so no paper read path can accidentally leak it.
 model AdaptivePaperSnapshot {
-  id           String                 @id @default(cuid())
+  id           String                @id @default(cuid())
   blueprintId  String
-  blueprint    AdaptiveBlueprint      @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
-  version      Int                    @default(1)
+  blueprint    AdaptiveBlueprint     @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  version      Int                   @default(1)
   questions    Json // CandidatePaperQuestion[] — no correctOption / explanation
   contentHash  String
   validation   String // PASS|PASS_WITH_WARNING|REPAIR_REQUIRED|REJECTED
-  createdAt    DateTime               @default(now())
+  createdAt    DateTime              @default(now())
   answerKey    AdaptiveAnswerKey?
   sessions     AdaptiveExamSession[]
   scoreReports AdaptiveScoreReport[]
@@ -1793,12 +1801,12 @@ model AdaptivePaperSnapshot {
 /// Server-only answer key. Access goes through AnswerKeyStore.getForScoring()
 /// or the authorized releaseForReview() path — never through a paper endpoint.
 model AdaptiveAnswerKey {
-  id          String               @id @default(cuid())
-  paperId     String               @unique
+  id          String                @id @default(cuid())
+  paperId     String                @unique
   paper       AdaptivePaperSnapshot @relation(fields: [paperId], references: [id], onDelete: Restrict)
   contentHash String // must equal AdaptivePaperSnapshot.contentHash
   entries     Json // SecureAnswerKeyEntry[] — position, correctOption, explanation
-  createdAt   DateTime             @default(now())
+  createdAt   DateTime              @default(now())
 
   @@index([contentHash])
 }
@@ -1824,28 +1832,28 @@ model CandidatePerformanceSnapshot {
 /// `legacyAttemptId` is a soft link to ExamAttempt (no FK) so the canonical
 /// attempt writer stays untouched while the two ids can be reconciled.
 model AdaptiveExamSession {
-  id              String                 @id @default(cuid())
+  id              String                @id @default(cuid())
   userId          String
-  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   paperId         String
-  paper           AdaptivePaperSnapshot  @relation(fields: [paperId], references: [id], onDelete: Restrict)
+  paper           AdaptivePaperSnapshot @relation(fields: [paperId], references: [id], onDelete: Restrict)
   blueprintId     String
-  blueprint       AdaptiveBlueprint      @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  blueprint       AdaptiveBlueprint     @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
   profileId       String
   profileVersion  Int
-  status          String                 @default("NOT_STARTED") // ExamLifecycleStatus union
-  startsAt        DateTime               @default(now())
+  status          String                @default("NOT_STARTED") // ExamLifecycleStatus union
+  startsAt        DateTime              @default(now())
   expiresAt       DateTime
   submittedAt     DateTime?
-  answers         Json                   @default("{}") // Record<position, OptionKey>
-  flags           Json                   @default("[]")
+  answers         Json                  @default("{}") // Record<position, OptionKey>
+  flags           Json                  @default("[]")
   lastSavedAt     DateTime?
-  version         Int                    @default(1) // optimistic concurrency
+  version         Int                   @default(1) // optimistic concurrency
   idempotencyKey  String
   legacyAttemptId Int? // soft link to ExamAttempt.id; no FK/back-relation
   scoreReport     AdaptiveScoreReport?
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 
   @@unique([userId, idempotencyKey])
   @@index([userId, status])
@@ -1858,19 +1866,19 @@ model AdaptiveExamSession {
 
 /// Immutable score + post-submit performance report. One row per attempt.
 model AdaptiveScoreReport {
-  id                   String             @id @default(cuid())
-  attemptId            String             @unique
-  attempt              AdaptiveExamSession @relation(fields: [attemptId], references: [id], onDelete: Restrict)
-  paperId              String
-  paper                AdaptivePaperSnapshot @relation(fields: [paperId], references: [id], onDelete: Restrict)
-  profileId            String
-  profileVersion       Int
-  scoring              Json
-  score                Json // ScoreReport — immutable true
-  report               Json // PerformanceReport with explicit limitations
-  contentHash          String
+  id                    String                @id @default(cuid())
+  attemptId             String                @unique
+  attempt               AdaptiveExamSession   @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  paperId               String
+  paper                 AdaptivePaperSnapshot @relation(fields: [paperId], references: [id], onDelete: Restrict)
+  profileId             String
+  profileVersion        Int
+  scoring               Json
+  score                 Json // ScoreReport — immutable true
+  report                Json // PerformanceReport with explicit limitations
+  contentHash           String
   candidateSnapshotHash String?
-  createdAt            DateTime           @default(now())
+  createdAt             DateTime              @default(now())
 
   @@index([profileId, createdAt])
   @@index([contentHash])
@@ -1893,4 +1901,128 @@ model AdaptiveAuditEvent {
   @@index([name, occurredAt])
   @@index([requestId])
   @@index([actorId, occurredAt])
+}
+
+// ── Adaptive Exam V2 catalog / global integrity additions ──────────
+// These tables extend the ADR-075 adaptive schema. They keep the hierarchy
+// extensible ("Others" organisations can be added without code changes) and
+// make global duplicate detection, publication windows and durable generation
+// first-class database concerns.
+
+/// Top of the exam hierarchy: family → organisation → post → type → profile.
+model AdaptiveExamOrganization {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  family    String // BCS | BANK | OTHERS
+  nameBn    String
+  nameEn    String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  posts AdaptiveExamPost[]
+
+  @@index([family, active])
+}
+
+model AdaptiveExamPost {
+  id             String                   @id @default(cuid())
+  organizationId String
+  organization   AdaptiveExamOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String
+  nameBn         String
+  nameEn         String
+  active         Boolean                  @default(true)
+  createdAt      DateTime                 @default(now())
+
+  types    AdaptiveExamType[]
+  profiles AdaptiveExamProfile[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
+
+model AdaptiveExamType {
+  id        String           @id @default(cuid())
+  postId    String
+  post      AdaptiveExamPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  code      String
+  nameBn    String
+  nameEn    String
+  profileId String? // optional default profile id (string union lives in contracts)
+  active    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+
+  @@unique([postId, code])
+  @@index([postId])
+}
+
+/// Global question-exposure index. Fingerprints are derived from question text,
+/// options and numeric/entity-normalised templates. The row never contains the
+/// question body, so internal duplicate checks cannot leak another user's paper.
+model AdaptiveQuestionExposure {
+  id           String   @id @default(cuid())
+  fingerprint  String
+  exactHash    String
+  nearHash     String
+  templateHash String
+  profileId    String
+  subjectId    String
+  topicPath    String
+  source       String // PYQ | IMPORTED_BANK | GENERATED
+  visibility   String // PUBLIC | PRIVATE | UPCOMING
+  paperId      String?
+  ownerId      String?
+  firstSeenAt  DateTime @default(now())
+
+  @@index([fingerprint])
+  @@index([exactHash])
+  @@index([nearHash])
+  @@index([templateHash])
+  @@index([profileId, subjectId])
+  @@index([paperId])
+}
+
+/// Publication lifecycle for shared papers. Answer keys are never part of this
+/// table; they stay in AdaptiveAnswerKey with post-submit entitlement.
+model AdaptiveMockPublication {
+  id            String    @id @default(cuid())
+  paperId       String    @unique
+  status        String    @default("DRAFT") // DRAFT|UPCOMING|PUBLISHED|ARCHIVED
+  titleBn       String
+  titleEn       String
+  availableFrom DateTime?
+  availableTo   DateTime?
+  visibility    String    @default("PUBLIC")
+  contentHash   String
+  immutable     Boolean   @default(true)
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, availableFrom])
+  @@index([paperId])
+}
+
+/// Durable generation job. A 200-question paper is staged in small batches and
+/// can resume after a serverless timeout or provider outage.
+model AdaptiveGenerationJob {
+  id             String   @id @default(cuid())
+  userId         String
+  blueprintId    String
+  idempotencyKey String
+  status         String   @default("QUEUED") // QUEUED|RUNNING|PARTIAL|FAILED|COMPLETED
+  stage          String   @default("prepare")
+  progress       Int      @default(0)
+  total          Int      @default(0)
+  paperId        String?
+  attempts       Int      @default(0)
+  error          Json?
+  /// Provider/model/prompt/token/cost/rollup derived from paper provenance. No answers.
+  telemetry      Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, idempotencyKey])
+  @@index([status, createdAt])
+  @@index([blueprintId])
 }

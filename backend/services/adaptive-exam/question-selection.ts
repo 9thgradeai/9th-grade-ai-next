@@ -1,23 +1,24 @@
 // backend/services/adaptive-exam/question-selection.ts
 // Module 8a of Adaptive Exam V2.0: QuestionSelectionService.
 //
-// Deterministic, seeded selection from eligible historical records. Shortages
-// are reported transparently via explainShortage(); nothing is silently
-// substituted or fabricated.
+// Deterministic, seeded selection from eligible historical records. Topic
+// filters are taxonomy PREFIX matches. Global exclusions from the committed
+// blueprint are applied in addition to the candidate's exposure history.
+// Shortages are reported transparently; nothing is silently fabricated.
 
 import "server-only";
 
 import type {
+  DifficultyBand,
   HistoricalQuestionRepository,
   QuestionSelectionService,
   SelectedQuestion,
   SelectionSpec,
 } from "./contracts";
-import { hashSnapshot } from "./hash";
+import { pathMatchesPrefix } from "./historical-repository";
 
 export type CreateQuestionSelectionServiceOptions = Readonly<{
   repository: HistoricalQuestionRepository;
-  /** Deterministic seed source; defaults to a stable value per blueprint hash. */
   seedFor?: (spec: SelectionSpec) => number;
 }>;
 
@@ -40,6 +41,29 @@ function hashString(value: string): number {
   return hash;
 }
 
+/** Split a slot count across difficulty bands using the blueprint allocation. */
+function splitByDifficulty(
+  count: number,
+  distribution: Record<DifficultyBand, number>,
+): Record<DifficultyBand, number> {
+  const bands: DifficultyBand[] = ["EASY", "MEDIUM", "HARD"];
+  const totalWeight = bands.reduce((sum, band) => sum + (distribution[band] ?? 0), 0);
+  const out: Record<DifficultyBand, number> = { EASY: 0, MEDIUM: 0, HARD: 0 };
+  if (count <= 0) return out;
+  let assigned = 0;
+  for (const band of bands) {
+    const weight = distribution[band] ?? 0;
+    const exact = totalWeight > 0 ? (weight / totalWeight) * count : band === "MEDIUM" ? count : 0;
+    out[band] = Math.floor(exact);
+    assigned += out[band];
+  }
+  // Remainder goes to the largest-weighted band, never a fabricated band.
+  const fallback = bands.reduce((best, band) =>
+    (distribution[band] ?? 0) > (distribution[best] ?? 0) ? band : best, "MEDIUM");
+  out[fallback] += count - assigned;
+  return out;
+}
+
 export function createQuestionSelectionService(
   options: CreateQuestionSelectionServiceOptions,
 ): QuestionSelectionService {
@@ -48,31 +72,31 @@ export function createQuestionSelectionService(
   async function selectForTopic(
     spec: SelectionSpec,
     subjectId: string,
-    topicId: string,
     topicPaths: string[],
+    subtopicPaths: string[] | undefined,
     language: "bn" | "en",
-    difficulty: "EASY" | "MEDIUM" | "HARD",
+    difficulty: DifficultyBand,
     count: number,
     usedIds: Set<string>,
   ): Promise<SelectedQuestion[]> {
-    if (count <= 0) return [];
+    if (count <= 0 || topicPaths.length === 0) return [];
     const records = await options.repository.findEligible({
-      profileId: undefined,
       family: spec.blueprint.family,
       subjectId,
-      topicPath: undefined,
+      topicPath: topicPaths[0],
       difficulty,
-      verification: undefined,
-      excludeIds: [...usedIds],
-      limit: count * 4,
+      excludeIds: [...usedIds, ...spec.blueprint.duplicateExclusions],
+      limit: count * 5,
     });
-    // Filter to topic paths and language by record.
-    const eligible = records.filter((record) =>
-      topicPaths.includes(record.topicPath) &&
-      record.originalLanguage === language &&
-      !usedIds.has(record.id),
-    );
-    const ordered = seededShuffle(eligible, seedFor(spec));
+    const eligible = records.filter((record) => {
+      const subtopicPath = record.subtopicPath;
+      return topicPaths.some((prefix) => pathMatchesPrefix(record.topicPath, prefix)) &&
+        (!subtopicPaths || subtopicPaths.length === 0 ||
+          !subtopicPath || subtopicPaths.some((prefix) => pathMatchesPrefix(subtopicPath, prefix))) &&
+        record.originalLanguage === language &&
+        !usedIds.has(record.id);
+    });
+    const ordered = seededShuffle(eligible, seedFor(spec) + hashString(`${subjectId}|${topicPaths[0]}|${difficulty}`));
     const picked: SelectedQuestion[] = [];
     for (const record of ordered) {
       if (picked.length >= count) break;
@@ -93,67 +117,67 @@ export function createQuestionSelectionService(
 
   return {
     async select(spec) {
-      const usedIds = new Set(spec.excludeIds);
+      const usedIds = new Set([...spec.excludeIds, ...spec.blueprint.duplicateExclusions]);
       const selected: SelectedQuestion[] = [];
-      let position = 1;
 
       for (const subject of spec.blueprint.allocations) {
         for (const topic of subject.topics) {
-          // PYQ slots first.
-          const pyqCount = topic.sources.PYQ;
-          const pyqPicks = await selectForTopic(
-            spec,
-            subject.subjectId,
-            topic.topicId,
-            topic.paths,
-            topic.language,
-            "MEDIUM",
-            pyqCount,
-            usedIds,
-          );
-          for (const pick of pyqPicks) {
-            pick.position = position++;
-            selected.push(pick);
+          const totalCount = topic.count;
+          const difficultySplit = splitByDifficulty(totalCount, topic.difficulty);
+          const pyqByDifficulty = splitByDifficulty(topic.sources.PYQ ?? 0, topic.difficulty);
+          const requestedGenerated = (topic.sources as Record<string, number>).ORIGINAL ?? 0;
+          const generatedByDifficulty = splitByDifficulty(requestedGenerated, topic.difficulty);
+
+          for (const band of ["EASY", "MEDIUM", "HARD"] as const) {
+            const picks = await selectForTopic(
+              spec,
+              subject.subjectId,
+              topic.paths,
+              topic.subtopicPaths,
+              topic.language,
+              band,
+              pyqByDifficulty[band],
+              usedIds,
+            );
+            selected.push(...picks);
+            for (let i = 0; i < generatedByDifficulty[band]; i += 1) {
+              selected.push({
+                position: 0,
+                sourceType: "ORIGINAL",
+                subjectId: subject.subjectId,
+                topicPath: topic.paths.length > 0 ? topic.paths[0] : topic.topicId,
+                ...(topic.subtopicPaths?.[0] ? { subtopicPath: topic.subtopicPaths[0] } : {}),
+                language: topic.language,
+                difficulty: band,
+              });
+            }
           }
-          // Remaining slots are marked GENERATED (filled later by generation service).
-          const generatedCount = (topic.sources as Record<string, number>).ORIGINAL;
-          for (let i = 0; i < generatedCount; i += 1) {
-            selected.push({
-              position: position++,
-              sourceType: "ORIGINAL",
-              subjectId: subject.subjectId,
-              topicPath: topic.paths.length > 0 ? topic.paths[0] : topic.topicId,
-              language: topic.language,
-              difficulty: "MEDIUM",
-            });
-          }
+          void difficultySplit;
         }
       }
 
-      // Re-number positions cleanly in case of gaps.
       selected.forEach((item, index) => {
         item.position = index + 1;
       });
-
-      // Suppress unused import warning for hashSnapshot by referencing it.
-      void hashSnapshot;
       return selected;
     },
 
     async explainShortage(spec) {
       const shortages: string[] = [];
-      const usedIds = new Set(spec.excludeIds);
+      const usedIds = new Set([...spec.excludeIds, ...spec.blueprint.duplicateExclusions]);
       for (const subject of spec.blueprint.allocations) {
         for (const topic of subject.topics) {
-          const pyqCount = topic.sources.PYQ;
+          const pyqCount = topic.sources.PYQ ?? 0;
           if (pyqCount <= 0) continue;
           const records = await options.repository.findEligible({
-            profileId: undefined,
             family: spec.blueprint.family,
             subjectId: subject.subjectId,
-            limit: pyqCount * 4,
+            topicPath: topic.paths[0],
+            excludeIds: [...usedIds],
+            limit: pyqCount * 5,
           });
-          const eligible = records.filter((record) => topic.paths.includes(record.topicPath));
+          const eligible = records.filter((record) =>
+            topic.paths.some((prefix) => pathMatchesPrefix(record.topicPath, prefix)));
           if (eligible.length < pyqCount) {
             shortages.push(
               `${subject.subjectId}/${topic.topicId}: requested ${pyqCount} PYQ but only ${eligible.length} eligible verified records available.`,
@@ -164,7 +188,6 @@ export function createQuestionSelectionService(
       if (shortages.length === 0) {
         shortages.push("No PYQ shortages detected for the committed blueprint.");
       }
-      void usedIds;
       return shortages;
     },
   };

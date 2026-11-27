@@ -49,10 +49,17 @@ function recordFingerprint(record: HistoricalQuestionRecord): string {
   return hashSnapshot({ normalizedText: record.normalizedText, language: record.originalLanguage });
 }
 
+/** A topic filter is a taxonomy PREFIX, never an exact-string match. */
+export function pathMatchesPrefix(path: string, prefix: string): boolean {
+  return path === prefix || path.startsWith(`${prefix}/`) || path.startsWith(`${prefix}|`) ||
+    prefix === "" || path.includes(`/${prefix}`) || path.includes(`|${prefix}`);
+}
+
 function matches(
   record: HistoricalQuestionRecord,
   criteria: HistoricalAnalyticsFilter,
   requireEligible: boolean,
+  sourceType?: string,
 ): boolean {
   const scope = profileScope(criteria);
   if (!scope.available) return false;
@@ -65,8 +72,9 @@ function matches(
   if (criteria.yearFrom !== undefined && (record.examYear ?? Number.NEGATIVE_INFINITY) < criteria.yearFrom) return false;
   if (criteria.yearTo !== undefined && (record.examYear ?? Number.POSITIVE_INFINITY) > criteria.yearTo) return false;
   if (criteria.subjectId && record.subjectId !== criteria.subjectId) return false;
-  if (criteria.topicPath && record.topicPath !== criteria.topicPath) return false;
-  if (criteria.subtopicPath && record.subtopicPath !== criteria.subtopicPath) return false;
+  if (criteria.topicPath && !pathMatchesPrefix(record.topicPath, criteria.topicPath)) return false;
+  if (criteria.subtopicPath && !(record.subtopicPath && pathMatchesPrefix(record.subtopicPath, criteria.subtopicPath))) return false;
+  if (sourceType && record.provenance.sourceType !== sourceType) return false;
   if (criteria.difficulty && record.classification.difficulty !== criteria.difficulty) return false;
   if (criteria.verification && record.verification !== criteria.verification) return false;
   // No historical source records a question type. Never pretend one exists.
@@ -85,8 +93,8 @@ export function createInMemoryHistoricalRepository(
 ): HistoricalAnalyticsRepository {
   const rows = [...initial];
 
-  function select(criteria: HistoricalAnalyticsFilter, requireEligible: boolean) {
-    return rows.filter((record) => matches(record, criteria, requireEligible));
+  function select(criteria: HistoricalAnalyticsFilter, requireEligible: boolean, sourceType?: string) {
+    return rows.filter((record) => matches(record, criteria, requireEligible, sourceType));
   }
 
   return {
@@ -94,9 +102,9 @@ export function createInMemoryHistoricalRepository(
       return select(criteria, false);
     },
     async findEligible(criteria) {
-      const { excludeIds, limit } = criteria;
+      const { excludeIds, limit, sourceType } = criteria;
       const excluded = new Set(excludeIds ?? []);
-      const matched = select(criteria, true).filter((record) => !excluded.has(record.id));
+      const matched = select(criteria, true, sourceType).filter((record) => !excluded.has(record.id));
       return limit === undefined ? matched : matched.slice(0, Math.max(0, limit));
     },
     async count(criteria) {
@@ -148,8 +156,8 @@ function prismaWhere(
     });
   }
   if (criteria.subjectId) and.push({ subjectId: criteria.subjectId });
-  if (criteria.topicPath) and.push({ topicPath: criteria.topicPath });
-  if (criteria.subtopicPath) and.push({ subtopicPath: criteria.subtopicPath });
+  // Topic/subtopic filters are prefix matches applied after row mapping so a
+  // taxonomy prefix cannot be mistaken for an exact DB value.
   // Difficulty lives in a JSON column; it is filtered after row mapping so a
   // malformed JSON shape cannot turn into a false positive in the database.
   if (criteria.verification) and.push({ verification: criteria.verification });
@@ -165,6 +173,15 @@ function prismaWhere(
   }
 
   return { AND: and };
+}
+
+function pathMatchesTopicCriteria(
+  record: HistoricalQuestionRecord,
+  criteria: HistoricalAnalyticsFilter,
+): boolean {
+  if (criteria.topicPath && !pathMatchesPrefix(record.topicPath, criteria.topicPath)) return false;
+  if (criteria.subtopicPath && !(record.subtopicPath && pathMatchesPrefix(record.subtopicPath, criteria.subtopicPath))) return false;
+  return true;
 }
 
 function filterByDifficulty(
@@ -184,11 +201,12 @@ export function createPrismaHistoricalRepository(
         where: prismaWhere(criteria, false),
         orderBy: [{ examYear: "asc" }, { subjectId: "asc" }, { topicPath: "asc" }],
       });
-      return filterByDifficulty(rows.map(historicalQuestionFromRow), criteria);
+      return filterByDifficulty(rows.map(historicalQuestionFromRow), criteria)
+        .filter((record) => pathMatchesTopicCriteria(record, criteria));
     },
 
     async findEligible(criteria) {
-      const { excludeIds, limit } = criteria;
+      const { excludeIds, limit, sourceType } = criteria;
       const rows = await client.historicalQuestion.findMany({
         where: {
           ...prismaWhere(criteria, true),
@@ -197,7 +215,9 @@ export function createPrismaHistoricalRepository(
         orderBy: [{ examYear: "asc" }, { subjectId: "asc" }, { topicPath: "asc" }],
         ...(limit === undefined ? {} : { take: Math.max(0, limit) }),
       });
-      return filterByDifficulty(rows.map(historicalQuestionFromRow), criteria);
+      return filterByDifficulty(rows.map(historicalQuestionFromRow), criteria)
+        .filter((record) => !sourceType || record.provenance.sourceType === sourceType)
+        .filter((record) => pathMatchesTopicCriteria(record, criteria));
     },
 
     async count(criteria) {

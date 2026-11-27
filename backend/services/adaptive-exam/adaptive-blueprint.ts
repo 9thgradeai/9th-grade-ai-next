@@ -47,10 +47,26 @@ export function createInMemoryAdaptiveBlueprintStore(): AdaptiveBlueprintStore {
 export function createPrismaAdaptiveBlueprintStore(client: PrismaClient): AdaptiveBlueprintStore {
   return {
     async commit(blueprint) {
+      const snapshot = await client.adaptiveExamProfile.findUnique({
+        where: {
+          profileId_version: {
+            profileId: blueprint.profileId,
+            version: blueprint.profileVersion,
+          },
+        },
+        select: { id: true },
+      });
+      if (!snapshot) {
+        throw adaptiveError("ADAPTIVE_PROFILE_NOT_FOUND", "Pinned profile snapshot is missing.", {
+          stage: "blueprint",
+          requestId: "prisma-blueprint-store",
+          metadata: { profileId: blueprint.profileId, version: blueprint.profileVersion },
+        });
+      }
       const row = await client.adaptiveBlueprint.create({
         data: {
           id: blueprint.id,
-          profileSnapshotId: blueprint.id, // placeholder; orchestrator wires real snapshot id
+          profileSnapshotId: snapshot.id,
           profileId: blueprint.profileId,
           profileVersion: blueprint.profileVersion,
           family: blueprint.family,
@@ -433,6 +449,10 @@ export function createAdaptiveBlueprintService(
       const persisted = await store.commit(blueprint);
       logger.info("adaptive.blueprint.committed", { id: persisted.id, hash: persisted.hash });
       return persisted;
+    },
+
+    async getById(blueprintId) {
+      return store.find(blueprintId);
     },
   };
 }

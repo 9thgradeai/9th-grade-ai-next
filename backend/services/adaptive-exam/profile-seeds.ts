@@ -33,23 +33,15 @@ import type { ExamConfig, SubjectNode, TopicNode } from "~backend/services/exam-
 import { BCS_PRELIMINARY_CONFIG } from "~backend/services/exam-config/bcs";
 import { BANK_PRELIMINARY_CONFIG } from "~backend/services/exam-config/bank";
 
-/** Authorship timestamp of this seed revision — not a verification date. */
-export const SEED_AUTHORED_AT = "2026-11-22T00:00:00.000Z";
-export const SEED_CHANGED_BY = "profile-seeds";
+import {
+  SEED_AUTHORED_AT,
+  SEED_CHANGED_BY,
+  STRICT_PYQ_POLICY,
+  UNSOURCED_DIFFICULTY_DISTRIBUTION,
+  PROVISIONAL_PROFILES,
+} from "./profile-seed-parts";
 
-/** Explicit sentinel: no verified difficulty distribution exists in the repo. */
-export const UNSOURCED_DIFFICULTY_DISTRIBUTION = Object.freeze({
-  EASY: 0,
-  MEDIUM: 0,
-  HARD: 0,
-});
-
-/** Verified answers only — source claims and unverified answers are excluded. */
-export const STRICT_PYQ_POLICY = Object.freeze({
-  allowSourceClaimedAnswers: false,
-  allowUnverifiedAnswers: false,
-  minVerifiedShare: 1,
-});
+export { SEED_AUTHORED_AT, SEED_CHANGED_BY, STRICT_PYQ_POLICY, UNSOURCED_DIFFICULTY_DISTRIBUTION };
 
 const COMMON_NOTES: readonly string[] = [
   "Seeded from a reviewed exam-config; verificationStatus mirrors reviewStatus=reviewed, not approved. Official simulation is disabled.",
@@ -144,6 +136,7 @@ function buildProfile(input: SeedInput): ExamProfile {
     allowedOverrides: [],
     source: input.source,
     verificationStatus: config.reviewStatus,
+    provisional: false,
     ...(config.effectiveFrom ? { effectiveFrom: config.effectiveFrom } : {}),
     revisionHistory: [
       {
@@ -200,49 +193,47 @@ export const BB_SENIOR_OFFICER_GENERAL_PROFILE: ExamProfile = buildProfile({
 export const SEED_PROFILES: readonly ExamProfile[] = Object.freeze([
   BCS_PRELIMINARY_PROFILE,
   BB_SENIOR_OFFICER_GENERAL_PROFILE,
+  ...PROVISIONAL_PROFILES,
 ]);
 
-export type UnavailableProfileId =
-  | "BB_ASSISTANT_DIRECTOR_GENERAL"
-  | "BANK_OFFICER_GENERAL"
-  | "BANK_OFFICER_CASH"
-  | "BANK_OFFICER_IT";
-
 export type UnavailableProfile = {
-  id: UnavailableProfileId;
-  family: ExamFamily;
+  id: string;
+  family: ExamFamily | "OTHERS";
   reason: string;
 };
 
 /**
- * Profiles the domain knows about but cannot seed. `resolve()` returns null
- * for these; the reason is exposed so the API/UI can explain the absence
- * instead of silently substituting another post's paper shape.
+ * Profiles the domain knows about but cannot seed. `resolve()` returns null for
+ * these; the reason is exposed so the API/UI can explain the absence instead of
+ * silently substituting another post's paper shape. Extensible "Others"
+ * organisations are declared here until a verified syllabus is supplied.
  */
 export const UNAVAILABLE_PROFILES: readonly UnavailableProfile[] = Object.freeze([
   {
-    id: "BB_ASSISTANT_DIRECTOR_GENERAL",
-    family: "BANK",
+    id: "OTHERS_PETROBANGLA",
+    family: "OTHERS",
     reason:
-      "No reviewed or approved post-level syllabus configuration exists for this recruitment in the repository. The verified configs describe only Preliminary papers; no marks table, topic hierarchy or scoring policy is available. Not seeded to avoid fabricating official figures.",
+      "No syllabus, marks distribution, taxonomy or verified historical questions are available for Petrobangla. Register an organisation and post in the catalog after evidence is supplied.",
   },
   {
-    id: "BANK_OFFICER_GENERAL",
-    family: "BANK",
-    reason:
-      "No reviewed or approved post-level configuration exists for this bank-officer specialisation. The only source-backed Bank config is a 100-mark Preliminary shape; per-post marks, topics and scoring are unsourced. Not seeded to avoid fabrication.",
+    id: "OTHERS_BEPZA",
+    family: "OTHERS",
+    reason: "No verified syllabus or marks distribution is available for BEPZA.",
   },
   {
-    id: "BANK_OFFICER_CASH",
-    family: "BANK",
-    reason:
-      "No reviewed or approved post-level configuration exists for this bank-officer specialisation. The only source-backed Bank config is a 100-mark Preliminary shape; per-post marks, topics and scoring are unsourced. Not seeded to avoid fabrication.",
+    id: "OTHERS_BEZA",
+    family: "OTHERS",
+    reason: "No verified syllabus or marks distribution is available for BEZA.",
   },
   {
-    id: "BANK_OFFICER_IT",
-    family: "BANK",
-    reason:
-      "No reviewed or approved post-level configuration exists for this bank-officer specialisation. The only source-backed Bank config is a 100-mark Preliminary shape; per-post marks, topics and scoring are unsourced. Not seeded to avoid fabrication.",
+    id: "OTHERS_BIDA",
+    family: "OTHERS",
+    reason: "No verified syllabus or marks distribution is available for BIDA.",
+  },
+  {
+    id: "OTHERS_NSI",
+    family: "OTHERS",
+    reason: "No verified syllabus or marks distribution is available for NSI.",
   },
 ]);
 

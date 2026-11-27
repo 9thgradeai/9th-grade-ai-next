@@ -58,14 +58,16 @@ export interface ProfileSnapshotStore {
   insert(snapshot: StoredProfileSnapshot): Promise<StoredProfileSnapshot>;
 }
 
-const PROFILE_IDS: readonly AdaptiveExamProfileId[] = [
-  "BCS_PRELIMINARY",
-  "BB_SENIOR_OFFICER_GENERAL",
-  "BB_ASSISTANT_DIRECTOR_GENERAL",
-  "BANK_OFFICER_GENERAL",
-  "BANK_OFFICER_CASH",
-  "BANK_OFFICER_IT",
-];
+/**
+ * Profile ids are open: the catalog may register new posts and "Others"
+ * organisations without a TypeScript release. We validate shape + family
+ * consistency here, and catalog membership at resolution/registration time.
+ */
+function familyForProfileId(id: string): ExamFamily {
+  if (id.startsWith("BCS_")) return "BCS";
+  if (id.startsWith("BB_") || id.startsWith("BANK_")) return "BANK";
+  return "OTHERS";
+}
 
 const OVERRIDE_KEYS: ReadonlySet<string> = new Set([
   "questionCount",
@@ -153,15 +155,15 @@ export function validateProfile(input: unknown): AdaptiveValidationResult {
   }
 
   const id = profile.id;
-  if (typeof id !== "string" || !(PROFILE_IDS as readonly string[]).includes(id)) {
-    add("error", "PROFILE_ID_UNKNOWN", `Unknown profile id "${String(id)}".`, "id");
+  if (typeof id !== "string" || id.trim() === "") {
+    add("error", "PROFILE_ID_UNKNOWN", "Profile id must be a non-empty string.", "id");
   }
   const version = finiteNumber(profile.version);
   if (version === null || !Number.isInteger(version) || version < 1) {
     add("error", "VERSION_INVALID", "Profile version must be a positive integer.", "version");
   }
 
-  const expectedFamily: ExamFamily = typeof id === "string" && id.startsWith("BCS_") ? "BCS" : "BANK";
+  const expectedFamily: ExamFamily = typeof id === "string" ? familyForProfileId(id) : "OTHERS";
   if (profile.family !== expectedFamily) {
     add(
       "error",
@@ -170,7 +172,7 @@ export function validateProfile(input: unknown): AdaptiveValidationResult {
       "family",
     );
   }
-  const expectedEcosystem = expectedFamily === "BCS" ? "BCS" : "BANGLADESH_BANK";
+  const expectedEcosystem = expectedFamily === "BCS" ? "BCS" : expectedFamily === "BANK" ? "BANGLADESH_BANK" : "OTHERS";
   if (profile.ecosystemCode !== expectedEcosystem) {
     add(
       "error",
