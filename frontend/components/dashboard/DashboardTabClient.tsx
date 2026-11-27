@@ -62,6 +62,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading, ssr: false }),
   "exam-history": dynamic(() => import("@/components/dashboard/ExamHistoryTab"), { loading: TabChunkLoading, ssr: false }),
   "real-exam": dynamic(() => import("@/components/dashboard/RealExamTab"), { loading: TabChunkLoading, ssr: false }),
+  "adaptive-exam": dynamic(() => import("@/components/dashboard/AdaptiveExamTab"), { loading: TabChunkLoading, ssr: false }),
   vocab: dynamic(() => import("@/components/dashboard/VocabTab"), { loading: TabChunkLoading, ssr: false }),
   "current-affairs": dynamic(() => import("@/components/dashboard/CurrentAffairsTab"), { loading: TabChunkLoading, ssr: false }),
   "ai-solver": dynamic(() => import("@/components/dashboard/AISolverTab"), { loading: TabChunkLoading, ssr: false }),

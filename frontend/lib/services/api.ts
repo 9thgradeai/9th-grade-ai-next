@@ -1,4 +1,4 @@
-import type { Server } from "@/lib/types";
+import type { AdaptiveExam, Server } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────
 
@@ -1153,4 +1153,114 @@ export const account = {
     goal?: string;
   }): Promise<{ ok: boolean; user: Server.UserDTO }> =>
     mutate<{ ok: boolean; user: Server.UserDTO }>("/api/onboarding", "POST", data),
+};
+
+/**
+ * Adaptive Exam V2 browser seam. POST bodies deliberately omit `userId`;
+ * the server derives identity from the session cookie. Answers submitted here
+ * are candidate echoes only — scoring always uses the server-owned snapshot.
+ */
+export const adaptiveExam = {
+  catalog: (): Promise<{ catalog: AdaptiveExam.ExamCatalog }> =>
+    authGateway("/api/adaptive-exam/catalog"),
+
+  profiles: (filter?: { family?: AdaptiveExam.Family; profileId?: string }): Promise<{
+    profiles: AdaptiveExam.ProfileSummary[];
+  }> => {
+    const qs = new URLSearchParams();
+    if (filter?.family) qs.set("family", filter.family);
+    if (filter?.profileId) qs.set("profileId", filter.profileId);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return authGateway(`/api/adaptive-exam/profiles${suffix}`);
+  },
+
+  prepare: (command: {
+    family: AdaptiveExam.Family;
+    profileId: string;
+    subjects: string[];
+    topics?: string[];
+    requestedQuestionCount: number;
+    durationMin?: number;
+    mode: AdaptiveExam.BlueprintMode;
+    difficulty?: AdaptiveExam.DifficultyBand | "MIXED";
+    historicalYearRange?: { from: number; to: number };
+    adaptationEnabled: boolean;
+    idempotencyKey: string;
+  }): Promise<{ prepared: AdaptiveExam.PreparedExam }> =>
+    mutate("/api/adaptive-exam/prepare", "POST", command, { timeoutMs: 120_000 }),
+
+  generate: (input: { blueprintId: string; idempotencyKey: string }): Promise<{
+    job: AdaptiveExam.GenerationJob;
+    paper: AdaptiveExam.Paper | null;
+  }> =>
+    mutate("/api/adaptive-exam/generate-paper", "POST", input, { timeoutMs: 180_000 }),
+
+  job: (jobId: string): Promise<{ job: AdaptiveExam.GenerationJob | null }> =>
+    authGateway(`/api/adaptive-exam/generation-job/${encodeURIComponent(jobId)}`),
+
+  startSession: (input: { paperId: string; blueprintId: string; idempotencyKey: string }): Promise<{
+    session: AdaptiveExam.Session;
+    paper: AdaptiveExam.Paper | null;
+  }> => mutate("/api/adaptive-exam/session/start", "POST", input),
+
+  session: (attemptId: string): Promise<{
+    session: AdaptiveExam.Session | null;
+    paper: AdaptiveExam.Paper | null;
+  }> => authGateway(`/api/adaptive-exam/session/${encodeURIComponent(attemptId)}`),
+
+  answer: (
+    attemptId: string,
+    input: { position: number; option: AdaptiveExam.OptionKey; expectedVersion?: number },
+  ): Promise<{ session: AdaptiveExam.Session }> =>
+    mutate(`/api/adaptive-exam/session/${encodeURIComponent(attemptId)}/answers`, "POST", input),
+
+  flag: (
+    attemptId: string,
+    input: { position: number; flagged: boolean; expectedVersion?: number },
+  ): Promise<{ session: AdaptiveExam.Session }> =>
+    mutate(`/api/adaptive-exam/session/${encodeURIComponent(attemptId)}/flags`, "POST", input),
+
+  submit: (
+    attemptId: string,
+    input: {
+      paperId: string;
+      answers: Array<{ position: number; option: AdaptiveExam.OptionKey }>;
+      durationSec: number;
+      idempotencyKey: string;
+    },
+  ): Promise<{ score: AdaptiveExam.Score }> =>
+    mutate(`/api/adaptive-exam/session/${encodeURIComponent(attemptId)}/submit`, "POST", input, {
+      timeoutMs: 60_000,
+    }),
+
+  submissionStatus: (attemptId: string): Promise<{
+    status: string;
+    submittedAt?: string | null;
+    version?: number;
+    score: AdaptiveExam.Score | null;
+  }> => authGateway(`/api/adaptive-exam/session/${encodeURIComponent(attemptId)}/submission-status`),
+
+  report: (attemptId: string): Promise<{ report: AdaptiveExam.Report }> =>
+    authGateway(`/api/adaptive-exam/session/${encodeURIComponent(attemptId)}/report`),
+
+  answerKey: (attemptId: string): Promise<{ answerKey: AdaptiveExam.AnswerKey | null }> =>
+    authGateway(`/api/adaptive-exam/answer-key/${encodeURIComponent(attemptId)}`),
+
+  library: (filter?: {
+    family?: AdaptiveExam.Family;
+    profileId?: string;
+    subjectId?: string;
+    status?: AdaptiveExam.PublicationStatus;
+  }): Promise<{ entries: AdaptiveExam.LibraryEntry[] }> => {
+    const qs = new URLSearchParams();
+    if (filter?.family) qs.set("family", filter.family);
+    if (filter?.profileId) qs.set("profileId", filter.profileId);
+    if (filter?.subjectId) qs.set("subjectId", filter.subjectId);
+    if (filter?.status) qs.set("status", filter.status);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return authGateway(`/api/adaptive-exam/library${suffix}`);
+  },
+
+  libraryPaper: (paperId: string): Promise<{ entry: AdaptiveExam.LibraryEntry | null }> =>
+    authGateway(`/api/adaptive-exam/library/${encodeURIComponent(paperId)}`),
 };

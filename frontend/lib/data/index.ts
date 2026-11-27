@@ -1,6 +1,8 @@
 // Centralized static data for the 9Th-Grade AI dashboard and seed.
 
-export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam" | "vocab" | "current-affairs" | "ai-solver" | "ai-mock" | "advisor" | "evaluator" | "voice-interview" | "student-model" | "usage";
+import { isAdaptiveExamV2Enabled } from "@/lib/flags";
+
+export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam" | "adaptive-exam" | "vocab" | "current-affairs" | "ai-solver" | "ai-mock" | "advisor" | "evaluator" | "voice-interview" | "student-model" | "usage";
 
 export const TABS: { id: TabId; label: string; short: string; bengali: string; icon: string }[] = [
   { id: "home", label: "HOME", short: "HOM", bengali: "হোম", icon: "🏠" },
@@ -12,6 +14,9 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
   { id: "study-planner", label: "PLANNER", short: "PLN", bengali: "প্ল্যানার", icon: "📅" },
   { id: "exam-history", label: "EXAM HISTORY", short: "EXH", bengali: "পরীক্ষা ইতিহাস", icon: "📋" },
   { id: "real-exam", label: "REAL EXAM", short: "REX", bengali: "রিয়েল এক্সাম", icon: "📄" },
+  ...(isAdaptiveExamV2Enabled()
+    ? [{ id: "adaptive-exam" as const, label: "ADAPTIVE EXAM", short: "ADX", bengali: "অ্যাডাপ্টিভ এক্সাম", icon: "🎯" }]
+    : []),
   { id: "vocab", label: "VOCAB", short: "VOC", bengali: "ভোকাব", icon: "📖" },
   { id: "current-affairs", label: "CURRENT AFFAIRS", short: "CAF", bengali: "সাম্প্রতিক সমাচার", icon: "📰" },
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
@@ -32,7 +37,17 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
 export const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
   { label: "Learn", labelBn: "শিখুন", ids: ["home", "practice", "question-bank", "study-planner"] },
   { label: "Revise", labelBn: "রিভিশন", ids: ["flashcards", "mistakes", "vocab"] },
-  { label: "Assess", labelBn: "মূল্যায়ন", ids: ["progress", "exam-history", "real-exam", "current-affairs"] },
+  {
+    label: "Assess",
+    labelBn: "মূল্যায়ন",
+    ids: [
+      "progress",
+      "exam-history",
+      "real-exam",
+      ...(isAdaptiveExamV2Enabled() ? (["adaptive-exam"] as const) : []),
+      "current-affairs",
+    ],
+  },
   { label: "AI Studio", labelBn: "এআই স্টুডিও", ids: ["ai-solver", "ai-mock", "advisor", "evaluator", "voice-interview", "student-model"] },
   { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings", "usage"] },
 ];

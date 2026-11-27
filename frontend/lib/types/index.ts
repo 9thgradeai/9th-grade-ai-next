@@ -412,6 +412,234 @@ export namespace Client {
   };
 }
 
+// ── Adaptive Exam V2 DTOs ──────────────────────────────────
+// Candidate-safe mirror of backend/services/adaptive-exam/contracts.ts.
+// Nothing here can express a correct answer in a paper or a submission.
+
+export namespace AdaptiveExam {
+  export type Family = "BCS" | "BANK" | "OTHERS";
+  export type DifficultyBand = "EASY" | "MEDIUM" | "HARD";
+  export type OptionKey = "A" | "B" | "C" | "D";
+  export type LanguageCode = "bn" | "en";
+  export type QuestionSourceType =
+    | "PYQ"
+    | "PYQ_DERIVED"
+    | "ORIGINAL"
+    | "CURRENT_AFFAIRS"
+    | "DIAGNOSTIC";
+  export type BlueprintMode =
+    | "HISTORICAL_PATTERN"
+    | "BALANCED"
+    | "HIGH_YIELD"
+    | "ADAPTIVE"
+    | "WEAKNESS_FOCUSED"
+    | "FULL_EXAM_SIMULATION";
+  export type PublicationStatus = "DRAFT" | "UPCOMING" | "PUBLISHED" | "ARCHIVED";
+
+  export type CatalogNode = {
+    id: string;
+    code: string;
+    nameBn: string;
+    nameEn: string;
+    active: boolean;
+  };
+
+  export type ExamCatalog = {
+    families: Family[];
+    organizations: Array<CatalogNode & { family: Family }>;
+    posts: Array<CatalogNode & { organizationId: string }>;
+    types: Array<CatalogNode & { postId: string; profileId?: string }>;
+  };
+
+  export type ProfileSummary = {
+    id: string;
+    version: number;
+    family: Family;
+    organization: string;
+    recruitmentPost: string;
+    stage: string;
+    labelBn: string;
+    labelEn: string;
+    totalQuestions: number;
+    totalMarks: number;
+    durationMin: number;
+    verificationStatus: "draft" | "reviewed" | "approved" | "rejected";
+    provisional: boolean;
+    historicalDataEligible: boolean;
+    subjects: Array<{
+      subjectId: string;
+      nameBn: string;
+      nameEn: string;
+      count: number;
+      language: LanguageCode;
+    }>;
+  };
+
+  export type Blueprint = {
+    id: string;
+    version: number;
+    hash: string;
+    profileId: string;
+    profileVersion: number;
+    family: Family;
+    mode: BlueprintMode;
+    totalQuestionCount: number;
+    totalMarks: number;
+    durationSec: number;
+    allocations: Array<{
+      subjectId: string;
+      count: number;
+      difficulty: Record<DifficultyBand, number>;
+      sources: Record<QuestionSourceType, number>;
+      language: LanguageCode;
+    }>;
+    difficultyAllocation: Record<DifficultyBand, number>;
+    sourceAllocation: Record<QuestionSourceType, number>;
+    duplicateExclusions: string[];
+    dataSufficiency: {
+      sufficient: boolean;
+      reasons: string[];
+      coverage: { historicalYears: number; verifiedShare: number; topicCoverage: number };
+    };
+    warnings: string[];
+    status: "draft" | "committed" | "superseded";
+  };
+
+  export type PreparedExam = {
+    blueprint: Blueprint;
+    estimatedHistoricalCount: number;
+    estimatedGeneratedCount: number;
+    warnings: string[];
+  };
+
+  export type CandidateQuestion = {
+    position: number;
+    questionId?: string;
+    sourceType: QuestionSourceType;
+    subjectId: string;
+    subjectName: string;
+    topicPath: string;
+    subtopicPath?: string;
+    language: LanguageCode;
+    difficulty: DifficultyBand;
+    questionText: string;
+    options: Record<OptionKey, string>;
+    marks: number;
+  };
+
+  export type Paper = {
+    id: string;
+    version: number;
+    blueprintId: string;
+    blueprintHash: string;
+    createdAt: string;
+    questions: CandidateQuestion[];
+    contentHash: string;
+  };
+
+  export type GenerationJob = {
+    id: string;
+    userId: string;
+    blueprintId: string;
+    status: "QUEUED" | "RUNNING" | "PARTIAL" | "FAILED" | "COMPLETED";
+    stage: string;
+    progress: number;
+    total: number;
+    paperId?: string;
+    attempts: number;
+    error?: Record<string, unknown>;
+    telemetry?: {
+      providers: string[];
+      models: string[];
+      promptVersions: string[];
+      mock: boolean;
+      batches: number;
+      questions: number;
+      inputTokens: number;
+      outputTokens: number;
+      costUsd: number;
+      durationMs: number;
+    };
+  };
+
+  export type Session = {
+    attemptId: string;
+    paperId: string;
+    blueprintId: string;
+    profileId: string;
+    profileVersion: number;
+    status: "IN_PROGRESS" | "SUBMITTING" | "COMPLETED" | "EXPIRED";
+    startsAt: string;
+    expiresAt: string;
+    submittedAt?: string;
+    answers: Record<number, OptionKey>;
+    flags: number[];
+    version: number;
+    idempotencyKey: string;
+  };
+
+  export type PerformanceSlice = {
+    subjectId?: string;
+    topicPath?: string;
+    attempted: number;
+    correct: number;
+    wrong: number;
+    unanswered: number;
+    accuracy: number;
+  };
+
+  export type Score = {
+    attemptId: string;
+    paperId: string;
+    correct: number;
+    incorrect: number;
+    unanswered: number;
+    total: number;
+    obtainedMarks: number;
+    maxMarks: number;
+    accuracy: number;
+    percentage: number;
+    subjectPerformance: PerformanceSlice[];
+    topicPerformance: PerformanceSlice[];
+    timeMetrics: { elapsedSec: number; avgSecPerQuestion?: number };
+  };
+
+  export type Report = {
+    attemptId: string;
+    score: Score;
+    revisionPriorities: Array<{
+      subjectId: string;
+      topicPath: string;
+      priority: number;
+      reason: string;
+      confidence: number;
+    }>;
+    limitations: string[];
+    generatedAt: string;
+  };
+
+  export type AnswerKey = {
+    paperId: string;
+    entries: Array<{ position: number; correctOption: OptionKey; explanation: string }>;
+    createdAt: string;
+  };
+
+  export type Publication = {
+    id: string;
+    paperId: string;
+    status: PublicationStatus;
+    titleBn: string;
+    titleEn: string;
+    availableFrom?: string;
+    availableTo?: string;
+    createdAt: string;
+  };
+
+  export type LibraryEntry = Publication & {
+    paper?: Paper;
+  };
+}
+
 // ── Server-side DTOs ────────────────────────────────────────
 
 export namespace Server {

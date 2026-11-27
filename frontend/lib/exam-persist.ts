@@ -9,8 +9,14 @@
 export const QUICK_EXAM_KEY = "ninth-grade-ai:practice:quick";
 export const MOCK_EXAM_KEY = "ninth-grade-ai:mock-test:active";
 export const CUSTOM_EXAM_KEY = "ninth-grade-ai:exam:active";
+export const ADAPTIVE_EXAM_KEY = "ninth-grade-ai:adaptive-exam:active";
 
-export const EXAM_PERSIST_KEYS = [QUICK_EXAM_KEY, MOCK_EXAM_KEY, CUSTOM_EXAM_KEY] as const;
+export const EXAM_PERSIST_KEYS = [
+  QUICK_EXAM_KEY,
+  MOCK_EXAM_KEY,
+  CUSTOM_EXAM_KEY,
+  ADAPTIVE_EXAM_KEY,
+] as const;
 export type ExamPersistKey = (typeof EXAM_PERSIST_KEYS)[number];
 
 const PERSIST_VERSION = 1;

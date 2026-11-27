@@ -1,6 +1,6 @@
 "use client";
 
-import { House, Calendar, LightningA, Brain, BookOpen, TrendUp, Gear, Target, ClockCounterClockwise, Download, Newspaper, Sparkle, Robot, Compass, Checks, Microphone, User, ChartBar } from "@phosphor-icons/react";
+import { House, Calendar, LightningA, Brain, BookOpen, TrendUp, Gear, Target, ClockCounterClockwise, Download, GraduationCap, Newspaper, Sparkle, Robot, Compass, Checks, Microphone, User, ChartBar } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 import type { TabId } from "@/lib/data";
 
@@ -18,6 +18,7 @@ export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   settings: Gear,
   "exam-history": ClockCounterClockwise,
   "real-exam": Download,
+  "adaptive-exam": GraduationCap,
   vocab: BookOpen,
   "current-affairs": Newspaper,
   "ai-solver": Robot,
