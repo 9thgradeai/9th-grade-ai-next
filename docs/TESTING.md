@@ -21,17 +21,38 @@
 | Area | Files | What is covered |
 |------|-------|-----------------|
 | Component | `tests/*.test.tsx` (~10) | Auth experience, dashboard tabs, landing, public pages |
-| Backend units | `tests/unit/backend/*` (~20) | Exam engine, SRS, rate limiting, auth hardening, session verify, security isolation, validation, badges, streaks, AI providers/search |
-| Frontend units | `tests/unit/frontend/*` | Markdown renderer, toaster, conversation list |
+| Backend units | `tests/unit/backend/*` | Exam engine, SRS, rate limiting, auth hardening, session verify, security isolation, validation, badges, streaks, AI providers/search; adaptive contracts, blueprints, profiles, scoring, historical ingestion/analytics and question pipeline |
+| Adaptive backend units | `tests/unit/backend/adaptive-duplicate-verification.test.ts`, `adaptive-library-privacy.test.ts`, `adaptive-live-import.test.ts` | Identity normalization, exact/near/template/concept/revision duplicate decisions, independent answer verification and evidence gating, library privacy/upcoming metadata, admin live-import verification/eligibility |
+| Frontend units | `tests/unit/frontend/*` | Markdown renderer, toaster, conversation list; `adaptive-exam-ui.test.ts` covers tab/icon/nav registration, flag default, and crash-safe submit recovery |
 | API routes | `tests/api/routes.test.ts` | Auth login/register/me (status codes, cookie flags, revocation), submission bounds (200-answer cap), CSRF origin checks, rate-limit 429s |
+| Adaptive API seam | `tests/api/adaptive-exam.routes.test.ts` | Route-set inventory, `runAdaptiveRoute` delegation, admin-only opt-in, no body `userId`, 401/403/400/429 and correlation/timing headers |
 | Integration | `tests/integration/*` | Real-Postgres run of the progress upsert (runs in CI via a Postgres service container) |
-| E2E (Playwright) | `tests/e2e/*.spec.ts` | `signup-mock-test` (signup → onboarding → first mock test, plus seeded-demo login), `home-sprint-flows` (public landing), `byos` (storage flows, API-mocked), and `dashboard-audit` (all 19 dashboard tabs: overflow at 5 viewports × 2 themes/locales, 44px touch targets, 11px type floor, axe serious/critical — ratcheted against `tests/e2e/dashboard-audit-baseline.json`). Needs a seeded DB (`npm run db:seed`); `tests/e2e/browser-logs.ts` fails on uncaught page exceptions and screenshots failures |
+| E2E (Playwright) | `tests/e2e/*.spec.ts` | `signup-mock-test` (signup → onboarding → first mock test, plus seeded-demo login), `home-sprint-flows` (public landing), `byos` (storage flows, API-mocked), and `dashboard-audit` (all 20 dashboard tabs including flag-enabled `adaptive-exam`: overflow at 5 viewports × 2 themes/locales, 44px touch targets, 11px type floor, axe serious/critical — ratcheted against `tests/e2e/dashboard-audit-baseline.json`). Needs a seeded DB (`npm run db:seed`) and the new adaptive tables (`npm run db:push`); `tests/e2e/browser-logs.ts` fails on uncaught page exceptions and screenshots failures |
 
 ## Known Gaps
 
 - **AI route streaming**: `/api/ai/tutor` stream behavior untested at HTTP level.
 - **Accessibility**: the dashboard is gated by `tests/e2e/dashboard-audit.spec.ts` (axe-core serious/critical, 44px targets, 11px type floor, zero overflow — all 19 tabs baselined); the public/landing surfaces are not, and there is no Lighthouse gate.
 - **Baseline harvest caveat**: Playwright clears `test-results/` at each run, so `AUDIT_WRITE_BASELINE=1 npx playwright test tests/e2e/dashboard-audit.spec.ts` must be run for **all** tabs in a single pass before `node scripts/merge-audit-baseline.mjs` (which rebuilds the baseline wholesale from the harvest directory).
+- **Adaptive real-provider exit run**: the staged BCS/SO/AD generation runs in `docs/ADAPTIVE_EXAM_IMPLEMENTATION_PLAN.md` §12.4 are not yet recorded; simulated batches are labelled `SIMULATED` and are not evidence of provider output quality.
+
+## Adaptive Exam verification
+
+- Unit/API/frontend coverage for the V2 seam lives in the files listed above;
+  run `npx vitest run tests/unit/backend/adaptive-*.test.ts tests/unit/frontend/adaptive-exam-ui.test.ts tests/api/adaptive-exam.routes.test.ts` for a focused pass.
+- Duplicate/verification tests assert that `claimedAnswer` alone never becomes a
+  verified key, that mock output cannot satisfy verification, that only hashes
+  enter `AdaptiveQuestionExposure`, and that library/upcoming rows never leak
+  paper content or answer keys.
+- Submission recovery tests cover pending-payload persistence, concurrent-click
+  rendezvous, authoritative `COMPLETED`/`EXPIRED` reconciliation and retry with
+  the original idempotency key.
+- Browser verification requires the feature flag enabled (the default unless
+  explicitly `NEXT_PUBLIC_ADAPTIVE_EXAM_V2=false`), a seeded database, and
+  `npm run db:push` for the adaptive tables. Before harvest, confirm the tab is
+  absent when the flag is disabled and present at
+  `/dashboard?tab=adaptive-exam` when enabled; then run the all-tab audit in a
+  single pass and merge its baseline.
 
 ## Running Tests
 

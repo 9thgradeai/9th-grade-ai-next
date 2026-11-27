@@ -198,3 +198,37 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
   `backend/ai/application/title.ts` summarizes the WHOLE chat transcript into a short title via the
   model (`backend/ai/prompts/title.ts`), falling back to the first learner message when no model or
   no output is available. Solver conversations keep their first-question snippet title.
+
+## Adaptive Exam generation and verification
+
+`backend/services/adaptive-exam/ai-generation-adapter.ts` implements
+`AiGenerationPort` using the shared provider registry (`question_generation`
+task, failover, retry, circuit breaker, usage telemetry). Requests are batched
+5–10 questions per call and carry profile identity, syllabus paths, language,
+difficulty, evidence snippets and forbidden duplicate fingerprints. Output is
+parsed with a strict schema; `provider`, `model`, `promptVersion` and token usage
+are recorded on every question's provenance.
+
+`answer-verification-engine.ts` asks an independent solver without the generator
+answer, then applies deterministic structural/math/evidence checks. Current-affairs
+questions require dated evidence; arithmetic is recomputed independently. Only
+agreed answers enter `SecureAnswerKey`; disagreements produce `DISPUTED` questions
+that are replaced or cause the paper job to fail. Mock-provider output is always
+labelled `source: "mock"` and cannot satisfy verified answer requirements.
+
+`generation-job.ts` persists the `prepare → select → generate → verify → dedupe →
+assemble → persist` stages as real counts/state so a serverless timeout can resume
+without reissuing a completed batch. Provider, model, prompt version, token
+usage, estimated cost and wall-clock duration are recorded on each generated
+question's provenance; `adaptive-generation-telemetry.ts` appends one shared
+`AIUsage` row per real batch (`task=ASSISTANT`, `intent=adaptive_exam_question_generation`)
+and the orchestrator writes a redacted `QUESTIONS_GENERATED` audit event. The job
+stores a telemetry rollup derived only from immutable paper provenance, alongside
+stage/progress/attempt/error state; no prompt, answer or secret is sent to the
+browser. The
+admin live-import flow reuses the same verification port: live-bank rows stay
+`SOURCE_CLAIMED`/`UNVERIFIED` and `eligibleForPyq=false` until independent
+agreement, after which `verifiedAnswer`, `verification="CROSS_CHECKED"` and PYQ
+eligibility are written together. Rejected rows become `DISPUTED` and ineligible.
+AI output is never used for authorization, validation of identity, or scoring
+authority.

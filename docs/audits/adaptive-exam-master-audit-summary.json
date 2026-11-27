@@ -1,0 +1,108 @@
+{
+  "auditDate": "2026-11-27",
+  "branch": "main",
+  "head": "d1270c8",
+  "mode": "audit-only",
+  "implementationChanged": false,
+  "tests": {
+    "typecheck": "pass",
+    "unitAndIntegration": { "files": 234, "tests": 2078, "passed": 2078 },
+    "adaptiveApiTests": 0,
+    "realProviderTests": 0
+  },
+  "database": {
+    "historicalQuestion": 0,
+    "historicalImportBatch": 0,
+    "adaptiveExamProfile": 0,
+    "adaptiveBlueprint": 0,
+    "adaptivePaperSnapshot": 0,
+    "adaptiveAnswerKey": 0,
+    "adaptiveExamSession": 0,
+    "adaptiveScoreReport": 0,
+    "question": 51272,
+    "subject": 18,
+    "topic": 650,
+    "exam": 5,
+    "examPaper": 53,
+    "mockTestResult": 143,
+    "examSchedule": 0
+  },
+  "profiles": {
+    "seeded": ["BCS_PRELIMINARY", "BB_SENIOR_OFFICER_GENERAL"],
+    "unavailable": [
+      "BB_ASSISTANT_DIRECTOR_GENERAL",
+      "BANK_OFFICER_GENERAL",
+      "BANK_OFFICER_CASH",
+      "BANK_OFFICER_IT"
+    ],
+    "missingFromUnion": ["BCS_SPECIAL", "BANK_ASSISTANT_MANAGER", "OTHERS"]
+  },
+  "apiRoutes": ["/api/adaptive-exam/prepare", "/api/adaptive-exam/session/start", "/api/adaptive-exam/answer-key/[attemptId]"],
+  "missingRoutes": ["generatePaper", "submit", "report", "shared mock library", "upcoming mock management"],
+  "ai": {
+    "generationPortInterface": true,
+    "generationPortImplementation": false,
+    "adapterInApiRoutes": "ports: {} as any",
+    "providerConfiguredInEnv": "GROQ_API_KEY present but unused by adaptive code",
+    "independentAnswerVerification": false,
+    "backgroundJobs": false
+  },
+  "duplicatePrevention": {
+    "inPaperIdSet": true,
+    "exactNormalizedTextInAnalytics": true,
+    "crossPaper": false,
+    "crossUser": false,
+    "nearDuplicate": false,
+    "templateDuplicate": false,
+    "globalMockHistory": false,
+    "generationGate": false
+  },
+  "simulatedGeneration": {
+    "label": "SIMULATED — deterministic AI stub, not a real provider",
+    "papers": 5,
+    "profile": "BCS_PRELIMINARY",
+    "questionsPerPaper": 200,
+    "totalQuestions": 1000,
+    "uniqueQuestions": 54,
+    "exactDuplicateRate": 0.946,
+    "aiStubCalls": 1000,
+    "papersPassedValidation": 5,
+    "artifact": "docs/audits/adaptive-exam/generation-simulated.json"
+  },
+  "findings": [
+    { "id": "P0-1", "severity": "critical", "title": "No AiGenerationPort implementation", "component": "backend/services/adaptive-exam/question-generation.ts" },
+    { "id": "P0-2", "severity": "critical", "title": "No paper generation/submit/report API routes", "component": "app/api/adaptive-exam" },
+    { "id": "P0-3", "severity": "critical", "title": "Historical question corpus empty; 100% AI slots", "component": "database/prisma, orchestrator-factory.ts" },
+    { "id": "P0-4", "severity": "critical", "title": "No global duplicate prevention gate", "component": "question-selection.ts, adaptive-blueprint.ts" },
+    { "id": "P1-1", "severity": "high", "title": "51k live Question bank disconnected from adaptive", "component": "historical-repository.ts" },
+    { "id": "P1-2", "severity": "high", "title": "Topic path namespace mismatch blocks PYQ retrieval", "component": "historical-sources.ts, question-selection.ts" },
+    { "id": "P1-3", "severity": "high", "title": "Difficulty always MEDIUM", "component": "profile-seeds.ts, question-selection.ts" },
+    { "id": "P1-4", "severity": "high", "title": "Bank language policy conflicts with supplied baseline", "component": "profile-seeds.ts" },
+    { "id": "P2-1", "severity": "medium", "title": "Feature embedded in Real Exam tab, not standalone", "component": "frontend/components/dashboard/RealExamTab.tsx" },
+    { "id": "P2-2", "severity": "medium", "title": "subtopicPaths metadata unused", "component": "profile-seeds.ts" },
+    { "id": "P2-3", "severity": "medium", "title": "No adaptive API docs or API tests", "component": "docs/API.md, tests/api" }
+  ],
+  "readinessScores": {
+    "featureCompleteness": 20,
+    "examinationHierarchy": 15,
+    "syllabusAndProfileAccuracy": 55,
+    "historicalQuestionCoverage": 0,
+    "historicalProvenance": 25,
+    "historicalFrequencyIntelligence": 15,
+    "patternAwareBlueprint": 20,
+    "aiGenerationQuality": 10,
+    "factualAccuracy": 0,
+    "mathematicsAccuracy": 0,
+    "globalDuplicatePrevention": 0,
+    "multiPaperDifferentiation": 5,
+    "sharedMockRepository": 0,
+    "upcomingMockManagement": 0,
+    "examDeliveryAndScoring": 20,
+    "adaptiveIntelligence": 25,
+    "privacyAndSecurity": 65,
+    "reliabilityAndScalability": 15,
+    "overallExaminationReadiness": 12
+  },
+  "remediationStarted": false,
+  "awaitingApproval": true
+}

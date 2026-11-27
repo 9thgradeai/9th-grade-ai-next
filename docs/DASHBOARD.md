@@ -1,7 +1,7 @@
 # User Dashboard — Component & UX Inventory
 
 Canonical reference for the authenticated dashboard (`/dashboard`): shell,
-navigation, all 19 tabs, reusable cards, state, and design tokens. Labels are
+navigation, all 20 tabs (19 always-on + feature-flagged Adaptive Exam), reusable cards, state, and design tokens. Labels are
 quoted literally from source (Bengali/English bilingual via `t(lang, …)`).
 
 Related docs: `DESIGN-SYSTEM.md` (tokens/primitives), `API.md` (endpoints),
@@ -19,10 +19,12 @@ Related docs: `DESIGN-SYSTEM.md` (tokens/primitives), `API.md` (endpoints),
   `CommandBar`.
 - **Tabs** (`frontend/lib/data/index.ts`): `home`, `practice`, `question-bank`,
   `mistakes`, `progress`, `flashcards`, `study-planner`, `exam-history`,
-  `real-exam`, `vocab`, `current-affairs`, `settings`, plus the **AI Workspace**
-  group: `ai-solver`, `ai-mock`, `advisor`, `evaluator`, `voice-interview`,
-  `student-model`, `usage`. All 19 are code-split (`ssr: false`) and reachable
-  via SideNav groups, the mobile More sheet, `?tab=` deep-links and ⌘K.
+  `real-exam`, `adaptive-exam`, `vocab`, `current-affairs`, `settings`, plus the
+  **AI Workspace** group: `ai-solver`, `ai-mock`, `advisor`, `evaluator`,
+  `voice-interview`, `student-model`, `usage`. All 20 are code-split
+  (`ssr: false`) and reachable via SideNav groups, the mobile More sheet,
+  `?tab=` deep-links and ⌘K. `adaptive-exam` is hidden from nav/quick actions
+  when `NEXT_PUBLIC_ADAPTIVE_EXAM_V2=false`; the API seam does not depend on the flag.
   `?tab=real-exam&paper=<id>` opens a specific paper (command palette).
   `?tab=practice&mode=quick|mock|custom` selects the practice mode;
   `?tab=question-bank&view=bookmarks` lands on saved questions.
@@ -37,8 +39,10 @@ Related docs: `DESIGN-SYSTEM.md` (tokens/primitives), `API.md` (endpoints),
   for URL handoffs); cross-tab `storage` events re-hydrate instead of
   diverging. Metrics are never stored — always server-fetched per tab.
 - **Exam persistence** (`frontend/lib/exam-persist.ts`, single seam): one
-  validated snapshot per mode (`quick`/`mock`/`custom`), versioned writes,
-  corrupt payloads dropped, starting one mode cross-clears the others.
+  validated snapshot per mode (`quick`/`mock`/`custom`/`adaptive`), versioned
+  writes, corrupt payloads dropped, starting one mode cross-clears the others.
+  Adaptive additionally stores a pending submit payload and joins concurrent
+  clicks before clearing it on an authoritative result.
 - **Keyboard**: `1–9/0` jump tabs (suppressed in inputs/dialogs); `⌘K/Ctrl+K`
   toggles the command palette; Home adds `P/M/W/A/F/Q/L/R`.
 
@@ -50,6 +54,7 @@ Collapsible 272px ↔ 76px icon rail (persisted). Brand (`9Th-Grade AI` /
 `বিসিএস • ব্যাংক • চাকরি`) → `ExamSwitcher` → grouped nav —
 **Primary**: Home, Practice, Question Bank, Mistakes, Progress;
 **Study**: Planner, Flashcards, Exam History, Real Exam;
+**Assess**: Adaptive Exam (flag-gated);
 **Account**: Settings (each English + Bengali, `aria-current="page"`, active
 indicator) → collapse toggle → user card (avatar, name, @handle, presence
 dot) + Log out.
@@ -63,7 +68,7 @@ Mobile bar: হোম, প্র্যাকটিস, ব্যাংক, ভ�
 
 Global command center: 7 **quick actions** (Start Practice, Mock Test,
 Review Mistakes, Flashcards, Question Bank, Planner, Ask AI Tutor) →
-**Go to** (all 19 tabs, bilingual + number hints) → **Your mistakes** +
+**Go to** (all available tabs, bilingual + number hints) → **Your mistakes** +
 **Exam papers** (live debounced search over real `/api/mistakes` and
 `/api/exam-papers`, 2+ chars; paper results deep-link to the exact paper) →
 **Ask AI** inline (⇧↵, stable ref guard) → footer hints. Valid `combobox`/
@@ -174,7 +179,23 @@ links) → expandable result rows.
 
 Official paper browser → custom paper builder → preview with export options
 → PDF download (`real-exam-{id}-….pdf`, max 200 Qs) → offline timed attempt
-with self-check scoring.
+with self-check scoring. The former adaptive panel was removed; a CTA links to
+`/dashboard/adaptive-exam` when the V2 flag is enabled.
+
+### Adaptive Exam — `AdaptiveExamTab.tsx` (flag-gated)
+
+Selection: family → organization → post → type → versioned profile (BCS General/
+Special, Bank AD/SO/Officer General/ICT/Cash/Assistant Manager, extensible
+"Others") → configure subjects/chapters/topics/subtopics, count, duration,
+language, source mix and adaptation → blueprint preview (marks, coverage,
+warnings, provisional-status disclosure) → durable generation job with real
+stage/progress state → server-authoritative runner using `expiresAt`, autosave,
+flag-for-review and crash-safe submit → immutable report → post-submit answer
+key → library (published papers, upcoming metadata-only, archived). The client
+persists a pending submit before the network call and reconciles through
+`submission-status` after refresh/timeout; no candidate response contains a
+correct option. Unverified PYQ claims and provisional marks are labelled as
+such; weak-topic adaptation distinguishes insufficient evidence from weakness.
 
 ### Settings — `SettingsTab.tsx`
 

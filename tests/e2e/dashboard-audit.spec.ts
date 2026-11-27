@@ -1,6 +1,6 @@
 // tests/e2e/dashboard-audit.spec.ts
 // P0 guardrail (docs/DASHBOARD_UI_UX_FIX_PLAN.md §4 Phase 0): a full sweep of
-// all 19 dashboard tabs — the only such sweep in the repo (practice-audit
+// all 20 dashboard tabs — the only such sweep in the repo (practice-audit
 // covered practice flows alone). Per tab:
 //
 //   1. Horizontal-overflow assertion at 320 / 360 / 768 / 1280 / 1536px
@@ -36,7 +36,7 @@ import {
   expectWithinBaseline,
 } from './dashboard-audit-helpers';
 
-test.describe('Dashboard audit — all 19 tabs: overflow, targets, type, a11y', () => {
+test.describe('Dashboard audit — all 20 tabs: overflow, targets, type, a11y', () => {
   test.use({ storageState: AUTH_STATE_PATH });
 
   test.beforeAll(async ({ browser }) => {

@@ -1168,3 +1168,37 @@ generator client {
   previewFeatures = ["postgresqlExtensions"]
 }
 ```
+
+### Adaptive Exam V2 additions
+
+- `AdaptiveExamOrganization`, `AdaptiveExamPost`, `AdaptiveExamType`: normalized,
+  extensible catalog (BCS, Bangladesh Bank and "Others" organizations).
+- `AdaptiveQuestionExposure`: global exact/near/template fingerprints across all
+  users, papers and verified history. Private papers are usable for internal
+  duplicate checks but never exposed through the library.
+- `AdaptiveMockPublication`: paper lifecycle `UPCOMING → PUBLISHED → ARCHIVED`,
+  availability window and immutable content hash.
+- `AdaptiveGenerationJob`: durable staged generation state with progress,
+  retry count, failure detail and a `telemetry` rollup (providers, models,
+  prompt versions, token counts, estimated cost and wall-clock duration) derived
+  only from immutable paper provenance. No question text or answer is stored.
+
+New indexes: catalog `[family, active]`, `[organizationId]`, `[postId]`;
+exposure `[fingerprint]`, `[exactHash]`, `[nearHash]`, `[templateHash]`, `[profileId]`;
+publication `[status, availableFrom]`, `[paperId]`; job `[status, createdAt]`, `[idempotencyKey]`.
+
+`AdaptiveQuestionExposure` rows contain only irreversible hashes and taxonomy
+metadata — never question text. `AdaptiveMockPublication.contentHash` is copied
+from the immutable paper and cannot change on a status update; upcoming rows
+expose metadata only. `AdaptiveExamSession` uses the server-owned row id as the
+candidate's `attemptId`, with a unique `(userId, idempotencyKey)` so re-sends and
+crash recovery resolve to one submission. Verified answers live only in
+`AdaptiveAnswerKey`; `HistoricalQuestion.claimedAnswer` is a source assertion and
+`verifiedAnswer`/`eligibleForPyq` are written only by the independent
+verification flow. Prisma adapters for all of these tables live in
+`backend/services/adaptive-exam/prisma-*.ts`; domain modules depend on ports only.
+
+Schema changes require `npm run db:push` (this project does not use migration
+files). `npm run db:push` succeeded against the configured Neon database on
+2026-11-28, including the `AdaptiveGenerationJob.telemetry` column; rerun it for
+any other environment before using the adaptive APIs.

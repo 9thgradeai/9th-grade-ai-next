@@ -13,7 +13,7 @@ import type { Browser, Cookie, Page } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
 
-/** All 19 dashboard tab slugs (must match frontend/lib/data/index.ts TABS). */
+/** All 20 dashboard tab slugs (must match frontend/lib/data/index.ts TABS). */
 export const TAB_SLUGS = [
   'home',
   'practice',
@@ -24,6 +24,7 @@ export const TAB_SLUGS = [
   'study-planner',
   'exam-history',
   'real-exam',
+  'adaptive-exam',
   'vocab',
   'current-affairs',
   'settings',

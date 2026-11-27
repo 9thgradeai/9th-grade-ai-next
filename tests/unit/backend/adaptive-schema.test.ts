@@ -138,6 +138,12 @@ describe("adaptive persistence schema", () => {
     expect(report).toMatch(/contentHash\s+String/);
   });
 
+  it("stores provider telemetry on generation jobs without answer data", () => {
+    const job = codeOnly(modelBlock("AdaptiveGenerationJob"));
+    expect(job).toMatch(/telemetry\s+Json\?/);
+    expect(job).not.toMatch(/correctAnswer|claimedAnswer|verifiedAnswer|explanation/i);
+  });
+
   it("has an append-only audit table with redacted metadata", () => {
     const audit = modelBlock("AdaptiveAuditEvent");
     expect(audit).toMatch(/requestId\s+String/);

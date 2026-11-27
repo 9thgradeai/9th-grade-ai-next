@@ -394,3 +394,47 @@ applies fully-clean outputs (validation + preservation + KaTeX parse);
 REVIEW-grade fields arrive byte-identical to storage, deterministically
 (answer-in-options invariant preserved). The database is never written on
 the read path.
+
+## Adaptive Exam (V2)
+
+All routes require an authenticated session. They are thin delegations to
+`backend/services/adaptive-exam/*`; business rules live in services.
+
+| Route | Purpose |
+|---|---|
+| `GET /api/adaptive-exam/catalog` | Exam family → organization → post → type catalog |
+| `GET /api/adaptive-exam/profiles` | Versioned profile summaries (filters: family, profileId) |
+| `POST /api/adaptive-exam/prepare` | Build and commit an immutable blueprint |
+| `POST /api/adaptive-exam/generate-paper` | Start a durable paper-generation job |
+| `GET /api/adaptive-exam/generation-job/[jobId]` | Job progress, failure detail and provider telemetry rollup (no answers) |
+| `POST /api/adaptive-exam/session/start` | Start a session against a persisted paper |
+| `GET /api/adaptive-exam/session/[attemptId]` | Resume a session (owner only) |
+| `POST /api/adaptive-exam/session/[attemptId]/answers` | Autosave an answer (version-checked) |
+| `POST /api/adaptive-exam/session/[attemptId]/flags` | Mark/unmark for review |
+| `POST /api/adaptive-exam/session/[attemptId]/submit` | Idempotent submit; returns persisted score |
+| `GET /api/adaptive-exam/session/[attemptId]/submission-status` | Reconcile an interrupted submit after timeout/refresh |
+| `GET /api/adaptive-exam/session/[attemptId]/report` | Performance report (owner only) |
+| `GET /api/adaptive-exam/answer-key/[attemptId]` | Answer key after authorized release only |
+| `GET /api/adaptive-exam/library` | Published/upcoming/archived shared paper library |
+| `GET /api/adaptive-exam/library/[paperId]` | Published paper content (no private data) |
+
+Admin-only endpoints (session role check, independent of the UI flag):
+
+| Route | Purpose |
+|---|---|
+| `POST /api/adaptive-exam/admin/live-import/preview` | Stage live-bank rows as `SOURCE_CLAIMED`/`UNVERIFIED`, `eligibleForPyq=false` |
+| `POST /api/adaptive-exam/admin/live-import/[batchId]/verify` | Independent answer verification; sets `CROSS_CHECKED`/`DISPUTED` and eligibility |
+| `POST /api/adaptive-exam/admin/live-import/[batchId]/approve` | Approve a preview batch for import |
+| `POST /api/adaptive-exam/admin/live-import/[batchId]/import` | Import an approved batch without altering verified answers |
+| `POST /api/adaptive-exam/admin/live-import/[batchId]/rollback` | Roll back a recent import batch |
+| `POST /api/adaptive-exam/admin/publication/[paperId]/status` | Publish, schedule (upcoming) or archive a finalized paper |
+
+Every route goes through `app/api/adaptive-exam/_shared.ts`: session auth (or
+`requireRole(["admin"])` for admin routes), same-origin check, 60 req/min per-user
+bucket, strict DTO validation, rejection of a body `userId`, and uniform
+`X-Request-Id` / `X-Response-Time` headers. Client commands never carry marks,
+scoring policy, correct answers, question ids or another user's identity. Paper
+content and answer keys are stored separately; no candidate-facing response
+includes a correct option. The browser's submit seam
+(`frontend/lib/services/adaptive-exam-submission.ts`) persists a pending payload
+before the request and reconciles through `submission-status` after a timeout.

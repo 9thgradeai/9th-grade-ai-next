@@ -1,4 +1,13 @@
 {
+  "adaptive-exam": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
   "advisor": {
     "overflow": 0,
     "touchTargets": 0,

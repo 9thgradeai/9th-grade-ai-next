@@ -36,25 +36,36 @@ function clone(profile: ExamProfile): ExamProfile {
 }
 
 describe("adaptive profile seeds — honesty", () => {
-  it("seeds only the two source-backed configs", () => {
+  it("seeds source-backed and explicitly provisional configs", () => {
     expect(SEED_PROFILES.map((profile) => profile.id)).toEqual([
       "BCS_PRELIMINARY",
       "BB_SENIOR_OFFICER_GENERAL",
+      "BCS_SPECIAL",
+      "BB_ASSISTANT_DIRECTOR_GENERAL",
+      "BB_OFFICER_GENERAL",
+      "BB_OFFICER_CASH",
+      "BB_ASSISTANT_MANAGER",
+      "BB_OFFICER_IT",
     ]);
     expect(unavailableReason("BCS_PRELIMINARY")).toBeNull();
     expect(unavailableReason("BB_SENIOR_OFFICER_GENERAL")).toBeNull();
+    for (const profile of SEED_PROFILES.filter((entry) => entry.provisional)) {
+      expect(unavailableReason(profile.id)).toBeNull();
+      expect(profile.verificationStatus).toBe("reviewed");
+    }
   });
 
-  it("declares all four other profile ids as unavailable with a reason", () => {
+  it("declares unavailable 'Others' organisations with an evidence reason", () => {
     expect(UNAVAILABLE_PROFILES.map((entry) => entry.id)).toEqual([
-      "BB_ASSISTANT_DIRECTOR_GENERAL",
-      "BANK_OFFICER_GENERAL",
-      "BANK_OFFICER_CASH",
-      "BANK_OFFICER_IT",
+      "OTHERS_PETROBANGLA",
+      "OTHERS_BEPZA",
+      "OTHERS_BEZA",
+      "OTHERS_BIDA",
+      "OTHERS_NSI",
     ]);
     for (const entry of UNAVAILABLE_PROFILES) {
-      expect(entry.reason).toMatch(/No reviewed or approved/);
-      expect(entry.reason).toMatch(/Not seeded/);
+      expect(entry.reason).toMatch(/No .*verified/);
+      expect(entry.family).toBe("OTHERS");
     }
   });
 
@@ -273,7 +284,7 @@ describe("adaptive profile registry", () => {
     );
     for (const id of UNAVAILABLE_PROFILES.map((entry) => entry.id)) {
       await expect(registry.resolve(id)).resolves.toBeNull();
-      expect(registry.unavailabilityReason(id)).toMatch(/No reviewed or approved/);
+      expect(registry.unavailabilityReason(id)).toMatch(/No .*verified/);
     }
   });
 
@@ -289,13 +300,25 @@ describe("adaptive profile registry", () => {
   it("lists profiles by family", async () => {
     const { registry } = makeRegistry();
     expect((await registry.list()).map((profile) => profile.id)).toEqual([
+      "BB_ASSISTANT_DIRECTOR_GENERAL",
+      "BB_ASSISTANT_MANAGER",
+      "BB_OFFICER_CASH",
+      "BB_OFFICER_GENERAL",
+      "BB_OFFICER_IT",
       "BB_SENIOR_OFFICER_GENERAL",
       "BCS_PRELIMINARY",
+      "BCS_SPECIAL",
     ]);
     expect((await registry.list("BCS")).map((profile) => profile.id)).toEqual([
       "BCS_PRELIMINARY",
+      "BCS_SPECIAL",
     ]);
     expect((await registry.list("BANK")).map((profile) => profile.id)).toEqual([
+      "BB_ASSISTANT_DIRECTOR_GENERAL",
+      "BB_ASSISTANT_MANAGER",
+      "BB_OFFICER_CASH",
+      "BB_OFFICER_GENERAL",
+      "BB_OFFICER_IT",
       "BB_SENIOR_OFFICER_GENERAL",
     ]);
   });
@@ -303,12 +326,12 @@ describe("adaptive profile registry", () => {
   it("seeds idempotently with stable hashes and drift detection", async () => {
     const { registry } = makeRegistry();
     const first = await registry.ensureSeeded();
-    expect(first.inserted).toHaveLength(2);
+    expect(first.inserted).toHaveLength(8);
     expect(first.unchanged).toHaveLength(0);
 
     const second = await registry.ensureSeeded();
     expect(second.inserted).toHaveLength(0);
-    expect(second.unchanged).toHaveLength(2);
+    expect(second.unchanged).toHaveLength(8);
     expect(second.hashes).toEqual(first.hashes);
     expect(first.hashes["BCS_PRELIMINARY:1"]).toBe(hashProfile(BCS_PRELIMINARY_PROFILE));
 
@@ -402,8 +425,9 @@ describe("adaptive profile registry", () => {
   it("surfaces seeded snapshots in list once committed", async () => {
     const { registry } = makeRegistry();
     await registry.ensureSeeded();
-    expect(await registry.list()).toHaveLength(2);
-    const stored = await registry.resolve("BANK_OFFICER_GENERAL");
-    expect(stored).toBeNull();
+    expect(await registry.list()).toHaveLength(8);
+    const stored = await registry.resolve("BB_OFFICER_GENERAL");
+    expect(stored?.provisional).toBe(true);
+    await expect(registry.resolve("OTHERS_PETROBANGLA")).resolves.toBeNull();
   });
 });

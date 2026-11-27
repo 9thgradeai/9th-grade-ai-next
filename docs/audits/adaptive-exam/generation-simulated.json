@@ -1,0 +1,69 @@
+{
+  "label": "SIMULATED — deterministic AI stub, not a real provider",
+  "aiCalls": 1000,
+  "papers": [
+    {
+      "paper": 1,
+      "blueprintId": "63e4bb02-5cb9-4f4f-b26e-b77f47b1f0d0",
+      "questionCount": 200,
+      "uniqueTextsWithinPaper": 54,
+      "subjects": 10,
+      "sourceTypes": [
+        "ORIGINAL"
+      ],
+      "validation": "PASS",
+      "answerKeyEntries": 200
+    },
+    {
+      "paper": 2,
+      "blueprintId": "16911d8c-1c27-4142-81df-cf9378ea68e7",
+      "questionCount": 200,
+      "uniqueTextsWithinPaper": 54,
+      "subjects": 10,
+      "sourceTypes": [
+        "ORIGINAL"
+      ],
+      "validation": "PASS",
+      "answerKeyEntries": 200
+    },
+    {
+      "paper": 3,
+      "blueprintId": "5d68bc22-fca2-4c53-972a-296f2406412d",
+      "questionCount": 200,
+      "uniqueTextsWithinPaper": 54,
+      "subjects": 10,
+      "sourceTypes": [
+        "ORIGINAL"
+      ],
+      "validation": "PASS",
+      "answerKeyEntries": 200
+    },
+    {
+      "paper": 4,
+      "blueprintId": "ad1a1c10-9b80-47ab-8fff-53242a1b77ac",
+      "questionCount": 200,
+      "uniqueTextsWithinPaper": 54,
+      "subjects": 10,
+      "sourceTypes": [
+        "ORIGINAL"
+      ],
+      "validation": "PASS",
+      "answerKeyEntries": 200
+    },
+    {
+      "paper": 5,
+      "blueprintId": "64e810d6-5e24-4a5b-8d49-75b3d3e96880",
+      "questionCount": 200,
+      "uniqueTextsWithinPaper": 54,
+      "subjects": 10,
+      "sourceTypes": [
+        "ORIGINAL"
+      ],
+      "validation": "PASS",
+      "answerKeyEntries": 200
+    }
+  ],
+  "totalQuestions": 1000,
+  "uniqueQuestionsAcrossPapers": 54,
+  "exactDuplicateRate": 0.946
+}

@@ -1292,3 +1292,45 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   `questionTypeDistribution` is always empty and near-duplicate counts remain zero with an
   explicit gap until the corpus records those facts. No new API route or UI ships here.
 
+
+## ADR-077 — Adaptive Exam V2 implementation decisions (2026-11-28)
+
+- **Status**: Accepted
+- **Context**: The audit found a full-featured panel inside Real Exam with simulated generation,
+  no verified answer authority, no durable session/report/library, and no trustworthy historical
+  corpus. `docs/ADAPTIVE_EXAM_IMPLEMENTATION_PLAN.md` records the ten defaults (D1–D10) approved
+  before implementation; ADR-075/076 created and governed the persistence layer but did not
+  authorize any profile or answer as official.
+- **Decision** (D1–D10):
+  1. Supplied BCS/Bank marks tables are **project-supplied baselines**, not official proof. Seeds are
+     `reviewed`/`provisionally configured` and never `approved` without evidence.
+  2. Missing profiles (BCS Special, Bank AD/Officer General/ICT/Cash/Assistant Manager) are seeded as
+     provisional configurations using the supplied tables; official simulation stays disabled.
+  3. "Others" uses extensible catalog rows (`OTHERS_PETROBANGLA`, `OTHERS_BEPZA`, `OTHERS_BEZA`,
+     `OTHERS_BIDA`, `OTHERS_NSI`) with no unverified syllabus claim.
+  4. `Question.correctAnswer` maps to `claimedAnswer` only. Only the verification workflow may set
+     `verifiedAnswer`. Difficulty remains unclassified until sourced.
+  5. AI answers are claims until an independent verifier agrees; a paper cannot be published on an
+     unverified answer key. No zero-score or guessed `"A"` fallback exists.
+  6. Generation is batched (5–10 questions per provider call) inside a durable job; no 200-call
+     synchronous path. Provider/model/usage/duration are recorded through the shared AI
+     ledger and a provenance-derived rollup on the job; no unmetered generation is allowed.
+  7. Exact, near and template duplicates are rejected globally. `conceptKey(...)` coarse concepts
+     use a per-paper multiset so repeats count against the cap; deliberate PYQ repetition is allowed
+     only in explicit revision mode, never inside one paper.
+  8. Published papers are public; upcoming papers expose metadata only until `availableFrom`;
+     private attempts, answers and scores never enter another candidate's view.
+  9. The standalone tab is registered through the existing dashboard tab seam; Real Exam keeps only
+     a CTA. Submission recovery persists a pending payload before the request and reconciles through
+     `submission-status` with the original idempotency key.
+  10. `NEXT_PUBLIC_ADAPTIVE_EXAM_V2=false` hides the tab/entry points; the flag defaults to enabled
+      unless explicitly disabled, and API authorization is independent of it.
+- **Rationale**: This preserves the audit's evidence boundary while making the product usable:
+  provisional profiles can be tested, unverified source answers can be audited, and no generated
+  paper can leak an unverified key. The durable job/session seam respects serverless limits and
+  keeps scoring server-authoritative. No new runtime dependency was added.
+- **Consequences**: The immutable audit baseline remains unchanged; remediation is tracked in the
+  implementation plan and tests. A working-database `db:push` succeeded including the additive
+  telemetry column, and the `adaptive-exam` tab was added to the 20-tab Playwright baseline; the
+  staged real-provider exit runs and production/live Vercel verification are still required before
+  claiming full production readiness.
