@@ -53,6 +53,8 @@ const baseConfig: NextConfig = {
   // isn't defeated by a single giant icon/motion chunk.
   experimental: {
     optimizePackageImports: ["@phosphor-icons/react", "framer-motion"],
+    // Pin the security upgrade path so Next surfaces advisories on this build.
+    agentUpgrade: "security",
   },
   images: {
     remotePatterns: [
